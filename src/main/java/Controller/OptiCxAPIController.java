@@ -33,6 +33,7 @@ import Model.DataModels.Stations.StationLogHistory;
 import Model.DataModels.Stations.WizardStationStatus;
 import Model.DataModels.Stations.StationValidateQueryParams;
 import Model.DataModels.Stations.StationsHeartbeat;
+import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TrendAPI.MobileCompanyList;
 import Model.DataModels.TrendAPI.MobileCompanyOverview;
 import Model.DataModels.TrendAPI.MobileHealthInfo;
@@ -633,10 +634,14 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
     }
     
     
+    //Tesla
+    public void resetTeslaClient(EnumTeslaBaseURLs baseURL ){
+        model.resetTeslaClient(baseURL);
+    }
+    
     public void getTeslaStations(){
         model.getTeslaStations();
     }
-            
             
     public void getTeslaStationInfo(String stationID){
         model.getTeslaStationInfo(stationID);

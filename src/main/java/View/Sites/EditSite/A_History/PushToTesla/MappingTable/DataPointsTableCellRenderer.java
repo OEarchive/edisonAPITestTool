@@ -31,7 +31,7 @@ public class DataPointsTableCellRenderer extends DefaultTableCellRenderer {
 
         Color color = Color.WHITE;
         setBackground(isSelected ? color : color);
-        this.setHorizontalAlignment((column == 0) ? JLabel.LEFT : JLabel.RIGHT);
+        this.setHorizontalAlignment(JLabel.LEFT);
 
         if (value == null) {
             color = Color.lightGray;

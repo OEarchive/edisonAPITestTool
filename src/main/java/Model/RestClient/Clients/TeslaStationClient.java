@@ -14,18 +14,18 @@ import java.util.List;
 
 public class TeslaStationClient {
 
-    private String serviceURL;
+    //private String serviceURL;
     private TeslaRestClientCommon teslaRestClient;
-    private final EnumTeslaBaseURLs baseURL;
+    private EnumTeslaBaseURLs baseURL;
 
     public TeslaStationClient(EnumTeslaBaseURLs baseURL, TeslaRestClientCommon teslaRestClient) {
         this.teslaRestClient = teslaRestClient;
         this.baseURL = baseURL;
     }
 
-    public void setServiceURLAndToken(String serviceURL, String accessToken) {
-        this.serviceURL = serviceURL;
-        teslaRestClient.setOauthToken(accessToken);
+    public void setTeslaBaseURL(EnumTeslaBaseURLs baseURL) {
+        this.baseURL = baseURL;
+        //teslaRestClient.setOauthToken(accessToken);
     }
 
     public OEResponse getStations() throws IOException {

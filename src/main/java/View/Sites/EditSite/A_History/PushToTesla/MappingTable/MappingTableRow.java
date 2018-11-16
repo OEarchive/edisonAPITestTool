@@ -2,20 +2,33 @@ package View.Sites.EditSite.A_History.PushToTesla.MappingTable;
 
 public class MappingTableRow {
 
+    private EnumMapStatus mapStatus;
     private String edisonShortName;
     private String edisonSid;
     private String teslaName;
+    private String teslaType;
     private String teslaID;
 
     public MappingTableRow() {
 
+        mapStatus = EnumMapStatus.NoInfo;
         edisonShortName = "?";
         edisonSid = "?";
         teslaName = "?";
+        teslaType = "?";
         teslaID = "?";
 
     }
+    
+    public void setMapStatus(EnumMapStatus mapStatus) {
+        this.mapStatus = mapStatus;
+    }
 
+    public EnumMapStatus getMapStatus() {
+        return mapStatus;
+    }
+    
+   
     public void setEdisonShortName(String edisionShortName) {
         edisonShortName = edisionShortName;
     }
@@ -38,6 +51,14 @@ public class MappingTableRow {
 
     public String getTeslaName() {
         return teslaName;
+    }
+    
+    public void setTeslaType(String teslaType) {
+        this.teslaType = teslaType;
+    }
+
+    public String getTeslaType() {
+        return teslaType;
     }
 
     public void setTeslaID(String teslaID) {

@@ -42,6 +42,7 @@ import Model.DataModels.Stations.StationLogHistory;
 import Model.DataModels.Stations.WizardStationStatus;
 import Model.DataModels.Stations.StationValidateQueryParams;
 import Model.DataModels.Stations.StationsHeartbeat;
+import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TotalSavings.TotalSavings;
 import Model.DataModels.TrendAPI.SiteInfo.EnumMobileTrendTypes;
 import Model.DataModels.Users.CreateUserRequest;
@@ -2114,6 +2115,10 @@ public class OptiCxAPIModel extends java.util.Observable {
     
     
     // Tesla
+    public void resetTeslaClient(EnumTeslaBaseURLs baseURL ){
+        teslaAPIModel.resetTeslaClient(baseURL);
+    }
+            
     public void getTeslaStations(){
         teslaAPIModel.getTeslaStations();
     }

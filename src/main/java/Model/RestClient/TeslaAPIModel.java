@@ -27,9 +27,9 @@ public class TeslaAPIModel extends java.util.Observable {
         this.pcs = pcs;
     }
 
-    public void resetClient(String serviceURL, String accessToken, TeslaRestClientCommon teslaRestClientCommon) {
-        this.teslaStationClient = new TeslaStationClient(EnumTeslaBaseURLs.Ninja, teslaRestClientCommon);
-        this.teslaStationClient.setServiceURLAndToken(serviceURL, accessToken);
+    public void resetTeslaClient(EnumTeslaBaseURLs baseURL ) {
+        //this.teslaStationClient = new TeslaStationClient(EnumTeslaBaseURLs.Ninja, teslaRestClientCommon);
+        this.teslaStationClient.setTeslaBaseURL(baseURL);
     }
 
     public void addPropChangeListener(PropertyChangeListener listener) {

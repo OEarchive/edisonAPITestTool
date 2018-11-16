@@ -7,10 +7,12 @@ import java.util.List;
 
 public enum EnumDatpointsTableColumns {
 
-    EdisonName(0,"EdisonName"),
-    EdsionSid(1,"Sid"),
-    TeslaName(2, "TeslaName"),
-    TeslaID(3, "TesalID");
+    MapStatus(0, "MapStatus"),
+    EdisonName(1,"EdisonName"),
+    EdsionSid(2,"Sid"),
+    TeslaName(3, "TeslaName"),
+    TeslaType(4, "TeslaType"),
+    TeslaID(5, "TesalID");
 
     private final String friendlyName;
     private final int columnNumber;
