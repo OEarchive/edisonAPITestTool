@@ -43,6 +43,7 @@ import Model.DataModels.Stations.WizardStationStatus;
 import Model.DataModels.Stations.StationValidateQueryParams;
 import Model.DataModels.Stations.StationsHeartbeat;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
+import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TotalSavings.TotalSavings;
 import Model.DataModels.TrendAPI.SiteInfo.EnumMobileTrendTypes;
 import Model.DataModels.Users.CreateUserRequest;
@@ -104,6 +105,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,7 +188,7 @@ public class OptiCxAPIModel extends java.util.Observable {
     public RestClientCommon getRestClient() {
         return api;
     }
-    
+
     public TeslaRestClientCommon getTeslaRestClient() {
         return teslaRestClientCommon;
     }
@@ -593,8 +595,8 @@ public class OptiCxAPIModel extends java.util.Observable {
     public void postDatapointHistory(HistoryPushObject history) {
         stationsModel.postDatapointHistory(history);
     }
-    
-    public void repostDatapointHistory( String timeStamp,  String stationId,  List<DatapointHistoriesResponse> oldhistory){
+
+    public void repostDatapointHistory(String timeStamp, String stationId, List<DatapointHistoriesResponse> oldhistory) {
         stationsModel.repostDatapointHistory(timeStamp, stationId, oldhistory);
     }
 
@@ -2012,7 +2014,7 @@ public class OptiCxAPIModel extends java.util.Observable {
     public void getDatapointsUnion(final Map<String, List<String>> sidsAndPoints) {
         datapointsModel.getDatapointsUnion(sidsAndPoints);
     }
-    
+
     public void getDatapointsUnionForReports(final Map<String, List<String>> sidsAndPoints) {
         datapointsModel.getDatapointsUnionForReports(sidsAndPoints);
     }
@@ -2112,20 +2114,26 @@ public class OptiCxAPIModel extends java.util.Observable {
     public void getReportSchema(String reportId) {
         reportsModel.getReportSchema(reportId);
     }
-    
-    
+
     // Tesla
-    public void resetTeslaClient(EnumTeslaBaseURLs baseURL ){
+    public void resetTeslaClient(EnumTeslaBaseURLs baseURL) {
         teslaAPIModel.resetTeslaClient(baseURL);
     }
-            
-    public void getTeslaStations(){
+
+    public void setEdisonClient() {
+        teslaAPIModel.setEdisonClient(this.datapointsClient);
+    }
+
+    public void getTeslaStations() {
         teslaAPIModel.getTeslaStations();
     }
-            
-            
-    public void getTeslaStationInfo(String stationID){
+
+    public void getTeslaStationInfo(String stationID) {
         teslaAPIModel.getTeslaStationInfo(stationID);
+    }
+
+    public void pullFromEdisonPushToTesla(String siteSid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows) {
+        teslaAPIModel.pullFromEdisonPushToTesla(siteSid, pushStartTime, pushEndTime, mappedRows);
     }
 
 }

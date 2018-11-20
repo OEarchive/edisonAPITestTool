@@ -1,4 +1,6 @@
-package View.Sites.EditSite.A_History.PushToTesla.MappingTable;
+package Model.DataModels.TeslaModels;
+
+import View.Sites.EditSite.A_History.PushToTesla.MappingTable.EnumMapStatus;
 
 public class MappingTableRow {
 

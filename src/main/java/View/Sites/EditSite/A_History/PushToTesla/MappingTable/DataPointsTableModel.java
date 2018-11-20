@@ -1,5 +1,6 @@
 package View.Sites.EditSite.A_History.PushToTesla.MappingTable;
 
+import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
 import Model.DataModels.TeslaModels.TeslaDataPoint;
 import Model.DataModels.TeslaModels.TeslaEquipment;
@@ -130,6 +131,18 @@ public class DataPointsTableModel extends AbstractTableModel {
     public MappingTableRow getRow(int modelNumber) {
         return mappingTableRows.get(modelNumber);
     }
+    
+    public List<MappingTableRow> getMappedColumns(){
+        List<MappingTableRow> mappedRows = new ArrayList<>();
+        for( MappingTableRow row : mappingTableRows ){ 
+            if( row.getMapStatus() == EnumMapStatus.Mapped && row.getTeslaType().contentEquals("raw")){
+                mappedRows.add(row);
+            }  
+        }
+        
+        return mappedRows;
+    }
+    
 
     @Override
     public int getRowCount() {

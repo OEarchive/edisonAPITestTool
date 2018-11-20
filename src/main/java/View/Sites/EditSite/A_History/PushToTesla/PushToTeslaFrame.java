@@ -7,7 +7,9 @@ import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.PropertyChangeNames;
 import View.Sites.EditSite.A_History.PushToTesla.MappingTable.DataPointsTableCellRenderer;
 import View.Sites.EditSite.A_History.PushToTesla.MappingTable.DataPointsTableModel;
+import Model.DataModels.TeslaModels.MappingTableRow;
 import View.Sites.EditSite.A_History.PushToTesla.MappingTable.PopupMenuForDataPointsTable;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,9 +24,17 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.table.TableColumn;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.PeriodFormat;
 
 public final class PushToTeslaFrame extends javax.swing.JFrame implements PropertyChangeListener {
 
@@ -37,17 +47,22 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private boolean showAllTesla = false;
     private boolean ignoreGarbage = true;
 
-    private final String timestamp;
-    private final String stationId;
+    private final String siteSid;
+
+    private Timer lapsedTimeTimer;
+    private ActionListener lapsedTimeUpdater;
+    private DateTime teslaPushTimerStartTime;
+
+    private DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
     public static PushToTeslaFrame getInstance(
-            final OptiCxAPIController controller, String timestamp,
+            final OptiCxAPIController controller,
             String stationId,
             List<DatapointsAndMetadataResponse> edisonPoints) {
 
         if (thisInstance == null) {
             thisInstance = new PushToTeslaFrame(
-                    controller, timestamp,
+                    controller,
                     stationId,
                     edisonPoints);
         }
@@ -56,27 +71,45 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     }
 
     private PushToTeslaFrame(final OptiCxAPIController controller,
-            String timestamp,
-            String stationId,
+            String siteSid,
             List<DatapointsAndMetadataResponse> edisonPoints) {
         initComponents();
 
         this.controller = controller;
-        this.timestamp = timestamp;
-        this.stationId = stationId;
+        this.siteSid = siteSid;
         this.edisonPoints = edisonPoints;
 
-        this.jLabelTimestamp.setText(timestamp);
+        DateTime pushEndTime = DateTime.now().withZone(DateTimeZone.UTC);
+        DateTime pushStartTime = pushEndTime.plusMonths(-1);
+
+        this.jTextFieldStartDate.setText(pushStartTime.toString(zzFormat));
+        this.jTextFieldEndDate.setText(pushEndTime.toString(zzFormat));
 
         fillTeslasHostsDropdown();
         createAllTeslaCheckBoxListener();
         createIgnoreGarbageCheckBoxListener();
         fillEdisonSidsDropdown();
 
+        lapsedTimeUpdater = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                DateTime tempTeslaPushTimerEndTime = DateTime.now();
+                Period period = new Period(teslaPushTimerStartTime, tempTeslaPushTimerEndTime);
+                String lapsedTimeString = String.format("%03d %02d:%02d:%02d", period.getDays(), period.getHours(), period.getMinutes(), period.getSeconds());
+                jLabelLapsedTime.setText(lapsedTimeString);
+                lapsedTimeTimer.restart();
+            }
+        };
+
     }
 
     @Override
     public void dispose() {
+        if (lapsedTimeTimer != null) {
+            lapsedTimeTimer.stop();
+            lapsedTimeTimer = null;
+        }
         controller.removePropChangeListener(this);
         thisInstance = null;
         super.dispose();
@@ -250,8 +283,6 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabelTimestamp = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jComboBoxTeslaSites = new javax.swing.JComboBox<>();
         jComboBoxEdisonSids = new javax.swing.JComboBox<>();
@@ -263,22 +294,22 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         jTextFieldEdisonFilter = new javax.swing.JTextField();
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBoxIgnoreGarbage = new javax.swing.JCheckBox();
+        jLabel7 = new javax.swing.JLabel();
+        jTextFieldStartDate = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jTextFieldEndDate = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTablePushPoints = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
-        jButtonRepush = new javax.swing.JButton();
+        jButtonStart = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jButtonQuit = new javax.swing.JButton();
-        jLabelStatus = new javax.swing.JLabel();
-        jProgressBar1 = new javax.swing.JProgressBar();
+        jLabelLapsedTime = new javax.swing.JLabel();
+        jProgressBar = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Push Edison To Tesla");
-
-        jLabel1.setText("Timestamp:");
-
-        jLabelTimestamp.setText("jLabel7");
 
         jLabel2.setText("TeslaSite");
 
@@ -307,6 +338,14 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
 
         jCheckBoxIgnoreGarbage.setSelected(true);
         jCheckBoxIgnoreGarbage.setText("Ignore COV, etc.");
+
+        jLabel7.setText("Start:");
+
+        jTextFieldStartDate.setText("jTextField1");
+
+        jLabel8.setText("End:");
+
+        jTextFieldEndDate.setText("jTextField2");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -337,15 +376,19 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                                 .addComponent(jCheckBoxIgnoreGarbage))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jComboBoxTeslaSites, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jCheckBoxShowAllTesla))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabelTimestamp)))
-                .addContainerGap(148, Short.MAX_VALUE))
+                        .addComponent(jTextFieldStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextFieldEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -366,8 +409,10 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                     .addComponent(jCheckBoxShowAllTesla, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabelTimestamp))
+                    .addComponent(jLabel7)
+                    .addComponent(jTextFieldStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8)
+                    .addComponent(jTextFieldEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -401,16 +446,16 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        jButtonRepush.setText("Repush");
-        jButtonRepush.addActionListener(new java.awt.event.ActionListener() {
+        jButtonStart.setText("Pull & Push");
+        jButtonStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonRepushActionPerformed(evt);
+                jButtonStartActionPerformed(evt);
             }
         });
 
@@ -423,7 +468,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             }
         });
 
-        jLabelStatus.setText("*status*");
+        jLabelLapsedTime.setText("*status*");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -431,13 +476,13 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButtonRepush)
+                .addComponent(jButtonStart)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabelStatus)
+                .addComponent(jLabelLapsedTime)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonQuit)
                 .addContainerGap())
@@ -448,11 +493,11 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButtonRepush)
+                        .addComponent(jButtonStart)
                         .addComponent(jLabel6)
                         .addComponent(jButtonQuit)
-                        .addComponent(jLabelStatus))
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabelLapsedTime))
+                    .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -483,9 +528,24 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonRepushActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRepushActionPerformed
-        //controller.repostDatapointHistory(timestamp, stationId, listOfDataPointHistories);
-    }//GEN-LAST:event_jButtonRepushActionPerformed
+    private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStartActionPerformed
+        DateTime pushStartTime = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
+        DateTime pushEndTime = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
+
+        DataPointsTableModel model = (DataPointsTableModel) this.jTablePushPoints.getModel();
+        List<MappingTableRow> mappedRows = model.getMappedColumns();
+
+        this.jButtonStart.setEnabled(false);
+
+        teslaPushTimerStartTime = DateTime.now();
+
+        lapsedTimeTimer = new Timer(1000, lapsedTimeUpdater);
+        lapsedTimeTimer.start();
+
+        controller.setEdisonClient();
+        controller.pullFromEdisonPushToTesla(siteSid, pushStartTime, pushEndTime, mappedRows);
+
+    }//GEN-LAST:event_jButtonStartActionPerformed
 
     private void jButtonQuitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonQuitActionPerformed
         dispose();
@@ -505,28 +565,30 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonQuit;
-    private javax.swing.JButton jButtonRepush;
+    private javax.swing.JButton jButtonStart;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBoxIgnoreGarbage;
     private javax.swing.JCheckBox jCheckBoxShowAllTesla;
     private javax.swing.JComboBox<String> jComboBoxEdisonSids;
     private javax.swing.JComboBox<String> jComboBoxTeslaHosts;
     private javax.swing.JComboBox<String> jComboBoxTeslaSites;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabelStatus;
-    private javax.swing.JLabel jLabelTimestamp;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabelLapsedTime;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JProgressBar jProgressBar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTablePushPoints;
     private javax.swing.JTextField jTextFieldEdisonFilter;
+    private javax.swing.JTextField jTextFieldEndDate;
+    private javax.swing.JTextField jTextFieldStartDate;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -543,7 +605,41 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             stationInfo = (TeslaStationInfo) evt.getNewValue();
             fillPointsTable();
 
-            this.jLabelStatus.setText("complete");
+            this.jLabelLapsedTime.setText("complete");
+            
+
+        } else if (propName.equals(PropertyChangeNames.TeslaOneHourPushed.getName())) {
+            int count = jProgressBar.getValue();
+            count++;
+            jProgressBar.setValue(Math.min(count, jProgressBar.getMaximum()));
+
+        } else if (propName.equals(PropertyChangeNames.TeslaPushComplete.getName())) {
+            jProgressBar.setBackground(Color.GREEN);
+            jProgressBar.invalidate();
+            jProgressBar.repaint();
+
+            if (lapsedTimeTimer != null) {
+                lapsedTimeTimer.stop();
+            }
+
+            DateTime historyPusTimerEnd = DateTime.now();
+            Period period = new Period(teslaPushTimerStartTime, historyPusTimerEnd);
+            System.out.println("lapsed time: " + PeriodFormat.getDefault().print(period));
+            System.out.println(String.format("%02d:%02d:%02d", period.getHours(), period.getMinutes(), period.getSeconds()));
+
+            String lapsedTimeString = String.format("%03d %02d:%02d:%02d", period.getDays(), period.getHours(), period.getMinutes(), period.getSeconds());
+            jLabelLapsedTime.setText(lapsedTimeString);
+
+            Object[] options = {"OK"};
+            JOptionPane.showOptionDialog(null,
+                    String.format("Lapsed time: %03d days %02d:%02d:%02d", period.getDays(), period.getHours(), period.getMinutes(), period.getSeconds()),
+                    "Done!",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null, options, options[0]);
+
+            this.dispose();
+
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
             this.dispose();
         }

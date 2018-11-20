@@ -34,6 +34,7 @@ import Model.DataModels.Stations.WizardStationStatus;
 import Model.DataModels.Stations.StationValidateQueryParams;
 import Model.DataModels.Stations.StationsHeartbeat;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
+import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TrendAPI.MobileCompanyList;
 import Model.DataModels.TrendAPI.MobileCompanyOverview;
 import Model.DataModels.TrendAPI.MobileHealthInfo;
@@ -69,6 +70,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.joda.time.DateTime;
 
 public class OptiCxAPIController implements java.awt.event.ActionListener, PropertyChangeListener {
     
@@ -645,6 +647,14 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
             
     public void getTeslaStationInfo(String stationID){
         model.getTeslaStationInfo(stationID);
+    }
+    
+    public void setEdisonClient() {
+        model.setEdisonClient();
+    }
+
+    public void pullFromEdisonPushToTesla(String siteSid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows) {
+        model.pullFromEdisonPushToTesla(siteSid, pushStartTime, pushEndTime, mappedRows);
     }
 
     /*

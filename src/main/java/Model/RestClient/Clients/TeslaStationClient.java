@@ -108,7 +108,7 @@ public class TeslaStationClient {
         return resObj;
     }
 
-    /*
+    
     public OEResponse putHistory(TeslaDataPointUpsertRequest dur) throws JsonProcessingException, IOException {
 
         String url = baseURL.getURL() + "/data/upsert";
@@ -122,6 +122,5 @@ public class TeslaStationClient {
         return resObj;
 
     }
-    */
-
+    
 }

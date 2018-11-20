@@ -4123,8 +4123,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             frame.setVisible(true);
             */
             
-            String timestamp = DateTime.now().toString();
-            PushToTeslaFrame frame = PushToTeslaFrame.getInstance(controller, timestamp, site.getStationID(), listOfMetadata);
+            PushToTeslaFrame frame = PushToTeslaFrame.getInstance(controller, site.getSid(), listOfMetadata);
 
             frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             controller.addModelListener(frame);
