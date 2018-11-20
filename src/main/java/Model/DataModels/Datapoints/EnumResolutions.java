@@ -14,17 +14,17 @@ public enum EnumResolutions {
     MONTH("month", 5),
     YEAR("year", 6);
 
-    private String name;
-    private int dropDownIndex;
+    private final String friendlyName;
+    private final int dropDownIndex;
 
     EnumResolutions(String name, int dropDownIndex) {
-        this.name = name;
+        this.friendlyName = name;
         this.dropDownIndex = dropDownIndex;
 
     }
 
-    public String getName() {
-        return this.name;
+    public String getFriendlyName() {
+        return this.friendlyName;
     }
     
     public int getDropDownIndex(){
@@ -34,14 +34,14 @@ public enum EnumResolutions {
     static public List<String> getNames() {
         List<String> names = new ArrayList<>();
         for (EnumResolutions res : EnumResolutions.values()) {
-            names.add(res.getName());
+            names.add(res.getFriendlyName());
         }
         return names;
     }
     
     static public EnumResolutions getResolutionFromName( String name ){
         for (EnumResolutions res : EnumResolutions.values()) {
-            if( res.getName().compareTo(name) == 0 ){
+            if( res.getFriendlyName().compareTo(name) == 0 ){
                 return res;
             }
         }

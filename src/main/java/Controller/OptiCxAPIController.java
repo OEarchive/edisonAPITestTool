@@ -653,8 +653,8 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
         model.setEdisonClient();
     }
 
-    public void pullFromEdisonPushToTesla(String siteSid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows) {
-        model.pullFromEdisonPushToTesla(siteSid, pushStartTime, pushEndTime, mappedRows);
+    public void pullFromEdisonPushToTesla(String querySid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows) {
+        model.pullFromEdisonPushToTesla(querySid, pushStartTime, pushEndTime, mappedRows);
     }
 
     /*

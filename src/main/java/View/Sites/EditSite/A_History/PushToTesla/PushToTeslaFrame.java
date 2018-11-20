@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.swing.AbstractButton;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -47,7 +46,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private boolean showAllTesla = false;
     private boolean ignoreGarbage = true;
 
-    private final String siteSid;
+    private final String edisonQuerySid;
 
     private Timer lapsedTimeTimer;
     private ActionListener lapsedTimeUpdater;
@@ -57,13 +56,13 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
 
     public static PushToTeslaFrame getInstance(
             final OptiCxAPIController controller,
-            String stationId,
+            String edisonQuerySid,
             List<DatapointsAndMetadataResponse> edisonPoints) {
 
         if (thisInstance == null) {
             thisInstance = new PushToTeslaFrame(
                     controller,
-                    stationId,
+                    edisonQuerySid,
                     edisonPoints);
         }
         return thisInstance;
@@ -71,12 +70,12 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     }
 
     private PushToTeslaFrame(final OptiCxAPIController controller,
-            String siteSid,
+            String edisonQuerySid,
             List<DatapointsAndMetadataResponse> edisonPoints) {
         initComponents();
 
         this.controller = controller;
-        this.siteSid = siteSid;
+        this.edisonQuerySid = edisonQuerySid;
         this.edisonPoints = edisonPoints;
 
         DateTime pushEndTime = DateTime.now().withZone(DateTimeZone.UTC);
@@ -533,7 +532,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         DateTime pushEndTime = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
 
         DataPointsTableModel model = (DataPointsTableModel) this.jTablePushPoints.getModel();
-        List<MappingTableRow> mappedRows = model.getMappedColumns();
+        List<MappingTableRow> mappedRows = model.getMappedRows();
 
         this.jButtonStart.setEnabled(false);
 
@@ -543,7 +542,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         lapsedTimeTimer.start();
 
         controller.setEdisonClient();
-        controller.pullFromEdisonPushToTesla(siteSid, pushStartTime, pushEndTime, mappedRows);
+        controller.pullFromEdisonPushToTesla(selectedSid, pushStartTime, pushEndTime, mappedRows);
 
     }//GEN-LAST:event_jButtonStartActionPerformed
 

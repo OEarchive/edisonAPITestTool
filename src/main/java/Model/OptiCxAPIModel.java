@@ -2132,8 +2132,8 @@ public class OptiCxAPIModel extends java.util.Observable {
         teslaAPIModel.getTeslaStationInfo(stationID);
     }
 
-    public void pullFromEdisonPushToTesla(String siteSid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows) {
-        teslaAPIModel.pullFromEdisonPushToTesla(siteSid, pushStartTime, pushEndTime, mappedRows);
+    public void pullFromEdisonPushToTesla(String querySid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows) {
+        teslaAPIModel.pullFromEdisonPushToTesla(querySid, pushStartTime, pushEndTime, mappedRows);
     }
 
 }

@@ -53,12 +53,12 @@ public class TeslaAPIModel extends java.util.Observable {
         this.pcs = pcs;
     }
 
-    public void resetTeslaClient(EnumTeslaBaseURLs baseURL ) {
+    public void resetTeslaClient(EnumTeslaBaseURLs baseURL) {
         //this.teslaStationClient = new TeslaStationClient(EnumTeslaBaseURLs.Ninja, teslaRestClientCommon);
         this.teslaStationClient.setTeslaBaseURL(baseURL);
     }
-    
-    public void setEdisonClient( DatapointsClient client ){
+
+    public void setEdisonClient(DatapointsClient client) {
         edisonClient = client;
     }
 
@@ -135,10 +135,9 @@ public class TeslaAPIModel extends java.util.Observable {
         };
         worker.execute();
     }
-    
-    public void pullFromEdisonPushToTesla( final String siteSid, final DateTime pushStartTime, final DateTime pushEndTime, final List<MappingTableRow> mappedRows  ){
-        
-        
+
+    public void pullFromEdisonPushToTesla(final String querySid, final DateTime pushStartTime, final DateTime pushEndTime, final List<MappingTableRow> mappedRows) {
+
         SwingWorker worker = new SwingWorker< OEResponse, Void>() {
 
             @Override
@@ -165,9 +164,9 @@ public class TeslaAPIModel extends java.util.Observable {
                 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
                 while (intervalStart.isBefore(endOfPeriod)) {
-                    
+
                     DateTime intervalEnd = intervalStart.plusHours(1);
-                    pullFromEdisonPushToTeslaInterval(siteSid, intervalStart, intervalEnd, mappedRows );
+                    pullFromEdisonPushToTeslaInterval(querySid, intervalStart, intervalEnd, mappedRows);
 
                     //increment loop index
                     pcs.firePropertyChange(PropertyChangeNames.TeslaOneHourPushed.getName(), null, 1);
@@ -207,38 +206,37 @@ public class TeslaAPIModel extends java.util.Observable {
         worker.execute();
     }
 
-        
-    private void pullFromEdisonPushToTeslaInterval( String siteSid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows  ) {
+    private void pullFromEdisonPushToTeslaInterval(String querySid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows) {
 
         List<String> edisonPointNames = new ArrayList<>();
-        Map< String, MappingTableRow > edisonNameToMappingTableRowMap = new HashMap<>();
-        
-        for(MappingTableRow mtr : mappedRows ){
+        Map< String, MappingTableRow> edisonNameToMappingTableRowMap = new HashMap<>();
+
+        for (MappingTableRow mtr : mappedRows) {
             edisonPointNames.add(mtr.getEdsionShortName());
             edisonNameToMappingTableRowMap.put(mtr.getEdsionShortName(), mtr);
         }
-        
+
         DatapointHistoriesQueryParams params = new DatapointHistoriesQueryParams(
-                siteSid, 
-                pushStartTime, 
-                pushEndTime, 
-                EnumResolutions.MINUTE, 
-                true, 
-                edisonPointNames, 
+                querySid,
+                pushStartTime,
+                pushEndTime,
+                EnumResolutions.MINUTE5,
+                true,
+                edisonPointNames,
                 EnumAggregationType.NORMAL);
-        
+
         try {
             OEResponse ttt = edisonClient.getDatapointHistories(params);
-            List<DatapointHistoriesResponse> dpr = (List<DatapointHistoriesResponse>)ttt.responseObject;          
-            TeslaDataPointUpsertRequest tdpu = new TeslaDataPointUpsertRequest( dpr, edisonNameToMappingTableRowMap);            
-            teslaStationClient.putHistory(tdpu);
-                   
+            List<DatapointHistoriesResponse> dpr = (List<DatapointHistoriesResponse>) ttt.responseObject;
+            if (dpr.size() > 0) {
+                TeslaDataPointUpsertRequest tdpu = new TeslaDataPointUpsertRequest(dpr, edisonNameToMappingTableRowMap);
+                teslaStationClient.putHistory(tdpu);
+            }
+
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(TeslaAPIModel.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    }
-    
 
+    }
 
 }

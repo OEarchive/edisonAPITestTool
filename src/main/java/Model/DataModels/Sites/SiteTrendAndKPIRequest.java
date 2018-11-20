@@ -35,7 +35,7 @@ public class SiteTrendAndKPIRequest {
                 "?start=%s&end=%s&resolution=%s",
                 startTimeString,
                 endDateString,
-                resolution.getName()
+                resolution.getFriendlyName()
         );
 
         return queryString;

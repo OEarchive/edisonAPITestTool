@@ -57,7 +57,7 @@ public class HistoryQueryParams {
                 "start=%s&end=%s&resolution=%s&points=%s",
                 startDateStr,
                 endDateStr,
-                resolution.getName(),
+                resolution.getFriendlyName(),
                 pointsList
                 );
 

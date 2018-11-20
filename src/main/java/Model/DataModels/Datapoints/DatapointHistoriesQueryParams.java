@@ -12,7 +12,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class DatapointHistoriesQueryParams {
 
-    private final String siteSid;
+    private final String querySid;
     private final DateTime start;
     private final DateTime end;
     private final EnumResolutions resolution;
@@ -20,9 +20,9 @@ public class DatapointHistoriesQueryParams {
     private final EnumAggregationType aggType;
     private final boolean sparseData;
     
-    public DatapointHistoriesQueryParams( String siteSid, DateTime start, DateTime end, EnumResolutions resolution, boolean sparseData, List<String> points, EnumAggregationType aggType ){
+    public DatapointHistoriesQueryParams( String querySid, DateTime start, DateTime end, EnumResolutions resolution, boolean sparseData, List<String> points, EnumAggregationType aggType ){
         
-        this.siteSid = siteSid;
+        this.querySid = querySid;
         this.start = start;
         this.end = end;
         this.resolution = resolution;
@@ -61,12 +61,11 @@ public class DatapointHistoriesQueryParams {
         }
         
         String pointsList = String.join("&", paramPoints);
-        String queryString = String.format(
-                "sid=%s&startDate=%s&endDate=%s&resolution=%s&sparse=%s&%s",
-                siteSid,
+        String queryString = String.format("sid=%s&startDate=%s&endDate=%s&resolution=%s&sparse=%s&%s",
+                querySid,
                 startDateStr,
                 endDateStr,
-                resolution.getName(),
+                resolution.getFriendlyName(),
                 (sparseData)?"true":"false",
                 pointsList
                 );

@@ -132,7 +132,7 @@ public class DataPointsTableModel extends AbstractTableModel {
         return mappingTableRows.get(modelNumber);
     }
     
-    public List<MappingTableRow> getMappedColumns(){
+    public List<MappingTableRow> getMappedRows(){
         List<MappingTableRow> mappedRows = new ArrayList<>();
         for( MappingTableRow row : mappingTableRows ){ 
             if( row.getMapStatus() == EnumMapStatus.Mapped && row.getTeslaType().contentEquals("raw")){
