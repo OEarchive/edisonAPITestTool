@@ -128,8 +128,8 @@ public class DataPointsTableModel extends AbstractTableModel {
 
     }
 
-    public MappingTableRow getRow(int modelNumber) {
-        return mappingTableRows.get(modelNumber);
+    public MappingTableRow getRow(int modelIndex) {
+        return mappingTableRows.get(modelIndex);
     }
     
     public List<MappingTableRow> getMappedRows(){

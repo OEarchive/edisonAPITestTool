@@ -175,10 +175,10 @@ public class TeslaAPIModel extends java.util.Observable {
 
                 StationStatusResponse stationResponse = new StationStatusResponse();
                 stationResponse.setSuccess(true);
-                stationResponse.setResult(200);
+                stationResponse.setResult(201);
 
                 OEResponse periodHistoryPushStatus = new OEResponse();
-                periodHistoryPushStatus.responseCode = 200;
+                periodHistoryPushStatus.responseCode = 201;
                 periodHistoryPushStatus.responseObject = stationResponse;
                 return periodHistoryPushStatus;
 
@@ -189,7 +189,7 @@ public class TeslaAPIModel extends java.util.Observable {
                 try {
                     OEResponse resp = get();
 
-                    if (resp.responseCode == 200) {
+                    if (resp.responseCode == 201) {
                         StationStatusResponse msg = (StationStatusResponse) resp.responseObject;
                         pcs.firePropertyChange(PropertyChangeNames.TeslaPushComplete.getName(), null, msg);
                     } else {

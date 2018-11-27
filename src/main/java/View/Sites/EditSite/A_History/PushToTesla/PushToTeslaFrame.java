@@ -30,6 +30,7 @@ import javax.swing.Timer;
 import javax.swing.table.TableColumn;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Hours;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -51,6 +52,8 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private Timer lapsedTimeTimer;
     private ActionListener lapsedTimeUpdater;
     private DateTime teslaPushTimerStartTime;
+    private double totalNumberOfHoursInPush = 0.0;
+    private double completedHours = 0.0;
 
     private DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
@@ -528,21 +531,35 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStartActionPerformed
-        DateTime pushStartTime = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
-        DateTime pushEndTime = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
 
-        DataPointsTableModel model = (DataPointsTableModel) this.jTablePushPoints.getModel();
-        List<MappingTableRow> mappedRows = model.getMappedRows();
+        if (jTablePushPoints.getSelectedRowCount() > 0) {
 
-        this.jButtonStart.setEnabled(false);
+            DataPointsTableModel model = (DataPointsTableModel) this.jTablePushPoints.getModel();
+            int[] rowNumbers = jTablePushPoints.getSelectedRows();
+            List<MappingTableRow> mappedRows = new ArrayList<>();
+            for (int selectedRowNumber : rowNumbers) {
+                int modelIndex = jTablePushPoints.convertRowIndexToModel(selectedRowNumber);
+                MappingTableRow mappedRow = model.getRow(modelIndex);
+                mappedRows.add(mappedRow);
+            }
+            //List<MappingTableRow> mappedRows = model.getMappedRows();
+            DateTime pushStartTime = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
+            DateTime pushEndTime = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
 
-        teslaPushTimerStartTime = DateTime.now();
+            //endOfPeriod is the number of whole hours between the startDate and the endDate.
+            Hours hours = Hours.hoursBetween(pushStartTime, pushEndTime);
+            totalNumberOfHoursInPush = hours.getHours();
+            jProgressBar.setMaximum(100);
+            jProgressBar.setValue(0);
+            jProgressBar.setStringPainted(true);
 
-        lapsedTimeTimer = new Timer(1000, lapsedTimeUpdater);
-        lapsedTimeTimer.start();
-
-        controller.setEdisonClient();
-        controller.pullFromEdisonPushToTesla(selectedSid, pushStartTime, pushEndTime, mappedRows);
+            this.jButtonStart.setEnabled(false);
+            teslaPushTimerStartTime = DateTime.now();
+            lapsedTimeTimer = new Timer(1000, lapsedTimeUpdater);
+            lapsedTimeTimer.start();
+            controller.setEdisonClient();
+            controller.pullFromEdisonPushToTesla(selectedSid, pushStartTime, pushEndTime, mappedRows);
+        }
 
     }//GEN-LAST:event_jButtonStartActionPerformed
 
@@ -605,11 +622,18 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             fillPointsTable();
 
             this.jLabelLapsedTime.setText("complete");
-            
 
         } else if (propName.equals(PropertyChangeNames.TeslaOneHourPushed.getName())) {
-            int count = jProgressBar.getValue();
-            count++;
+            
+            completedHours += 1.0;
+            
+            double percComplete = completedHours / totalNumberOfHoursInPush;
+            percComplete *= 100;
+            
+            int count = (int) percComplete;
+                    
+            //int count = jProgressBar.getValue();
+            //count++;
             jProgressBar.setValue(Math.min(count, jProgressBar.getMaximum()));
 
         } else if (propName.equals(PropertyChangeNames.TeslaPushComplete.getName())) {
