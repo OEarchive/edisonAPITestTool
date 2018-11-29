@@ -52,8 +52,12 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private Timer lapsedTimeTimer;
     private ActionListener lapsedTimeUpdater;
     private DateTime teslaPushTimerStartTime;
-    private double totalNumberOfHoursInPush = 0.0;
-    private double completedHours = 0.0;
+    //private int maxHoursPerPush = 0;
+    //private int maxPointsPerPush = 0;
+    //private double totalNumberOfHoursInPush = 0.0;
+    //private double totalNumberOfPointsInPush = 0.0;
+    private int completedBatches = 0;
+    private int totalBatchesToPush = 0;
 
     private DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
@@ -82,10 +86,16 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         this.edisonPoints = edisonPoints;
 
         DateTime pushEndTime = DateTime.now().withZone(DateTimeZone.UTC);
+        //pushEndTime = pushEndTime.minusMonths(1);
+        //pushEndTime = pushEndTime.minusDays( pushEndTime.getDayOfMonth() - 1 );
+        pushEndTime = pushEndTime.minusMillis(pushEndTime.getMillisOfDay());
         DateTime pushStartTime = pushEndTime.plusMonths(-1);
 
         this.jTextFieldStartDate.setText(pushStartTime.toString(zzFormat));
         this.jTextFieldEndDate.setText(pushEndTime.toString(zzFormat));
+        
+        this.jTextFieldMaxNumHoursPerPush.setText("1");
+        this.jTextFieldMaxNumPointsPerPush.setText("20");
 
         fillTeslasHostsDropdown();
         createAllTeslaCheckBoxListener();
@@ -157,8 +167,8 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         final Map< String, String> shortNameToIDMap = new HashMap<>();
 
         for (TeslaStationInfo station : stations) {
-            jComboBoxTeslaSites.addItem(station.getShortName());
-            shortNameToIDMap.put(station.getShortName(), station.getId());
+            jComboBoxTeslaSites.addItem(station.getPlantID());
+            shortNameToIDMap.put(station.getPlantID(), station.getId());
         }
 
         this.jComboBoxTeslaSites.addActionListener(new ActionListener() {
@@ -300,6 +310,10 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         jTextFieldStartDate = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jTextFieldEndDate = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jTextFieldMaxNumHoursPerPush = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        jTextFieldMaxNumPointsPerPush = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTablePushPoints = new javax.swing.JTable();
@@ -349,6 +363,14 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
 
         jTextFieldEndDate.setText("jTextField2");
 
+        jLabel1.setText("Hours/Push:");
+
+        jTextFieldMaxNumHoursPerPush.setText("100");
+
+        jLabel9.setText("# Pts/Push");
+
+        jTextFieldMaxNumPointsPerPush.setText("500");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -389,7 +411,15 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTextFieldEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextFieldMaxNumHoursPerPush, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextFieldMaxNumPointsPerPush, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -415,6 +445,12 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                     .addComponent(jTextFieldStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
                     .addComponent(jTextFieldEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextFieldMaxNumHoursPerPush, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(jTextFieldMaxNumPointsPerPush, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -450,7 +486,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -519,7 +555,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -533,6 +569,10 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private void jButtonStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStartActionPerformed
 
         if (jTablePushPoints.getSelectedRowCount() > 0) {
+            
+            int maxHoursPerPush = Integer.parseInt( this.jTextFieldMaxNumHoursPerPush.getText());
+            int maxPointsPerPush = Integer.parseInt( this.jTextFieldMaxNumPointsPerPush.getText());
+            
 
             DataPointsTableModel model = (DataPointsTableModel) this.jTablePushPoints.getModel();
             int[] rowNumbers = jTablePushPoints.getSelectedRows();
@@ -542,13 +582,21 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                 MappingTableRow mappedRow = model.getRow(modelIndex);
                 mappedRows.add(mappedRow);
             }
-            //List<MappingTableRow> mappedRows = model.getMappedRows();
+
             DateTime pushStartTime = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
             DateTime pushEndTime = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
 
             //endOfPeriod is the number of whole hours between the startDate and the endDate.
             Hours hours = Hours.hoursBetween(pushStartTime, pushEndTime);
-            totalNumberOfHoursInPush = hours.getHours();
+            int totalNumberOfHoursToPush = hours.getHours();
+            int totalNumberOfPointsToPush = mappedRows.size();
+            maxPointsPerPush = Math.min(maxPointsPerPush, mappedRows.size());
+            
+            int numHourGroups = (totalNumberOfHoursToPush + 1) /  maxHoursPerPush;
+            int numPointGroups = (totalNumberOfPointsToPush + 1)  /  maxPointsPerPush;
+            
+            totalBatchesToPush =  numHourGroups * numPointGroups;
+            
             jProgressBar.setMaximum(100);
             jProgressBar.setValue(0);
             jProgressBar.setStringPainted(true);
@@ -558,7 +606,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             lapsedTimeTimer = new Timer(1000, lapsedTimeUpdater);
             lapsedTimeTimer.start();
             controller.setEdisonClient();
-            controller.pullFromEdisonPushToTesla(selectedSid, pushStartTime, pushEndTime, mappedRows);
+            controller.pullFromEdisonPushToTesla(selectedSid, pushStartTime, pushEndTime, mappedRows, maxHoursPerPush, maxPointsPerPush );
         }
 
     }//GEN-LAST:event_jButtonStartActionPerformed
@@ -588,6 +636,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private javax.swing.JComboBox<String> jComboBoxEdisonSids;
     private javax.swing.JComboBox<String> jComboBoxTeslaHosts;
     private javax.swing.JComboBox<String> jComboBoxTeslaSites;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -595,6 +644,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelLapsedTime;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -604,6 +654,8 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private javax.swing.JTable jTablePushPoints;
     private javax.swing.JTextField jTextFieldEdisonFilter;
     private javax.swing.JTextField jTextFieldEndDate;
+    private javax.swing.JTextField jTextFieldMaxNumHoursPerPush;
+    private javax.swing.JTextField jTextFieldMaxNumPointsPerPush;
     private javax.swing.JTextField jTextFieldStartDate;
     // End of variables declaration//GEN-END:variables
 
@@ -623,11 +675,10 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
 
             this.jLabelLapsedTime.setText("complete");
 
-        } else if (propName.equals(PropertyChangeNames.TeslaOneHourPushed.getName())) {
+        } else if (propName.equals(PropertyChangeNames.TeslaBatchPushed.getName())) {
             
-            completedHours += 1.0;
-            
-            double percComplete = completedHours / totalNumberOfHoursInPush;
+            completedBatches += 1;
+            double percComplete = (double)completedBatches / (double)totalBatchesToPush;
             percComplete *= 100;
             
             int count = (int) percComplete;

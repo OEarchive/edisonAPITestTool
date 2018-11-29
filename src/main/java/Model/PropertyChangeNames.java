@@ -164,7 +164,7 @@ public enum PropertyChangeNames {
     
     TeslaStationsListReturned("TeslaStationsListReturned"),
     TeslaStationInfoRetrieved("TeslaStationInfoRetrieved"),
-    TeslaOneHourPushed( "TeslaOneHourPushed"),
+    TeslaBatchPushed( "TeslaBatchPushed"),
     TeslaPushComplete( "TeslaPushComplete");
 
     private final String name;

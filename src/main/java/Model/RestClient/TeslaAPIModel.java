@@ -136,14 +136,18 @@ public class TeslaAPIModel extends java.util.Observable {
         worker.execute();
     }
 
-    public void pullFromEdisonPushToTesla(final String querySid, final DateTime pushStartTime, final DateTime pushEndTime, final List<MappingTableRow> mappedRows) {
+    public void pullFromEdisonPushToTesla(
+            final String querySid,
+            final DateTime pushStartTime,
+            final DateTime pushEndTime,
+            final List<MappingTableRow> mappedRows,
+            final int maxHoursPerPush,
+            final int maxPointsPerPush) {
 
         SwingWorker worker = new SwingWorker< OEResponse, Void>() {
 
             @Override
             public OEResponse doInBackground() throws IOException {
-
-                final int maxPointsPerPush = 20;
 
                 //Push data on hour boudaries
                 //Starting from startTime with minutes, seconds, millis set to zero.
@@ -165,11 +169,21 @@ public class TeslaAPIModel extends java.util.Observable {
 
                 while (intervalStart.isBefore(endOfPeriod)) {
 
-                    DateTime intervalEnd = intervalStart.plusHours(1);
-                    pullFromEdisonPushToTeslaInterval(querySid, intervalStart, intervalEnd, mappedRows);
+                    DateTime intervalEnd = intervalStart.plusHours(maxHoursPerPush);
+
+                    int startPushIndex = 0;
+
+                    while (startPushIndex < mappedRows.size()) {
+                        
+                        int endIndex = Math.min(startPushIndex + maxPointsPerPush, mappedRows.size());
+                        
+                        List<MappingTableRow> pointsToPush = mappedRows.subList(startPushIndex, endIndex);
+                        pullFromEdisonPushToTeslaInterval(querySid, intervalStart, intervalEnd, pointsToPush);
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaBatchPushed.getName(), null, 1);
+                        startPushIndex += maxPointsPerPush;
+                    }
 
                     //increment loop index
-                    pcs.firePropertyChange(PropertyChangeNames.TeslaOneHourPushed.getName(), null, 1);
                     intervalStart = intervalEnd;
                 }
 

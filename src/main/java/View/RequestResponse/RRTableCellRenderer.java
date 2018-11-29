@@ -56,7 +56,7 @@ public class RRTableCellRenderer extends DefaultTableCellRenderer {
                     value = "";
                     color = Color.WHITE;
                 }
-                else if( status == 200 || status == 201 ){
+                else if( status == 200 || status == 201 || status == 204 ){
                     color = Color.GREEN;
                 }
                 else {

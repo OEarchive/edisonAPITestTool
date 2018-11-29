@@ -1,4 +1,3 @@
-
 package Model.RestClient.Clients;
 
 import Model.RestClient.EnumCallType;
@@ -13,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -25,9 +25,9 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class TeslaRestClientCommon {
-        private final String badCredentials = "incorrect credentials";
+
+    private final String badCredentials = "incorrect credentials";
 
     static Logger logger = LoggerFactory.getLogger(RestClientCommon.class.getName());
 
@@ -129,16 +129,29 @@ public class TeslaRestClientCommon {
             rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.POST, 0, url, payload));
 
             response = httpClient.execute(postRequest);
-            resp.responseCode = response.getStatusLine().getStatusCode();
-            BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-            String output;
-            while ((output = br.readLine()) != null) {
-                responseString += output;
+
+            StatusLine statusLine = response.getStatusLine();
+            resp.responseObject = statusLine.getReasonPhrase();
+            responseString = statusLine.getReasonPhrase();
+            resp.responseCode = statusLine.getStatusCode();
+
+            if (resp.responseCode != 204) {
+                try {
+                    BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+                    String output;
+                    while ((output = br.readLine()) != null) {
+                        responseString += output;
+                    }
+
+                    resp.responseCode = response.getStatusLine().getStatusCode();
+                    if (resp.responseCode == 401) {
+                        responseString = badCredentials;
+                    }
+                    resp.responseObject = responseString;
+                } catch (Exception ex) {
+
+                }
             }
-            if (resp.responseCode == 401) {
-                responseString = badCredentials;
-            }
-            resp.responseObject = responseString;
 
         } catch (Exception ex) {
             resp.responseObject = ex.getMessage();
