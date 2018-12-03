@@ -1,6 +1,7 @@
 package Model.RestClient.Clients;
 
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
+import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
 import Model.DataModels.TeslaModels.TeslaLiveDataPoint;
@@ -36,8 +37,7 @@ public class TeslaStationClient {
 
         if (resObj.responseCode == 200) {
             ObjectMapper mapper = new ObjectMapper();
-            resObj.responseObject = mapper.readValue((String) resObj.responseObject, new TypeReference<List<TeslaStationInfo>>() {
-            });
+            resObj.responseObject = mapper.readValue((String) resObj.responseObject, new TypeReference<List<TeslaStationInfo>>() {});
         }
 
         return resObj;
@@ -51,6 +51,19 @@ public class TeslaStationClient {
         if (resObj.responseCode == 200) {
             ObjectMapper mapper = new ObjectMapper();
             resObj.responseObject = mapper.readValue((String) resObj.responseObject, TeslaStationInfo.class);
+        }
+
+        return resObj;
+    }
+    
+    public OEResponse getTeslaStationDatapoints(String stationID) throws IOException {
+
+        String url = baseURL.getURL() + "/stations/" + stationID + "/data-points";
+        OEResponse resObj = teslaRestClient.getResponse(url);
+
+        if (resObj.responseCode == 200) {
+            ObjectMapper mapper = new ObjectMapper();
+            resObj.responseObject = mapper.readValue((String) resObj.responseObject, new TypeReference<List<TeslaDPServiceDatapoint>>(){});
         }
 
         return resObj;

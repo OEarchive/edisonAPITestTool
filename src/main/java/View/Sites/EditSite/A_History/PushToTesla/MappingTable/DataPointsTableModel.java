@@ -2,7 +2,8 @@ package View.Sites.EditSite.A_History.PushToTesla.MappingTable;
 
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
-import Model.DataModels.TeslaModels.TeslaDataPoint;
+import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
+import Model.DataModels.TeslaModels.TeslaStationInfoDataPoint;
 import Model.DataModels.TeslaModels.TeslaEquipment;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class DataPointsTableModel extends AbstractTableModel {
 
     private final List<MappingTableRow> mappingTableRows;
 
-    public DataPointsTableModel(List<DatapointsAndMetadataResponse> edisonPoints, String selectedSid, TeslaStationInfo stationInfo, boolean showAllTesla, boolean ignoreGarbage) {
+    public DataPointsTableModel(List<DatapointsAndMetadataResponse> edisonPoints, String selectedSid, List<TeslaDPServiceDatapoint> listOfStationDatapoints, boolean showAllTesla, boolean ignoreGarbage) {
         super();
 
         List<DatapointsAndMetadataResponse> filteredList = new ArrayList<>();
@@ -52,16 +53,18 @@ public class DataPointsTableModel extends AbstractTableModel {
             allRows.add(row);
         }
 
-        if (stationInfo != null) {
-            for (TeslaDataPoint teslaPoint : stationInfo.getDatapoints()) {
+        if (listOfStationDatapoints != null ) {
+            for ( TeslaDPServiceDatapoint teslaPoint : listOfStationDatapoints) {
                 setMappingTableRow(teslaPoint, allRows, showAllTesla);
             }
 
+            /*
             for (TeslaEquipment te : stationInfo.getequipments()) {
-                for (TeslaDataPoint teslaPoint : te.getDatapoints()) {
+                for (TeslaStationInfoDataPoint teslaPoint : te.getDatapoints()) {
                     setMappingTableRow(teslaPoint, allRows, showAllTesla);
                 }
             }
+            */
         }
 
         mappingTableRows = new ArrayList<>();
@@ -107,7 +110,7 @@ public class DataPointsTableModel extends AbstractTableModel {
         return false;
     }
 
-    private void setMappingTableRow(TeslaDataPoint teslaPoint, List<MappingTableRow> allRows, boolean showAllTesla) {
+    private void setMappingTableRow(TeslaDPServiceDatapoint teslaPoint, List<MappingTableRow> allRows, boolean showAllTesla) {
 
         for (MappingTableRow mtr : allRows) {
             if (mtr.getEdsionShortName().compareToIgnoreCase(teslaPoint.getShortName()) == 0) {

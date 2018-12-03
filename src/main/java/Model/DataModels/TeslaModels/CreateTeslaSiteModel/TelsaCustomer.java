@@ -1,10 +1,13 @@
-package Model.DataModels.TeslaModels;
 
+package Model.DataModels.TeslaModels.CreateTeslaSiteModel;
+
+import Model.DataModels.TeslaModels.TeslaStationInfoDataPoint;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public class TeslaEquipment {
 
+public class TelsaCustomer {
+    
     @JsonProperty("id")
     private String id;
 
@@ -75,4 +78,6 @@ public class TeslaEquipment {
         return dataPoints;
     }
 
+    
+    
 }

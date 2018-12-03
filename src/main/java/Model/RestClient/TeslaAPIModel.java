@@ -13,6 +13,7 @@ import Model.DataModels.Stations.HistoryPushPoint;
 import Model.DataModels.Stations.StationStatusResponse;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.MappingTableRow;
+import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.OptiCxAPIModel;
@@ -135,6 +136,39 @@ public class TeslaAPIModel extends java.util.Observable {
         };
         worker.execute();
     }
+    
+    public void getTeslaStationDatapoints(final String stationID) {
+
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+
+            @Override
+            public OEResponse doInBackground() throws IOException {
+                OEResponse results = teslaStationClient.getTeslaStationDatapoints(stationID);
+                return results;
+            }
+
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+
+                    if (resp.responseCode == 200) {
+                        List<TeslaDPServiceDatapoint> listOfStationDatapoints =  (List<TeslaDPServiceDatapoint> )resp.responseObject;
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaStationDatapointsReturned.getName(), null, listOfStationDatapoints);
+                    } else {
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, model.getRRS());
+
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+        };
+        worker.execute();
+    }
+
 
     public void pullFromEdisonPushToTesla(
             final String querySid,

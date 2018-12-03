@@ -1,30 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Model.DataModels.TeslaModels;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- *
- * @author hal
- */
-public class TeslaDataPoint {
+public class TeslaStationInfoDataPoint {
 
     @JsonProperty("id")
     private String id;
-
-    @JsonProperty("name")
-    private String name;
-
-    @JsonProperty("shortName")
-    private String shortName;
-
-    @JsonProperty("unitOfMeasurement")
-    private String unitOfMeasurement;
 
     @JsonProperty("ownerType")
     private String ownerType;
@@ -38,14 +20,23 @@ public class TeslaDataPoint {
     @JsonProperty("ownerId")
     private String ownerId;
 
-    @JsonProperty("type")
-    private String pointType;
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("shortName")
+    private String shortName;
 
     @JsonProperty("calculation")
     private String calculation;
 
     @JsonProperty("minimumResolution")
     private String minimumResolution;
+
+    @JsonProperty("type")
+    private String pointType;
+
+    @JsonProperty("unitOfMeasurement")
+    private String unitOfMeasurement;
 
     @JsonProperty("rollupAggregation")
     private String rollupAggregation;

@@ -9,7 +9,7 @@ public class TeslaStationInfo {
     
 
     @JsonProperty("id")
-    private String id;
+    private String stationId;
     
     @JsonProperty("name")
     private String name;
@@ -66,13 +66,13 @@ public class TeslaStationInfo {
     private String longitude;
 
     @JsonProperty("dataPoints")
-    private List<TeslaDataPoint> datapoints;
+    private List<TeslaStationInfoDataPoint> datapoints;
 
     @JsonProperty("equipments")
     private List<TeslaEquipment> equipments;
 
-    public String getId() {
-        return id;
+    public String getStationId() {
+        return stationId;
     }
     
     public String getName() {
@@ -147,7 +147,7 @@ public class TeslaStationInfo {
         return longitude;
     }
 
-    public List<TeslaDataPoint> getDatapoints() {
+    public List<TeslaStationInfoDataPoint> getDatapoints() {
         return datapoints;
     }
 

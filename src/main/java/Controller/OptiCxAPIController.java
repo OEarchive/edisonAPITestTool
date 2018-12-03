@@ -649,6 +649,10 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
         model.getTeslaStationInfo(stationID);
     }
     
+    public void getTeslaStationDatapoints(String stationID) {
+        model.getTeslaStationDatapoints(stationID);
+    }
+    
     public void setEdisonClient() {
         model.setEdisonClient();
     }

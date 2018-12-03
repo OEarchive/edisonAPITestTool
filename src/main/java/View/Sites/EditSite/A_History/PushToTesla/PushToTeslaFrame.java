@@ -8,6 +8,7 @@ import Model.PropertyChangeNames;
 import View.Sites.EditSite.A_History.PushToTesla.MappingTable.DataPointsTableCellRenderer;
 import View.Sites.EditSite.A_History.PushToTesla.MappingTable.DataPointsTableModel;
 import Model.DataModels.TeslaModels.MappingTableRow;
+import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import View.Sites.EditSite.A_History.PushToTesla.MappingTable.PopupMenuForDataPointsTable;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -42,7 +43,8 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private final OptiCxAPIController controller;
 
     private final List<DatapointsAndMetadataResponse> edisonPoints;
-    private TeslaStationInfo stationInfo = null;
+    //private TeslaStationInfo stationInfo = null;
+    private List<TeslaDPServiceDatapoint> listOfStationDatapoints;
     private String selectedSid = null;
     private boolean showAllTesla = false;
     private boolean ignoreGarbage = true;
@@ -84,6 +86,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         this.controller = controller;
         this.edisonQuerySid = edisonQuerySid;
         this.edisonPoints = edisonPoints;
+        listOfStationDatapoints = new ArrayList<>();
 
         DateTime pushEndTime = DateTime.now().withZone(DateTimeZone.UTC);
         //pushEndTime = pushEndTime.minusMonths(1);
@@ -113,6 +116,8 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                 lapsedTimeTimer.restart();
             }
         };
+        
+       
 
     }
 
@@ -164,11 +169,12 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         }
         ComboBoxModel comboBoxModel = new DefaultComboBoxModel();
         this.jComboBoxTeslaSites.setModel(comboBoxModel);
-        final Map< String, String> shortNameToIDMap = new HashMap<>();
+        final Map< String, String> shortNameToStationIdMap = new HashMap<>();
 
         for (TeslaStationInfo station : stations) {
             jComboBoxTeslaSites.addItem(station.getPlantID());
-            shortNameToIDMap.put(station.getPlantID(), station.getId());
+            shortNameToStationIdMap.put(station.getPlantID(), station.getStationId());
+            //shortNameToStationIdMap.put( station.getPlantID(), station.getStationId);
         }
 
         this.jComboBoxTeslaSites.addActionListener(new ActionListener() {
@@ -181,7 +187,8 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                     public void run() {
                         JComboBox<String> combo = (JComboBox<String>) event.getSource();
                         final String name = (String) combo.getSelectedItem();
-                        controller.getTeslaStationInfo(shortNameToIDMap.get(name));
+                        //controller.getTeslaStationInfo(shortNameToIDMap.get(name));
+                        controller.getTeslaStationDatapoints(shortNameToStationIdMap.get(name));
                     }
                 });
             }
@@ -242,8 +249,9 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                         fillPointsTable();
                     }
                 });
-
             }
+            
+            
         });
 
         jComboBoxEdisonSids.setSelectedIndex(0);
@@ -253,7 +261,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private void fillPointsTable() {
 
         this.jTablePushPoints.setDefaultRenderer(Object.class, new DataPointsTableCellRenderer());
-        this.jTablePushPoints.setModel(new DataPointsTableModel(edisonPoints, selectedSid, stationInfo, showAllTesla, ignoreGarbage));
+        this.jTablePushPoints.setModel(new DataPointsTableModel(edisonPoints, selectedSid, listOfStationDatapoints, showAllTesla, ignoreGarbage));
         this.jTablePushPoints.setAutoCreateRowSorter(true);
         fixPointsTableColumnWidths(jTablePushPoints);
         //setPointCounts();
@@ -668,12 +676,24 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             List<TeslaStationInfo> stations = (List<TeslaStationInfo>) evt.getNewValue();
             fillTeslasSitesDropdown(stations);
 
+        /*
         } else if (propName.equals(PropertyChangeNames.TeslaStationInfoRetrieved.getName())) {
 
             stationInfo = (TeslaStationInfo) evt.getNewValue();
+            //fillPointsTable();
+
+            this.jLabelLapsedTime.setText("complete");
+        */
+            
+            
+        } else if (propName.equals(PropertyChangeNames.TeslaStationDatapointsReturned.getName())) {
+
+            this.listOfStationDatapoints = (List<TeslaDPServiceDatapoint>) evt.getNewValue();
             fillPointsTable();
 
             this.jLabelLapsedTime.setText("complete");
+            
+            //List<TeslaDPServiceDatapoint> listOfStationDatapoints
 
         } else if (propName.equals(PropertyChangeNames.TeslaBatchPushed.getName())) {
             
