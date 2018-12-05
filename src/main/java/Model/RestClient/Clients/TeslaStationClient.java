@@ -1,5 +1,9 @@
 package Model.RestClient.Clients;
 
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
@@ -15,7 +19,6 @@ import java.util.List;
 
 public class TeslaStationClient {
 
-    //private String serviceURL;
     private TeslaRestClientCommon teslaRestClient;
     private EnumTeslaBaseURLs baseURL;
 
@@ -26,7 +29,6 @@ public class TeslaStationClient {
 
     public void setTeslaBaseURL(EnumTeslaBaseURLs baseURL) {
         this.baseURL = baseURL;
-        //teslaRestClient.setOauthToken(accessToken);
     }
 
     public OEResponse getStations() throws IOException {
@@ -37,7 +39,8 @@ public class TeslaStationClient {
 
         if (resObj.responseCode == 200) {
             ObjectMapper mapper = new ObjectMapper();
-            resObj.responseObject = mapper.readValue((String) resObj.responseObject, new TypeReference<List<TeslaStationInfo>>() {});
+            resObj.responseObject = mapper.readValue((String) resObj.responseObject, new TypeReference<List<TeslaStationInfo>>() {
+            });
         }
 
         return resObj;
@@ -55,7 +58,7 @@ public class TeslaStationClient {
 
         return resObj;
     }
-    
+
     public OEResponse getTeslaStationDatapoints(String stationID) throws IOException {
 
         String url = baseURL.getURL() + "/stations/" + stationID + "/data-points";
@@ -63,7 +66,8 @@ public class TeslaStationClient {
 
         if (resObj.responseCode == 200) {
             ObjectMapper mapper = new ObjectMapper();
-            resObj.responseObject = mapper.readValue((String) resObj.responseObject, new TypeReference<List<TeslaDPServiceDatapoint>>(){});
+            resObj.responseObject = mapper.readValue((String) resObj.responseObject, new TypeReference<List<TeslaDPServiceDatapoint>>() {
+            });
         }
 
         return resObj;
@@ -121,7 +125,6 @@ public class TeslaStationClient {
         return resObj;
     }
 
-    
     public OEResponse putHistory(TeslaDataPointUpsertRequest dur) throws JsonProcessingException, IOException {
 
         String url = baseURL.getURL() + "/data/upsert";
@@ -135,5 +138,52 @@ public class TeslaStationClient {
         return resObj;
 
     }
-    
+
+    public OEResponse postCustomer(TeslaPostCustomer postCustomer) throws JsonProcessingException, IOException {
+
+        String url = baseURL.getURL() + "/customers";
+
+        ObjectMapper mapper = new ObjectMapper();
+        String payload = mapper.writeValueAsString(postCustomer);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+
+        return resObj;
+
+    }
+
+    public OEResponse postSite(String customerId, TeslaPostSite postSite) throws JsonProcessingException, IOException {
+
+        String url = baseURL.getURL() + "/customers/" + customerId + "/sites";
+
+        ObjectMapper mapper = new ObjectMapper();
+        String payload = mapper.writeValueAsString(postSite);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+
+        return resObj;
+
+    }
+
+    public OEResponse postStation(String siteId, TeslaPostStation postStation) throws JsonProcessingException, IOException {
+
+        String url = baseURL.getURL() + "/sites/" + siteId + "/stations";
+
+        ObjectMapper mapper = new ObjectMapper();
+        String payload = mapper.writeValueAsString(postStation);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+
+        return resObj;
+
+    }
+
+    public OEResponse postEquipmentList(String stationId, List<TeslaGenEquipment> equipList) throws JsonProcessingException, IOException {
+        String url = baseURL.getURL() + "/stations/" + stationId + "/equipment";
+
+        ObjectMapper mapper = new ObjectMapper();
+        String payload = mapper.writeValueAsString(equipList);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+
+        return resObj;
+
+    }
+
 }

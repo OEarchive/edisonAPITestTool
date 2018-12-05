@@ -155,18 +155,21 @@ public enum PropertyChangeNames {
     MobileCompaniesReturned("MobileCompaniesReturned"),
     MobileCompanyOverviewReturned("MobileCompanyOverviewReturned"),
     MobileSiteOverviewReturned("MobileSiteOverviewReturned"),
-    
     MobileSavingsTrendReturned("MobileSavingsTrendReturned"),
     MobilePlantEfficiencyTrendReturned("MobilePlantEfficiencyTrendReturned"),
     MobileOptimizationTrendReturned("MobileOptimizationTrendReturned"),
     MobileChillerTrendReturned("MobileChillerTrendReturned"),
     MobileKeyTrendReturned("MobileKeyTrendReturned"),
-    
+    //
     TeslaStationsListReturned("TeslaStationsListReturned"),
     TeslaStationInfoRetrieved("TeslaStationInfoRetrieved"),
     TeslaStationDatapointsReturned("TeslaStationDatapointsReturned"),
-    TeslaBatchPushed( "TeslaBatchPushed"),
-    TeslaPushComplete( "TeslaPushComplete");
+    TeslaBatchPushed("TeslaBatchPushed"),
+    TeslaPushComplete("TeslaPushComplete"),
+    TeslaCustomerCreated("TeslaCustomerCreated"),
+    TeslaSiteCreated("TeslaSiteCreated"),
+    TeslaStationCreated("TeslaStationCreated"),
+    TeslaEquipmentCreated("TeslaEquipmentCreated");
 
     private final String name;
 

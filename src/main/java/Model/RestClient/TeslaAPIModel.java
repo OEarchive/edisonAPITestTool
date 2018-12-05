@@ -11,6 +11,10 @@ import Model.DataModels.Datapoints.simulator.Patterns.SquarePattern;
 import Model.DataModels.Stations.HistoryPushObject;
 import Model.DataModels.Stations.HistoryPushPoint;
 import Model.DataModels.Stations.StationStatusResponse;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
@@ -286,5 +290,138 @@ public class TeslaAPIModel extends java.util.Observable {
         }
 
     }
+    
+    
+    
+    //site creation
+    
+    /*
+    TeslaCustomerCreated("TeslaCustomerCreated"),
+    TeslaSiteCreated("TeslaSiteCreated"),
+    TeslaStationCreated("TeslaStationCreated"),
+    TeslaEquipmentCreated("TeslaEquipmentCreated");
+    */
+    
+    public void postCustomer(final TeslaPostCustomer postCustomer) {
+
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+
+            @Override
+            public OEResponse doInBackground() throws IOException {
+                OEResponse results = teslaStationClient.postCustomer(postCustomer);
+                return results;
+            }
+
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+                    if (resp.responseCode == 201) {
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaCustomerCreated.getName(), null, resp);
+                    } else {
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, model.getRRS());
+
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+        };
+        worker.execute();
+    }
+    
+    public void postSite(final String customerId, final TeslaPostSite postSite) {
+
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+
+            @Override
+            public OEResponse doInBackground() throws IOException {
+                OEResponse results = teslaStationClient.postSite(customerId, postSite);
+                return results;
+            }
+
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+                    if (resp.responseCode == 201) {
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaSiteCreated.getName(), null, resp);
+                    } else {
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, model.getRRS());
+
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+        };
+        worker.execute();
+    }
+       
+    public void postStation(final String siteId, final TeslaPostStation postStation) {
+
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+
+            @Override
+            public OEResponse doInBackground() throws IOException {
+                OEResponse results = teslaStationClient.postStation(siteId, postStation );
+                return results;
+            }
+
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+                    if (resp.responseCode == 201) {
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaStationCreated.getName(), null, resp);
+                    } else {
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, model.getRRS());
+
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+        };
+        worker.execute();
+    }
+      
+    
+    public void postEquipmentList(final String stationId, final List<TeslaGenEquipment> equipList) {
+
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+
+            @Override
+            public OEResponse doInBackground() throws IOException {
+                OEResponse results = teslaStationClient.postEquipmentList(stationId, equipList );
+                return results;
+            }
+
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+                    if (resp.responseCode == 201) {
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaEquipmentCreated.getName(), null, resp);
+                    } else {
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, model.getRRS());
+
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+        };
+        worker.execute();
+    }
+    
 
 }

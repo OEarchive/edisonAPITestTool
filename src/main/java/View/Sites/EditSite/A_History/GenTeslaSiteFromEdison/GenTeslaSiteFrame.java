@@ -53,7 +53,7 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
     }
 
     private void setTeslaEquipList(PageView pageView) {
-        
+
         equipList = new ArrayList<>();
         List<ItemGroup> itemGroups = pageView.getGroups();
 
@@ -65,10 +65,10 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
             }
         }
     }
-    
+
     private void fillEquipTable() {
         this.jTableEquipment.setDefaultRenderer(Object.class, new TeslaEquipTableCellRenderer());
-        this.jTableEquipment.setModel(new TeslaEquipTableModel( equipList ));
+        this.jTableEquipment.setModel(new TeslaEquipTableModel(equipList));
         this.jTableEquipment.setAutoCreateRowSorter(true);
         fixEquipColumnWidths(jTableEquipment);
     }
@@ -90,8 +90,7 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
             }
         }
     }
-    
-   
+
     @Override
     public void dispose() {
 
@@ -191,6 +190,11 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
         });
 
         jButton2.setText("Generate Site");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Tesla Site Equipment"));
 
@@ -263,6 +267,24 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+        /*
+    public void postCustomer(TeslaPostCustomer postCustomer) {
+    public void postSite(String customerId, TeslaPostSite postSite) {
+    public void postStation(String siteId, TeslaPostStation postStation) {
+    public void postEquipmentList(final String stationId, final List<TeslaGenEquipment> equipList) {
+ 
+         */
+ /*
+    TeslaCustomerCreated("TeslaCustomerCreated"),
+    TeslaSiteCreated("TeslaSiteCreated"),
+    TeslaStationCreated("TeslaStationCreated"),
+    TeslaEquipmentCreated("TeslaEquipmentCreated");
+         */
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         String propName = evt.getPropertyName();
@@ -270,12 +292,17 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
         if (propName.equals(PropertyChangeNames.UIMetaDataReturned.getName())) {
             try {
                 PageView pageView = (PageView) evt.getNewValue();
-                setTeslaEquipList( pageView );
+                setTeslaEquipList(pageView);
                 fillEquipTable();
             } catch (Exception ex) {
                 Logger.getLogger(EditSiteDetailsFrame.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
+
+        } else if (propName.equals(PropertyChangeNames.TeslaCustomerCreated.getName())) {
+        } else if (propName.equals(PropertyChangeNames.TeslaSiteCreated.getName())) {
+        } else if (propName.equals(PropertyChangeNames.TeslaStationCreated.getName())) {
+        } else if (propName.equals(PropertyChangeNames.TeslaEquipmentCreated.getName())) {
 
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
             this.dispose();
