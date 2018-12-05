@@ -6,19 +6,21 @@ import java.util.List;
 
 public enum EnumEdisonGroupTypes {
     
-    Chiller("Chillers", "chiller"),
-    PCWP("Primary Chilled Water Pumps", "primary-chilled-water-pump"),
-    SCWP("Secondary Chilled Water Pumps", "secondary-chilled-water-pump"),
-    CWP("Condenser Water Pumps", "condenser-water-pump"),
-    CT("Cooling Towers", "cooling-tower"),
-    HX("Heat Exchangers", "heat-exchanger");
+    Chiller("Chillers", "chiller", "chiller"),
+    PCWP("Primary Chilled Water Pumps", "primary-chilled-water-pump", "primaryChilledWaterPump"),
+    SCWP("Secondary Chilled Water Pumps", "secondary-chilled-water-pump", "secondaryChilledWaterPump"),
+    CWP("Condenser Water Pumps", "condenser-water-pump", "condenserWaterPump"),
+    CT("Cooling Towers", "cooling-tower", "coolingTower"),
+    HX("Heat Exchangers", "heat-exchanger", "heatExchanger");
 
     private final String friendlyName;
     private final String typeName;
+    private final String teslaName;
 
-    EnumEdisonGroupTypes(String friendlyName, String typeName) {
+    EnumEdisonGroupTypes(String friendlyName, String typeName, String teslaName) {
         this.friendlyName = friendlyName;
         this.typeName = typeName;
+        this.teslaName = teslaName;
 
     }
 
@@ -28,6 +30,10 @@ public enum EnumEdisonGroupTypes {
 
     public String getTypeName() {
         return this.typeName;
+    }
+    
+    public String getTeslaName(){
+        return this.teslaName;
     }
 
     static public List<String> getFriendlyNames() {

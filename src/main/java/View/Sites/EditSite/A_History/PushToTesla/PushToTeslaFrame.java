@@ -620,7 +620,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     }//GEN-LAST:event_jButtonStartActionPerformed
 
     private void jButtonQuitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonQuitActionPerformed
-        dispose();
+        this.dispose();
     }//GEN-LAST:event_jButtonQuitActionPerformed
 
     private void jTablePushPointsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTablePushPointsMousePressed

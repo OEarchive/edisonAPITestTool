@@ -1,22 +1,17 @@
 package View.Sites.EditSite.A_History.GenTeslaSiteFromEdison;
 
 import Controller.OptiCxAPIController;
-import Model.DataModels.Sites.Chiller;
-import Model.DataModels.Sites.EdgePlantInfo;
 import Model.DataModels.Sites.EnumProducts;
-import Model.DataModels.Sites.HeatExchanger;
-import Model.DataModels.Sites.PlantEquipment;
-import Model.DataModels.Sites.Pump;
 import Model.DataModels.Sites.Site;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.EnumEdisonGroupTypes;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
 import Model.DataModels.Views.EnumPageViewTypes;
 import Model.DataModels.Views.ItemGroup;
 import Model.DataModels.Views.PageView;
-import Model.DataModels.Views.PointGroup;
 import Model.DataModels.Views.ViewItem;
-import Model.DataModels.Views.ViewSite;
 import Model.PropertyChangeNames;
+import View.Sites.EditSite.A_History.GenTeslaSiteFromEdison.TeslaEquipmentTable.TeslaEquipTableCellRenderer;
+import View.Sites.EditSite.A_History.GenTeslaSiteFromEdison.TeslaEquipmentTable.TeslaEquipTableModel;
 import View.Sites.EditSite.EditSiteDetailsFrame;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -24,14 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
 
 public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyChangeListener {
 
     private static GenTeslaSiteFrame thisInstance;
     private final OptiCxAPIController controller;
-    private final Site edisonSite;
 
-    private PageView pageView;
+    private List<TeslaGenEquipment> equipList;
 
     public static GenTeslaSiteFrame getInstance(
             final OptiCxAPIController controller,
@@ -41,76 +37,61 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
             thisInstance = new GenTeslaSiteFrame(controller, edisonSite);
         }
         return thisInstance;
-
     }
 
     private GenTeslaSiteFrame(final OptiCxAPIController controller, Site edisonSite) {
         initComponents();
 
         this.controller = controller;
-        this.edisonSite = edisonSite;
 
         jTextFieldCustomerName.setText("");
         jTextFieldSalesForceID.setText(edisonSite.getExtSFID());
         jTextFieldSiteName.setText(edisonSite.getName());
         jTextFieldSiteShortName.setText("");
 
-        //List<TeslaGenEquipment> equipList = getTeslaEquipList( edisonSite.getEquipment() );
-        controller.getUIMetaData(EnumProducts.edge.getName(), edisonSite.getSid(), EnumPageViewTypes.Optimization.getEdisonName());
-
+        controller.getUIMetaData(EnumProducts.edge.getName(), edisonSite.getSid(), EnumPageViewTypes.PlantOverview.getEdisonName());
     }
 
-    List<TeslaGenEquipment> getTeslaEquipList(PageView pageView) {
-        List<TeslaGenEquipment> equipList = new ArrayList<>();
-
+    private void setTeslaEquipList(PageView pageView) {
+        
+        equipList = new ArrayList<>();
         List<ItemGroup> itemGroups = pageView.getGroups();
 
         for (ItemGroup ig : itemGroups) {
             String typeName = ig.getTypeName();
-
             EnumEdisonGroupTypes groupType = EnumEdisonGroupTypes.getEnumFromTypeName(typeName);
-            switch (groupType) {
-                case Chiller:
-                    
-            List<ViewItem> chillerItems = ig.getItems();
-            for( ViewItem chillerViewItem : chillerItems ){
-                
-                TeslaGenEquipment equip = new TeslaGenEquipment();
-                //equip.getName( chillerViewItem.getName());
-                
-                //zzz.
+            for (ViewItem vi : ig.getItems()) {
+                equipList.add(new TeslaGenEquipment(vi, groupType, "generic", "generic"));
             }
-                    
-                    break;
-                case PCWP:
-                    break;
-                case SCWP:
-                    break;
-                case CWP:
-                    break;
-                case CT:
-                    break;
-                case HX:
-                    break;
-            }
-
         }
-
-        //List<Chiller> chillers = pe.getChillers();
-        //List<Pump> condensers = pe.getCondenserWaterPumps();
-        //List<Pump> cts = pe.getCoolingTowers();
-        //List<HeatExchanger> hes = pe.getHeatExchangers();
-        //List<Pump> pwps = pe.getPrimaryWaterPumps();
-        //List<Pump> swps = pe.getSecondaryWaterPumps();
-
-        //for (Chiller chiller : chillers) {
-        //    TeslaGenEquipment equip = new TeslaGenEquipment();
-        //    //equip.setName(chiller.);
-        //}
-
-        return equipList;
+    }
+    
+    private void fillEquipTable() {
+        this.jTableEquipment.setDefaultRenderer(Object.class, new TeslaEquipTableCellRenderer());
+        this.jTableEquipment.setModel(new TeslaEquipTableModel( equipList ));
+        this.jTableEquipment.setAutoCreateRowSorter(true);
+        fixEquipColumnWidths(jTableEquipment);
     }
 
+    public void fixEquipColumnWidths(JTable t) {
+
+        for (int i = 0; i < t.getColumnCount(); i++) {
+            TableColumn column = t.getColumnModel().getColumn(i);
+            switch (i) {
+                case 0:
+                    column.setPreferredWidth(200);
+                    break;
+                case 1:
+                    column.setPreferredWidth(200);
+                    break;
+                default:
+                    column.setPreferredWidth(100);
+                    break;
+            }
+        }
+    }
+    
+   
     @Override
     public void dispose() {
 
@@ -132,10 +113,11 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
         jLabel2 = new javax.swing.JLabel();
         jTextFieldSalesForceID = new javax.swing.JTextField();
         jTextFieldSiteShortName = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTableEquipment = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableEquipment = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -198,9 +180,21 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
                     .addComponent(jTextFieldSiteName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
                     .addComponent(jTextFieldSiteShortName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jButton1.setText("Close");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Generate Site");
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Tesla Site Equipment"));
+
+        jTableEquipment.setAutoCreateRowSorter(true);
         jTableEquipment.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -212,25 +206,40 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTableEquipment.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jTableEquipment.setShowGrid(true);
         jScrollPane1.setViewportView(jTableEquipment);
 
-        jButton1.setText("Close");
-
-        jButton2.setText("Generate Site");
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
-                    .addComponent(jScrollPane1))
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -239,7 +248,7 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -250,23 +259,24 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         String propName = evt.getPropertyName();
 
         if (propName.equals(PropertyChangeNames.UIMetaDataReturned.getName())) {
             try {
-                this.pageView = (PageView) evt.getNewValue();
-                //fillPageViewTree();
-
+                PageView pageView = (PageView) evt.getNewValue();
+                setTeslaEquipList( pageView );
+                fillEquipTable();
             } catch (Exception ex) {
                 Logger.getLogger(EditSiteDetailsFrame.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
 
-        } else if (propName.equals(PropertyChangeNames.TeslaStationsListReturned.getName())) {
-            //List<TeslaStationInfo> stations = (List<TeslaStationInfo>) evt.getNewValue();
-            //fillTeslasSitesDropdown(stations);
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
             this.dispose();
         }
@@ -281,6 +291,7 @@ public class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyCha
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableEquipment;
     private javax.swing.JTextField jTextFieldCustomerName;
