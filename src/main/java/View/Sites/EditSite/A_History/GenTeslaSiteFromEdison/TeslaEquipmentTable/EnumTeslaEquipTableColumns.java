@@ -9,7 +9,8 @@ public enum EnumTeslaEquipTableColumns {
     EquipType(1,"EquipType"),
     ShortName(2,"ShortName"),
     Make(3, "Make"),
-    Model(4, "Model");
+    Model(4, "Model"),
+    ID(5, "id");
 
     private final String friendlyName;
     private final int columnNumber;

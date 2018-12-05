@@ -2,6 +2,7 @@ package Model.RestClient.Clients;
 
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostEquipResponse;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
@@ -13,9 +14,11 @@ import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.RestClient.OEResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class TeslaStationClient {
 
@@ -139,6 +142,7 @@ public class TeslaStationClient {
 
     }
 
+    // site creation ============
     public OEResponse postCustomer(TeslaPostCustomer postCustomer) throws JsonProcessingException, IOException {
 
         String url = baseURL.getURL() + "/customers";
@@ -147,6 +151,14 @@ public class TeslaStationClient {
         String payload = mapper.writeValueAsString(postCustomer);
         OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
 
+        //Created{"id":"17a8c5e2-67de-4534-b652-a0f12b923b42","name":"skdkskdks","salesforceId":null,"createdAt":"2018-12-05T15:36:59.413Z","updatedAt":"2018-12-05T15:36:59.413Z"}
+        if (resObj.responseCode == 201) {
+            String response = (String) resObj.responseObject;
+            response = response.substring("Created".length(), response.length());
+            JsonNode jsonNode = mapper.readTree(response);
+            Map<String, Object> map = mapper.convertValue(jsonNode, Map.class);
+            resObj.responseObject = map;
+        }
         return resObj;
 
     }
@@ -159,6 +171,13 @@ public class TeslaStationClient {
         String payload = mapper.writeValueAsString(postSite);
         OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
 
+        if (resObj.responseCode == 201) {
+            String response = (String) resObj.responseObject;
+            response = response.substring("Created".length(), response.length());
+            JsonNode jsonNode = mapper.readTree(response);
+            Map<String, Object> map = mapper.convertValue(jsonNode, Map.class);
+            resObj.responseObject = map;
+        }
         return resObj;
 
     }
@@ -171,17 +190,33 @@ public class TeslaStationClient {
         String payload = mapper.writeValueAsString(postStation);
         OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
 
+        if (resObj.responseCode == 201) {
+            String response = (String) resObj.responseObject;
+            response = response.substring("Created".length(), response.length());
+            JsonNode jsonNode = mapper.readTree(response);
+            Map<String, Object> map = mapper.convertValue(jsonNode, Map.class);
+            resObj.responseObject = map;
+        }
         return resObj;
 
     }
 
-    public OEResponse postEquipmentList(String stationId, List<TeslaGenEquipment> equipList) throws JsonProcessingException, IOException {
+    public OEResponse postEquipmentList(String stationId, TeslaGenEquipment equip) throws JsonProcessingException, IOException {
         String url = baseURL.getURL() + "/stations/" + stationId + "/equipment";
 
         ObjectMapper mapper = new ObjectMapper();
-        String payload = mapper.writeValueAsString(equipList);
+        String payload = mapper.writeValueAsString(equip);
         OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
 
+        if (resObj.responseCode == 201) {
+            String response = (String) resObj.responseObject;
+            response = response.substring("Created".length(), response.length());
+            
+            resObj.responseObject = mapper.readValue(response, TeslaPostEquipResponse.class);
+            //JsonNode jsonNode = mapper.readTree(response);
+            //Map<String, Object> map = mapper.convertValue(jsonNode, Map.class);
+            //resObj.responseObject = map;
+        }
         return resObj;
 
     }

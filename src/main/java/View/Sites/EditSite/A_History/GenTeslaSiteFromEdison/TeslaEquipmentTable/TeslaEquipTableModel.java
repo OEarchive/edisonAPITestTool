@@ -1,6 +1,7 @@
 package View.Sites.EditSite.A_History.GenTeslaSiteFromEdison.TeslaEquipmentTable;
 
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostEquipResponse;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
@@ -20,6 +21,7 @@ public class TeslaEquipTableModel extends AbstractTableModel {
         return equipList.size();
     }
 
+    @Override
     public String getColumnName(int col) {
         return EnumTeslaEquipTableColumns.getColumnFromColumnNumber(col).getFriendlyName();
     }
@@ -53,7 +55,9 @@ public class TeslaEquipTableModel extends AbstractTableModel {
             case Model:
                 val = equip.getModel();
                 break;
-
+            case ID:
+                val = equip.getId();
+                break;
         }
 
         return val;
@@ -61,6 +65,20 @@ public class TeslaEquipTableModel extends AbstractTableModel {
 
     public TeslaGenEquipment getEquipAtIndex(int modelIndex) {
         return equipList.get(modelIndex);
+    }
+    
+    public void updateEquipWithIds( List<TeslaPostEquipResponse> equipResponses ){
+        
+        for( TeslaGenEquipment equip : equipList){
+            for( TeslaPostEquipResponse resp : equipResponses ){
+                if( resp.getShortName().contentEquals(equip.getShortName())){
+                    equip.setId( resp.getId());
+                    break;
+                }
+            }
+        }
+        
+        fireTableDataChanged();
     }
 
 }

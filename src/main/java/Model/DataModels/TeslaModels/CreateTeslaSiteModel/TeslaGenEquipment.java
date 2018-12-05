@@ -20,14 +20,18 @@ public class TeslaGenEquipment {
 
     @JsonProperty("model")
     private String model;
+    
+    @JsonIgnore
+    private String id;
 
     @JsonIgnore
-    public TeslaGenEquipment(ViewItem vi, EnumEdisonGroupTypes gt, String make, String model) {
+    public TeslaGenEquipment(ViewItem vi, EnumEdisonGroupTypes gt, String make, String model, String id) {
         this.name = vi.getName();
         this.shortName = vi.getStationName();
         this.equipmentType = gt.getTeslaName();
         this.make = make;
         this.model = model;
+        this.id = id;
     }
 
     @JsonIgnore
@@ -73,6 +77,16 @@ public class TeslaGenEquipment {
 
     public String getModel() {
         return model;
+    }
+    
+    @JsonIgnore
+    public void setId( String id){
+        this.id = id;
+    }
+    
+    @JsonIgnore
+    public String getId(){
+        return id;
     }
 
 }

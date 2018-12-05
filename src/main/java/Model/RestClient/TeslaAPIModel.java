@@ -13,6 +13,7 @@ import Model.DataModels.Stations.HistoryPushPoint;
 import Model.DataModels.Stations.StationStatusResponse;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
+import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostEquipResponse;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
@@ -140,7 +141,7 @@ public class TeslaAPIModel extends java.util.Observable {
         };
         worker.execute();
     }
-    
+
     public void getTeslaStationDatapoints(final String stationID) {
 
         SwingWorker worker = new SwingWorker< OEResponse, Void>() {
@@ -157,7 +158,7 @@ public class TeslaAPIModel extends java.util.Observable {
                     OEResponse resp = get();
 
                     if (resp.responseCode == 200) {
-                        List<TeslaDPServiceDatapoint> listOfStationDatapoints =  (List<TeslaDPServiceDatapoint> )resp.responseObject;
+                        List<TeslaDPServiceDatapoint> listOfStationDatapoints = (List<TeslaDPServiceDatapoint>) resp.responseObject;
                         pcs.firePropertyChange(PropertyChangeNames.TeslaStationDatapointsReturned.getName(), null, listOfStationDatapoints);
                     } else {
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
@@ -172,7 +173,6 @@ public class TeslaAPIModel extends java.util.Observable {
         };
         worker.execute();
     }
-
 
     public void pullFromEdisonPushToTesla(
             final String querySid,
@@ -212,9 +212,9 @@ public class TeslaAPIModel extends java.util.Observable {
                     int startPushIndex = 0;
 
                     while (startPushIndex < mappedRows.size()) {
-                        
+
                         int endIndex = Math.min(startPushIndex + maxPointsPerPush, mappedRows.size());
-                        
+
                         List<MappingTableRow> pointsToPush = mappedRows.subList(startPushIndex, endIndex);
                         pullFromEdisonPushToTeslaInterval(querySid, intervalStart, intervalEnd, pointsToPush);
                         pcs.firePropertyChange(PropertyChangeNames.TeslaBatchPushed.getName(), null, 1);
@@ -290,18 +290,14 @@ public class TeslaAPIModel extends java.util.Observable {
         }
 
     }
-    
-    
-    
+
     //site creation
-    
     /*
     TeslaCustomerCreated("TeslaCustomerCreated"),
     TeslaSiteCreated("TeslaSiteCreated"),
     TeslaStationCreated("TeslaStationCreated"),
     TeslaEquipmentCreated("TeslaEquipmentCreated");
-    */
-    
+     */
     public void postCustomer(final TeslaPostCustomer postCustomer) {
 
         SwingWorker worker = new SwingWorker< OEResponse, Void>() {
@@ -317,7 +313,8 @@ public class TeslaAPIModel extends java.util.Observable {
                 try {
                     OEResponse resp = get();
                     if (resp.responseCode == 201) {
-                        pcs.firePropertyChange(PropertyChangeNames.TeslaCustomerCreated.getName(), null, resp);
+                        Map<String, Object> map = (Map<String, Object>) resp.responseObject;
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaCustomerCreated.getName(), null, map);
                     } else {
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
                     }
@@ -331,7 +328,7 @@ public class TeslaAPIModel extends java.util.Observable {
         };
         worker.execute();
     }
-    
+
     public void postSite(final String customerId, final TeslaPostSite postSite) {
 
         SwingWorker worker = new SwingWorker< OEResponse, Void>() {
@@ -347,7 +344,8 @@ public class TeslaAPIModel extends java.util.Observable {
                 try {
                     OEResponse resp = get();
                     if (resp.responseCode == 201) {
-                        pcs.firePropertyChange(PropertyChangeNames.TeslaSiteCreated.getName(), null, resp);
+                        Map<String, Object> map = (Map<String, Object>) resp.responseObject;
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaSiteCreated.getName(), null, map);
                     } else {
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
                     }
@@ -361,14 +359,14 @@ public class TeslaAPIModel extends java.util.Observable {
         };
         worker.execute();
     }
-       
+
     public void postStation(final String siteId, final TeslaPostStation postStation) {
 
         SwingWorker worker = new SwingWorker< OEResponse, Void>() {
 
             @Override
             public OEResponse doInBackground() throws IOException {
-                OEResponse results = teslaStationClient.postStation(siteId, postStation );
+                OEResponse results = teslaStationClient.postStation(siteId, postStation);
                 return results;
             }
 
@@ -377,7 +375,8 @@ public class TeslaAPIModel extends java.util.Observable {
                 try {
                     OEResponse resp = get();
                     if (resp.responseCode == 201) {
-                        pcs.firePropertyChange(PropertyChangeNames.TeslaStationCreated.getName(), null, resp);
+                        Map<String, Object> map = (Map<String, Object>) resp.responseObject;
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaStationCreated.getName(), null, map);
                     } else {
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
                     }
@@ -391,16 +390,31 @@ public class TeslaAPIModel extends java.util.Observable {
         };
         worker.execute();
     }
-      
-    
+
     public void postEquipmentList(final String stationId, final List<TeslaGenEquipment> equipList) {
 
         SwingWorker worker = new SwingWorker< OEResponse, Void>() {
 
             @Override
             public OEResponse doInBackground() throws IOException {
-                OEResponse results = teslaStationClient.postEquipmentList(stationId, equipList );
-                return results;
+
+                List<TeslaPostEquipResponse> equipResponses = new ArrayList<>();
+                for (TeslaGenEquipment equip : equipList) {
+                    OEResponse resp = teslaStationClient.postEquipmentList(stationId, equip);
+                    if (resp.responseCode != 201) {
+                        return resp;
+                    }
+                    
+                    TeslaPostEquipResponse equipResp = (TeslaPostEquipResponse)resp.responseObject;
+                    equipResponses.add(equipResp);
+                    
+                    
+                }
+
+                OEResponse resp = new OEResponse();
+                resp.responseCode = 201;
+                resp.responseObject = equipResponses;
+                return resp;
             }
 
             @Override
@@ -408,7 +422,8 @@ public class TeslaAPIModel extends java.util.Observable {
                 try {
                     OEResponse resp = get();
                     if (resp.responseCode == 201) {
-                        pcs.firePropertyChange(PropertyChangeNames.TeslaEquipmentCreated.getName(), null, resp);
+                        List<TeslaPostEquipResponse> equipResponses = (List<TeslaPostEquipResponse>) resp.responseObject;
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaEquipmentCreated.getName(), null, equipResponses);
                     } else {
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
                     }
@@ -422,6 +437,5 @@ public class TeslaAPIModel extends java.util.Observable {
         };
         worker.execute();
     }
-    
 
 }

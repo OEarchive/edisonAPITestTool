@@ -7,16 +7,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TeslaPostCustomer {
     
     @JsonProperty("name")
-    private String name;
+    private final String name;
 
     @JsonProperty("salesForceId")
-    private String salesForceId;
+    private final String salesForceId;
 
 
     @JsonIgnore
-    public TeslaPostCustomer( String name, String shortName ){
+    public TeslaPostCustomer( String name, String salesForceId ){
         this.name = name;
-        this.salesForceId = shortName;
+        this.salesForceId = salesForceId;
     }
 
     public String getName() {
