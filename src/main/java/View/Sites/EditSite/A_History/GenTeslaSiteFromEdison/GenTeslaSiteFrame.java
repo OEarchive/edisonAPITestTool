@@ -162,7 +162,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                     column.setPreferredWidth(200);
                     break;
                 case 5:
-                    column.setPreferredWidth(200);
+                    column.setPreferredWidth(250);
                     break;
                 default:
                     column.setPreferredWidth(100);

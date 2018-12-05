@@ -507,7 +507,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
 
         jLabel6.setText("Progress");
 
-        jButtonQuit.setText("Quit");
+        jButtonQuit.setText("Close");
         jButtonQuit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonQuitActionPerformed(evt);
