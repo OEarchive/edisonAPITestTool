@@ -1,5 +1,5 @@
 
-package View.Sites.EditSite.A_History.GenTeslaSiteFromEdison.TeslaEquipmentTable;
+package View.Sites.EditSite.A_History.Tesla.GenTeslaSiteFromEdison.TeslaEquipmentTable;
 
 import java.util.ArrayList;
 import java.util.List;

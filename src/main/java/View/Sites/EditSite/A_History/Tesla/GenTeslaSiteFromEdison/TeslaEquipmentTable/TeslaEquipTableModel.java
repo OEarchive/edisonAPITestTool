@@ -1,4 +1,4 @@
-package View.Sites.EditSite.A_History.GenTeslaSiteFromEdison.TeslaEquipmentTable;
+package View.Sites.EditSite.A_History.Tesla.GenTeslaSiteFromEdison.TeslaEquipmentTable;
 
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostEquipResponse;

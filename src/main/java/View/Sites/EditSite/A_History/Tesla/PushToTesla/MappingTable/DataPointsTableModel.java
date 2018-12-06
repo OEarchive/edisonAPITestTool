@@ -1,4 +1,4 @@
-package View.Sites.EditSite.A_History.PushToTesla.MappingTable;
+package View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable;
 
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;

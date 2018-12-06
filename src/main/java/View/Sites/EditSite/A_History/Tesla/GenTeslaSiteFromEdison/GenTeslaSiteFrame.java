@@ -1,4 +1,4 @@
-package View.Sites.EditSite.A_History.GenTeslaSiteFromEdison;
+package View.Sites.EditSite.A_History.Tesla.GenTeslaSiteFromEdison;
 
 import Controller.OptiCxAPIController;
 import Model.DataModels.Sites.EnumProducts;
@@ -15,8 +15,8 @@ import Model.DataModels.Views.ItemGroup;
 import Model.DataModels.Views.PageView;
 import Model.DataModels.Views.ViewItem;
 import Model.PropertyChangeNames;
-import View.Sites.EditSite.A_History.GenTeslaSiteFromEdison.TeslaEquipmentTable.TeslaEquipTableCellRenderer;
-import View.Sites.EditSite.A_History.GenTeslaSiteFromEdison.TeslaEquipmentTable.TeslaEquipTableModel;
+import View.Sites.EditSite.A_History.Tesla.GenTeslaSiteFromEdison.TeslaEquipmentTable.TeslaEquipTableCellRenderer;
+import View.Sites.EditSite.A_History.Tesla.GenTeslaSiteFromEdison.TeslaEquipmentTable.TeslaEquipTableModel;
 import View.Sites.EditSite.EditSiteDetailsFrame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

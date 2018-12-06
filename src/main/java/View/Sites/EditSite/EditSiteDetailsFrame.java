@@ -92,14 +92,15 @@ import View.Sites.EditSite.A_History.DatapointListTable.DataPointAssiationsTable
 import View.Sites.EditSite.A_History.DatapointListTable.DatapointsListTableModel;
 import View.Sites.EditSite.A_History.DatapointListTable.DatapointsListTableCellRenderer;
 import View.Sites.EditSite.A_History.DatapointListTable.PopupMenuForDataPointsListTable;
-import View.Sites.EditSite.A_History.GenTeslaSiteFromEdison.GenTeslaSiteFrame;
+import View.Sites.EditSite.A_History.Tesla.GenTeslaSiteFromEdison.GenTeslaSiteFrame;
 import View.Sites.EditSite.A_History.PushLiveData.OptimizationStatus.PushOptimizationInfoFrame;
-import View.Sites.EditSite.A_History.PushToTesla.PushToTeslaFrame;
+import View.Sites.EditSite.A_History.Tesla.PushToTesla.PushToTeslaFrame;
 import View.Sites.EditSite.A_History.ReportVerification.ReportDates.EnumDateTypes;
 import View.Sites.EditSite.A_History.ReportVerification.ReportDates.EnumReportMonths;
 import View.Sites.EditSite.A_History.ReportVerification.ReportDates.EnumReportYears;
 import View.Sites.EditSite.A_History.ReportVerification.ReportVerificationFrame;
 import View.Sites.EditSite.A_History.RepushEdisonData.RepushFrame;
+import View.Sites.EditSite.A_History.Tesla.TeslaHistory.TeslaHistoryFrame;
 import View.Sites.EditSite.E_Views.ViewLiveData.ViewLiveDataFrame;
 import View.Sites.EditSite.F_SiteTrend.SiteTrendChartFrame;
 import View.Sites.EditSite.J_Contacts.Phones.ContactPhoneTableCellRenderer;
@@ -1385,7 +1386,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jButtonGenTeslaSite = new javax.swing.JButton();
         jButtonPushXLS = new javax.swing.JButton();
         jButtonOptimizationLivePush = new javax.swing.JButton();
-        jButtonPushDataForLineage = new javax.swing.JButton();
+        jButtonTeslaHistory = new javax.swing.JButton();
         jButtonReportVerification = new javax.swing.JButton();
         jPanelHistoryQueryResults = new javax.swing.JPanel();
         jScrollPane16 = new javax.swing.JScrollPane();
@@ -1878,10 +1879,10 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             }
         });
 
-        jButtonPushDataForLineage.setText("Lineage...");
-        jButtonPushDataForLineage.addActionListener(new java.awt.event.ActionListener() {
+        jButtonTeslaHistory.setText("Tesla History");
+        jButtonTeslaHistory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonPushDataForLineageActionPerformed(evt);
+                jButtonTeslaHistoryActionPerformed(evt);
             }
         });
 
@@ -1897,16 +1898,17 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jPanelSytheticJaceSettingsLayout.setHorizontalGroup(
             jPanelSytheticJaceSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelSytheticJaceSettingsLayout.createSequentialGroup()
-                .addComponent(jButtonPushXLS)
+                .addContainerGap()
+                .addComponent(jButtonGenTeslaSite)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonHistoryToTesla)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonGenTeslaSite)
+                .addComponent(jButtonTeslaHistory)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonOptimizationLivePush)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonPushDataForLineage)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonPushXLS)
+                .addGap(154, 154, 154)
                 .addComponent(jLabel39)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextFieldHistoryMaxPoints, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1926,10 +1928,10 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                     .addComponent(jTextFieldHistoryMaxPoints, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel39)
                     .addComponent(jButtonGenTeslaSite)
-                    .addComponent(jButtonPushXLS)
                     .addComponent(jButtonOptimizationLivePush)
-                    .addComponent(jButtonPushDataForLineage)
-                    .addComponent(jButtonReportVerification))
+                    .addComponent(jButtonTeslaHistory)
+                    .addComponent(jButtonReportVerification)
+                    .addComponent(jButtonPushXLS))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -2306,7 +2308,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jPanelHistory.setLayout(jPanelHistoryLayout);
         jPanelHistoryLayout.setHorizontalGroup(
             jPanelHistoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1300, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1461, Short.MAX_VALUE)
         );
         jPanelHistoryLayout.setVerticalGroup(
             jPanelHistoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2462,7 +2464,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                         .addComponent(jTextFieldNodeSid, javax.swing.GroupLayout.PREFERRED_SIZE, 576, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonNodeQuery)
-                        .addGap(0, 555, Short.MAX_VALUE)))
+                        .addGap(0, 716, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanelGraphNodesLayout.setVerticalGroup(
@@ -2515,7 +2517,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanelAlarmsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelAlarmsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1288, Short.MAX_VALUE)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1449, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(jPanelAlarmsLayout.createSequentialGroup()
                 .addComponent(jButtonEditAlarms)
@@ -2587,7 +2589,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jTextFieldSiteTrendEndTime)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 624, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 785, Short.MAX_VALUE)
                         .addGroup(jPanelSiteTrendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelSiteTrendLayout.createSequentialGroup()
                                 .addComponent(jLabel8)
@@ -2871,7 +2873,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanelSubscriptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelSubscriptionsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanelSubscriptionsLayout.setVerticalGroup(
@@ -2905,7 +2907,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanelEnhancementsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelEnhancementsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 615, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 696, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanelEnhancementsLayout.setVerticalGroup(
@@ -3009,7 +3011,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanelAddressLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelAddressLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1266, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1427, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanelAddressLayout.setVerticalGroup(
@@ -3447,7 +3449,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanelLiveDataLayout.createSequentialGroup()
                         .addComponent(jCheckBoxUseStationToken)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 451, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 612, Short.MAX_VALUE)
                         .addComponent(jButtonPutHeartbeat)))
                 .addContainerGap())
         );
@@ -3623,7 +3625,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                         .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBoxPageViewTypes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 1119, Short.MAX_VALUE))
+                        .addGap(0, 1280, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelViewsLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButtonViewLiveData))
@@ -3677,7 +3679,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1262, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1423, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -3700,7 +3702,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1262, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1423, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel10Layout.setVerticalGroup(
@@ -4331,8 +4333,10 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         frame.setVisible(true);
     }//GEN-LAST:event_jButtonOptimizationLivePushActionPerformed
 
-    private void jButtonPushDataForLineageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPushDataForLineageActionPerformed
-
+    
+    
+        // old lineage button handler
+        
         /*
         List<String> selectedPointsList = this.jListHistoryDatapoints.getSelectedValuesList();
         Map<String, DatapointMetadata> selectedPointsMap = new HashMap<>();
@@ -4365,8 +4369,17 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         frame.setVisible(true)
         ;
          */
+    private void jButtonTeslaHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonTeslaHistoryActionPerformed
+            
+            TeslaHistoryFrame frame = TeslaHistoryFrame.getInstance(controller );
 
-    }//GEN-LAST:event_jButtonPushDataForLineageActionPerformed
+            frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            controller.addModelListener(frame);
+            frame.pack();
+            frame.setLocationRelativeTo(this);
+            frame.setVisible(true);
+
+    }//GEN-LAST:event_jButtonTeslaHistoryActionPerformed
 
     private void jButtonViewLiveDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonViewLiveDataActionPerformed
 
@@ -4689,7 +4702,6 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
     private javax.swing.JButton jButtonOptimizationLivePush;
     private javax.swing.JButton jButtonPostLogHistory;
     private javax.swing.JButton jButtonPostStationsAuditLog;
-    private javax.swing.JButton jButtonPushDataForLineage;
     private javax.swing.JButton jButtonPushXLS;
     private javax.swing.JButton jButtonPutAlarmChanges;
     private javax.swing.JButton jButtonPutConfigStatus;
@@ -4699,6 +4711,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
     private javax.swing.JButton jButtonRulesInfoRefresh;
     private javax.swing.JButton jButtonSiteTrendChart;
     private javax.swing.JButton jButtonSiteTrendQuery;
+    private javax.swing.JButton jButtonTeslaHistory;
     private javax.swing.JButton jButtonTestStationLogin;
     private javax.swing.JButton jButtonUpdate;
     private javax.swing.JButton jButtonValidateLocalFiles;

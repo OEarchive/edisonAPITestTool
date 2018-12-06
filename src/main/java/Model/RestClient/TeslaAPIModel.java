@@ -26,7 +26,7 @@ import Model.PropertyChangeNames;
 import Model.RestClient.Clients.DatapointsClient;
 import Model.RestClient.Clients.TeslaRestClientCommon;
 import Model.RestClient.Clients.TeslaStationClient;
-import View.Sites.EditSite.A_History.PushToTesla.MappingTable.DataPointsTableModel;
+import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.beans.PropertyChangeListener;

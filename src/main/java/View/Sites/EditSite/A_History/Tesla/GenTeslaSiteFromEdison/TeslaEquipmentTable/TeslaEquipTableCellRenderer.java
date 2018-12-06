@@ -1,4 +1,4 @@
-package View.Sites.EditSite.A_History.GenTeslaSiteFromEdison.TeslaEquipmentTable;
+package View.Sites.EditSite.A_History.Tesla.GenTeslaSiteFromEdison.TeslaEquipmentTable;
 
 import java.awt.Component;
 import javax.swing.JTable;

@@ -1,5 +1,5 @@
 
-package View.Sites.EditSite.A_History.PushToTesla.MappingTable;
+package View.Sites.EditSite.A_History.Tesla.TeslaHistory.PointsTable;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -11,6 +11,7 @@ import java.text.NumberFormat;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+
 
 public class PopupMenuForDataPointsTable extends JPopupMenu {
 
@@ -74,11 +75,7 @@ public class PopupMenuForDataPointsTable extends JPopupMenu {
 
         });
         this.add(selectAllItem);
-
-
         this.show(evt.getComponent(), evt.getX(), evt.getY());
-
     }
 
 }
-
