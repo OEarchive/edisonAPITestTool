@@ -39,6 +39,7 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.MappingTableRow;
+import Model.DataModels.TeslaModels.TeslaHistoryRequest;
 import Model.DataModels.TrendAPI.MobileCompanyList;
 import Model.DataModels.TrendAPI.MobileCompanyOverview;
 import Model.DataModels.TrendAPI.MobileHealthInfo;
@@ -680,6 +681,10 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
 
     public void postEquipmentList(final String stationId, final List<TeslaGenEquipment> equipList) {
         model.postEquipmentList(stationId, equipList);
+    }
+    
+    public void getTeslaHistory( TeslaHistoryRequest historyRequest){
+        model.getTeslaHistory(historyRequest);
     }
 
     /*

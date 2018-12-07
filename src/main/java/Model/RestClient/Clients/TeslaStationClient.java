@@ -9,6 +9,7 @@ import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
+import Model.DataModels.TeslaModels.TeslaHistoryResultPoint;
 import Model.DataModels.TeslaModels.TeslaLiveDataPoint;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.RestClient.OEResponse;
@@ -110,7 +111,7 @@ public class TeslaStationClient {
         return resObj;
     }
 
-    public OEResponse getHistory(TeslaHistoryRequest historyRequest) throws IOException {
+    public OEResponse getTeslaHistory(TeslaHistoryRequest historyRequest) throws IOException {
 
         String url = baseURL.getURL() + "/data/query";
 
@@ -121,7 +122,9 @@ public class TeslaStationClient {
 
         if (resObj.responseCode == 200) {
             mapper = new ObjectMapper();
-            resObj.responseObject = mapper.readValue((String) resObj.responseObject, new TypeReference<List<TeslaLiveDataPoint>>() {
+            String response = (String) resObj.responseObject;
+            response = response.substring("OK".length(), response.length());
+            resObj.responseObject = mapper.readValue(response, new TypeReference<List<TeslaHistoryResultPoint>>() {
             });
         }
 

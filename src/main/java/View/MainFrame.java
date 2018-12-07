@@ -97,8 +97,8 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
         
-        this.jTextFieldLoginUsername.setText("");
-        this.jPasswordFieldLoginPassword.setText("");
+        this.jTextFieldLoginUsername.setText("hal.wilkinson@optimumenergyco.com");
+        this.jPasswordFieldLoginPassword.setText("xxxx");
 
         this.jTextFieldPWResetCode.setText("");
         this.jTextFieldPWResetPassword.setText("");

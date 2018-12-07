@@ -4,12 +4,6 @@ import Model.DataModels.Datapoints.DatapointHistoriesQueryParams;
 import Model.DataModels.Datapoints.DatapointHistoriesResponse;
 import Model.DataModels.Datapoints.EnumAggregationType;
 import Model.DataModels.Datapoints.EnumResolutions;
-import Model.DataModels.Datapoints.simulator.Patterns.LinearPattern;
-import Model.DataModels.Datapoints.simulator.Patterns.SawPattern;
-import Model.DataModels.Datapoints.simulator.Patterns.SinePattern;
-import Model.DataModels.Datapoints.simulator.Patterns.SquarePattern;
-import Model.DataModels.Stations.HistoryPushObject;
-import Model.DataModels.Stations.HistoryPushPoint;
 import Model.DataModels.Stations.StationStatusResponse;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
@@ -20,15 +14,14 @@ import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
+import Model.DataModels.TeslaModels.TeslaHistoryRequest;
+import Model.DataModels.TeslaModels.TeslaHistoryResultPoint;
+import Model.DataModels.TeslaModels.TeslaHistoryResults;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.OptiCxAPIModel;
 import Model.PropertyChangeNames;
 import Model.RestClient.Clients.DatapointsClient;
-import Model.RestClient.Clients.TeslaRestClientCommon;
 import Model.RestClient.Clients.TeslaStationClient;
-import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableModel;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -160,6 +153,51 @@ public class TeslaAPIModel extends java.util.Observable {
                     if (resp.responseCode == 200) {
                         List<TeslaDPServiceDatapoint> listOfStationDatapoints = (List<TeslaDPServiceDatapoint>) resp.responseObject;
                         pcs.firePropertyChange(PropertyChangeNames.TeslaStationDatapointsReturned.getName(), null, listOfStationDatapoints);
+                    } else {
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, model.getRRS());
+
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+        };
+        worker.execute();
+    }
+
+    public void getTeslaHistory(final TeslaHistoryRequest historyRequest) {
+
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+
+            @Override
+            public OEResponse doInBackground() throws IOException {
+                OEResponse results = teslaStationClient.getTeslaHistory(historyRequest);
+
+                if (results.responseCode == 200) {
+
+                    TeslaHistoryResults historyResults = new TeslaHistoryResults((List<TeslaHistoryResultPoint>) results.responseObject);
+
+                    results = new OEResponse();
+                    results.responseCode = 200;
+                    results.responseObject = historyResults;
+
+                    return results;
+
+                }
+
+                return results;
+            }
+
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+
+                    if (resp.responseCode == 200) {
+                        TeslaHistoryResults historyResults = (TeslaHistoryResults) resp.responseObject;
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaHistoryReturned.getName(), null, historyResults);
                     } else {
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
                     }
@@ -404,11 +442,10 @@ public class TeslaAPIModel extends java.util.Observable {
                     if (resp.responseCode != 201) {
                         return resp;
                     }
-                    
-                    TeslaPostEquipResponse equipResp = (TeslaPostEquipResponse)resp.responseObject;
+
+                    TeslaPostEquipResponse equipResp = (TeslaPostEquipResponse) resp.responseObject;
                     equipResponses.add(equipResp);
-                    
-                    
+
                 }
 
                 OEResponse resp = new OEResponse();
