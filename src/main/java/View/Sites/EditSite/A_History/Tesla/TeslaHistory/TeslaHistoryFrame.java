@@ -8,6 +8,7 @@ import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryResultPoint;
 import Model.DataModels.TeslaModels.TeslaHistoryResults;
+import Model.DataModels.TeslaModels.TeslaHistoryStats;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.PropertyChangeNames;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.PopupMenuForDataPointsTable;
@@ -16,6 +17,8 @@ import View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryTable.HistoryTabl
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.PointsTable.DatapointsTableCellRenderer;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.PointsTable.DatapointsTableModel;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.PointsTable.EnumDatapointsTableColumns;
+import View.Sites.EditSite.A_History.Tesla.TeslaHistory.StatsTable.TeslaStatsTableCellRenderer;
+import View.Sites.EditSite.A_History.Tesla.TeslaHistory.StatsTable.TeslaStatsTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -28,7 +31,9 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -43,6 +48,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private final OptiCxAPIController controller;
 
     private List<TeslaDPServiceDatapoint> listOfStationDatapoints;
+    
+    private TeslaHistoryResults historyResults;
+    private TeslaHistoryStats historyStats;
     
     
     private DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
@@ -86,6 +94,20 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
         this.jTextFieldStartDate.setText(startTime.toString(zzFormat));
         this.jTextFieldEndDate.setText(endTime.toString(zzFormat));
+        
+        SpinnerNumberModel spinModel = new SpinnerNumberModel(3, 0, 6, 1);
+        this.jSpinnerPrec.setModel(spinModel);
+        jSpinnerPrec.addChangeListener(new javax.swing.event.ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+
+                if (historyResults != null && historyResults.getTimestamps().size() > 0) {
+                    int prec = (int) jSpinnerPrec.getModel().getValue();
+                    fillHistoryTable(prec);
+                    fillTeslaStatsTable(prec);
+                }
+            }
+        });
           
     }
     
@@ -159,6 +181,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         });
 
         jComboBoxTeslaSites.setSelectedIndex(0);
+        
     }
 
     private void fillPointsTable() {
@@ -189,8 +212,8 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         this.jTableHistory.setAutoCreateRowSorter(true);
     }
     
-    private void fillHistoryTable( TeslaHistoryResults historyResults ){
-        this.jTableHistory.setDefaultRenderer(Object.class, new HistoryTableCellRenderer());
+    private void fillHistoryTable( int prec ){
+        this.jTableHistory.setDefaultRenderer(Object.class, new HistoryTableCellRenderer( prec ));
         this.jTableHistory.setModel(new HistoryTableModel(historyResults));
         this.jTableHistory.setAutoCreateRowSorter(true);
         fixHistoryTableColumnWidths(jTableHistory);
@@ -205,6 +228,13 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 column.setPreferredWidth(150);
             }
         }
+    }
+    
+    private void fillTeslaStatsTable( int prec ){
+        this.jTableStatistics.setDefaultRenderer(Object.class, new TeslaStatsTableCellRenderer( prec ));
+        this.jTableStatistics.setModel(new TeslaStatsTableModel(historyStats));
+        this.jTableStatistics.setAutoCreateRowSorter(true);
+        fixHistoryTableColumnWidths(jTableStatistics);
     }
 
     @SuppressWarnings("unchecked")
@@ -676,8 +706,13 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             fillPointsTable();
             
         } else if (propName.equals(PropertyChangeNames.TeslaHistoryReturned.getName())) {
-            TeslaHistoryResults historyResults = (TeslaHistoryResults) evt.getNewValue();
-            fillHistoryTable( historyResults);
+            
+            historyResults = (TeslaHistoryResults) evt.getNewValue();
+            historyStats = new TeslaHistoryStats(historyResults);
+            int prec = (int) jSpinnerPrec.getModel().getValue();
+            fillHistoryTable(prec);
+            fillTeslaStatsTable(prec);
+ 
             
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
             this.dispose();

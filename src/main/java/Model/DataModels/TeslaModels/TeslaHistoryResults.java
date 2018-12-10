@@ -64,7 +64,7 @@ public class TeslaHistoryResults {
         return pointNames;
     }
 
-    public Map getTimeStampToValuesArray() {
+    public Map< DateTime, List< Object>> getTimeStampToValuesArray() {
         return timeStampToValuesArray;
     }
 

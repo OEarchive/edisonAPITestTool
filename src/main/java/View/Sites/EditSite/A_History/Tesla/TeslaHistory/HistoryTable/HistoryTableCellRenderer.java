@@ -15,10 +15,12 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class HistoryTableCellRenderer extends DefaultTableCellRenderer {
 
+    final int prec;
     final Color limeGreen;
     private final DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
-    public HistoryTableCellRenderer() {
+    public HistoryTableCellRenderer( int prec ) {
+        this.prec = prec;
         limeGreen = new Color(204, 255, 204);
     }
 
@@ -48,9 +50,9 @@ public class HistoryTableCellRenderer extends DefaultTableCellRenderer {
             try {
                 String precFormatString = "#0";
                 String stringOfZeros = "000000";
-                if (3 > 0) {
+                if (prec > 0) {
                     precFormatString += ".";
-                    precFormatString = precFormatString.concat(stringOfZeros.substring(0, 3));
+                    precFormatString = precFormatString.concat(stringOfZeros.substring(0, prec));
                 }
                 NumberFormat formatter = new DecimalFormat(precFormatString);
                 value = formatter.format(value);
