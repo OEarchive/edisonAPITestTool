@@ -329,6 +329,9 @@
                             <Property name="autoResizeMode" type="int" value="0"/>
                             <Property name="showGrid" type="boolean" value="true"/>
                           </Properties>
+                          <Events>
+                            <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTableHistoryMousePressed"/>
+                          </Events>
                         </Component>
                       </SubComponents>
                     </Container>
@@ -359,6 +362,9 @@
                             <Property name="autoResizeMode" type="int" value="0"/>
                             <Property name="showGrid" type="boolean" value="true"/>
                           </Properties>
+                          <Events>
+                            <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTableStatisticsMousePressed"/>
+                          </Events>
                         </Component>
                       </SubComponents>
                     </Container>
@@ -366,6 +372,9 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Chart"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonChartActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>

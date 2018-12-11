@@ -1,4 +1,5 @@
-package View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryTable;
+
+package View.Sites.EditSite.A_History.Tesla.TeslaHistory.StatsTable;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -11,9 +12,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
-public class PopupMenuForHistoryTable extends JPopupMenu {
 
-    public PopupMenuForHistoryTable(java.awt.event.MouseEvent evt, final JTable table) {
+public class PopupMenuForStatsTable extends JPopupMenu {
+
+    public PopupMenuForStatsTable(java.awt.event.MouseEvent evt, final JTable table) {
 
         JMenuItem item = new JMenuItem("Copy");
         item.addActionListener(new ActionListener() {

@@ -30,6 +30,7 @@ public class TeslaHistoryStats {
             }
             
             pointNameToStatsMap.put( pointName, new TeslaDataPointStatistics(values));
+            pointIndex++;
         }
         
     }
