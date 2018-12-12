@@ -137,12 +137,9 @@ public class TeslaStationClient {
 
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(dur.getListOfPoints());
-        //String payload = mapper.writeValueAsString(dur);
-
         OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
 
         return resObj;
-
     }
 
     // site creation ============

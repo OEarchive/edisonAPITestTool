@@ -4121,7 +4121,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             frame.setLocationRelativeTo(this);
             frame.setVisible(true);
              */
-            PushToTeslaFrame frame = PushToTeslaFrame.getInstance(controller, site.getSid(), listOfMetadata);
+            PushToTeslaFrame frame = PushToTeslaFrame.getInstance(controller, siteLocalStartDate, siteLocalEndDate, listOfMetadata);
 
             frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             controller.addModelListener(frame);
@@ -4333,11 +4333,8 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         frame.setVisible(true);
     }//GEN-LAST:event_jButtonOptimizationLivePushActionPerformed
 
-    
-    
-        // old lineage button handler
-        
-        /*
+    // old lineage button handler
+    /*
         List<String> selectedPointsList = this.jListHistoryDatapoints.getSelectedValuesList();
         Map<String, DatapointMetadata> selectedPointsMap = new HashMap<>();
         for (String selectedPoint : selectedPointsList) {
@@ -4368,16 +4365,22 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         frame.setLocationRelativeTo(this);
         frame.setVisible(true)
         ;
-         */
+     */
     private void jButtonTeslaHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonTeslaHistoryActionPerformed
-            
-            TeslaHistoryFrame frame = TeslaHistoryFrame.getInstance(controller );
 
-            frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-            controller.addModelListener(frame);
-            frame.pack();
-            frame.setLocationRelativeTo(this);
-            frame.setVisible(true);
+        String startDateString = this.jTextFieldHistoryStartDate.getText();
+        String endDateString = this.jTextFieldHistoryEndDate.getText();
+        
+        DateTime startDate = DateTime.parse(startDateString, zzFormat);
+        DateTime endDate = DateTime.parse(endDateString, zzFormat);
+
+        TeslaHistoryFrame frame = TeslaHistoryFrame.getInstance(controller, startDate, endDate);
+
+        frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        controller.addModelListener(frame);
+        frame.pack();
+        frame.setLocationRelativeTo(this);
+        frame.setVisible(true);
 
     }//GEN-LAST:event_jButtonTeslaHistoryActionPerformed
 

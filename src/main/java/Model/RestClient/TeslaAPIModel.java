@@ -87,7 +87,7 @@ public class TeslaAPIModel extends java.util.Observable {
                     if (resp.responseCode == 200) {
                         List<TeslaStationInfo> stations = (List<TeslaStationInfo>) resp.responseObject;
 
-                        pcs.firePropertyChange(PropertyChangeNames.TeslaStationsListReturned.getName(), null, stations);
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaSitesListReturned.getName(), null, stations);
                     } else {
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
                     }

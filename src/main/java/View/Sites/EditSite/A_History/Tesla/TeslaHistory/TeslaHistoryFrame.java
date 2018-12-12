@@ -1,21 +1,15 @@
 package View.Sites.EditSite.A_History.Tesla.TeslaHistory;
 
 import Controller.OptiCxAPIController;
-import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
-import Model.DataModels.Datapoints.EnumResolutions;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.EnumTeslaResolutions;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
-import Model.DataModels.TeslaModels.TeslaHistoryResultPoint;
 import Model.DataModels.TeslaModels.TeslaHistoryResults;
 import Model.DataModels.TeslaModels.TeslaHistoryStats;
 import Model.DataModels.TeslaModels.TeslaStampsAndPoints;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.PropertyChangeNames;
-import View.Sites.EditSite.A_History.DPHistoryChart.DPHistoryChartFrame;
-import View.Sites.EditSite.A_History.DPHistoryChart.StampsAndPoints;
-import View.Sites.EditSite.A_History.DatapointListTable.PopupMenuForDataPointsListTable;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.PopupMenuForDataPointsTable;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryTable.HistoryTableCellRenderer;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryTable.HistoryTableModel;
@@ -40,7 +34,6 @@ import java.util.regex.Pattern;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
@@ -57,6 +50,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
     private static TeslaHistoryFrame thisInstance;
     private final OptiCxAPIController controller;
+    
+    private DateTime startTime;
+    private DateTime endTime;
 
     private List<TeslaDPServiceDatapoint> listOfStationDatapoints;
 
@@ -67,19 +63,23 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
     public static TeslaHistoryFrame getInstance(
-            final OptiCxAPIController controller) {
+            final OptiCxAPIController controller, DateTime startTime, DateTime endTime) {
 
         if (thisInstance == null) {
-            thisInstance = new TeslaHistoryFrame(controller);
+            thisInstance = new TeslaHistoryFrame(controller, startTime, endTime);
         }
         return thisInstance;
 
     }
 
-    private TeslaHistoryFrame(OptiCxAPIController controller) {
+    private TeslaHistoryFrame(OptiCxAPIController controller, DateTime startTime, DateTime endTime) {
         initComponents();
 
         this.controller = controller;
+        
+        this.startTime = startTime;
+        this.endTime = endTime;
+        
         fillQueryParametersPanel();
         fillTeslasHostsDropdown();
     }
@@ -100,9 +100,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         String timeZone = "America/Los_Angeles";
         jTextFieldTimeZone.setText(timeZone);
 
-        DateTime endTime = DateTime.now().withZone(DateTimeZone.UTC);
-        endTime = endTime.minusMillis(endTime.getMillisOfDay());
-        DateTime startTime = endTime.plusMonths(-1);
+        //DateTime endTime = DateTime.now().withZone(DateTimeZone.UTC);
+        //endTime = endTime.minusMillis(endTime.getMillisOfDay());
+        //DateTime startTime = endTime.plusMonths(-1);
 
         this.jTextFieldStartDate.setText(startTime.toString(zzFormat));
         this.jTextFieldEndDate.setText(endTime.toString(zzFormat));
@@ -229,7 +229,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     }
 
     private void setPointCounts() {
-        String msg = String.format("num points: %d (%d selected)", listOfStationDatapoints.size(), jTableDataPoints.getSelectedRowCount());
+        String msg = String.format("num points: %d (%d selected)", jTableDataPoints.getRowCount(), jTableDataPoints.getSelectedRowCount());
         jLabelPointCounts.setText(msg);
     }
 
@@ -787,7 +787,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     public void propertyChange(PropertyChangeEvent evt) {
         String propName = evt.getPropertyName();
 
-        if (propName.equals(PropertyChangeNames.TeslaStationsListReturned.getName())) {
+        if (propName.equals(PropertyChangeNames.TeslaSitesListReturned.getName())) {
             List<TeslaStationInfo> stations = (List<TeslaStationInfo>) evt.getNewValue();
             fillTeslasSitesDropdown(stations);
 

@@ -161,7 +161,7 @@ public enum PropertyChangeNames {
     MobileChillerTrendReturned("MobileChillerTrendReturned"),
     MobileKeyTrendReturned("MobileKeyTrendReturned"),
     //
-    TeslaStationsListReturned("TeslaStationsListReturned"),
+    TeslaSitesListReturned("TeslaStationsListReturned"),
     TeslaStationInfoRetrieved("TeslaStationInfoRetrieved"),
     TeslaStationDatapointsReturned("TeslaStationDatapointsReturned"),
     TeslaBatchPushed("TeslaBatchPushed"),
