@@ -39,6 +39,7 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.MappingTableRow;
+import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
 import Model.DataModels.TrendAPI.MobileCompanyList;
 import Model.DataModels.TrendAPI.MobileCompanyOverview;
@@ -685,6 +686,10 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
     
     public void getTeslaHistory( TeslaHistoryRequest historyRequest){
         model.getTeslaHistory(historyRequest);
+    }
+    
+    public void postSparsePoints( TeslaDataPointUpsertRequest upsertRequest) {
+        model.postSparsePoints(upsertRequest);
     }
 
     /*

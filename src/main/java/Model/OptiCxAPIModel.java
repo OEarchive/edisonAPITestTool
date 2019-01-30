@@ -48,6 +48,7 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.MappingTableRow;
+import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
 import Model.DataModels.TotalSavings.TotalSavings;
 import Model.DataModels.TrendAPI.SiteInfo.EnumMobileTrendTypes;
@@ -2163,6 +2164,10 @@ public class OptiCxAPIModel extends java.util.Observable {
     
     public void getTeslaHistory( TeslaHistoryRequest historyRequest){
         teslaAPIModel.getTeslaHistory(historyRequest);
+    }
+    
+    public void postSparsePoints( TeslaDataPointUpsertRequest upsertRequest) {
+        teslaAPIModel.postSparsePoints(upsertRequest);
     }
     
 }

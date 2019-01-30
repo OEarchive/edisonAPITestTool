@@ -6,5 +6,7 @@ public enum EnumMapStatus {
     Mapped,
     NoEdisonInfo,
     NoTeslaInfo,
-    NoInfo
+    NoInfo,
+    Overridden,
+    SparsePoint
 }

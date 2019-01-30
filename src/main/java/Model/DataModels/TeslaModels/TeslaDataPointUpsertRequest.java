@@ -16,6 +16,10 @@ public class TeslaDataPointUpsertRequest {
     private final List<TeslaDataPointUpsert> listOfPoints;
     
     private final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    
+    public TeslaDataPointUpsertRequest( List<TeslaDataPointUpsert> listOfPoints ){
+        this.listOfPoints = listOfPoints;
+    }
 
     public TeslaDataPointUpsertRequest(List<DatapointHistoriesResponse> edisonHistory, Map< String, MappingTableRow > edisonNameToMappingTableRowMap ) {
         listOfPoints = new ArrayList<>();

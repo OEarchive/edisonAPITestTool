@@ -40,7 +40,10 @@ public class DataPointsTableCellRenderer extends DefaultTableCellRenderer {
         MappingTableRow mappedRow = model.getRow(modelIndex);
 
         if (column == 0) {
-            if (mappedRow.getMapStatus() != EnumMapStatus.Mapped) {
+            if (mappedRow.getMapStatus() == EnumMapStatus.Overridden) {
+                color = Color.YELLOW;
+            }
+            else if (mappedRow.getMapStatus() != EnumMapStatus.Mapped) {
                 color = Color.PINK;
             }
         } else {

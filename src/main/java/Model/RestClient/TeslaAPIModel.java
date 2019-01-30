@@ -254,7 +254,10 @@ public class TeslaAPIModel extends java.util.Observable {
                         int endIndex = Math.min(startPushIndex + maxPointsPerPush, mappedRows.size());
 
                         List<MappingTableRow> pointsToPush = mappedRows.subList(startPushIndex, endIndex);
-                        pullFromEdisonPushToTeslaInterval(querySid, intervalStart, intervalEnd, pointsToPush);
+                        OEResponse pullPushResponse = pullFromEdisonPushToTeslaInterval(querySid, intervalStart, intervalEnd, pointsToPush);
+                        if (pullPushResponse.responseCode != 201) {
+                            System.out.println("could not pull / push");
+                        }
                         pcs.firePropertyChange(PropertyChangeNames.TeslaBatchPushed.getName(), null, 1);
                         startPushIndex += maxPointsPerPush;
                     }
@@ -296,7 +299,7 @@ public class TeslaAPIModel extends java.util.Observable {
         worker.execute();
     }
 
-    private void pullFromEdisonPushToTeslaInterval(String querySid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows) {
+    private OEResponse pullFromEdisonPushToTeslaInterval(String querySid, DateTime pushStartTime, DateTime pushEndTime, List<MappingTableRow> mappedRows) {
 
         List<String> edisonPointNames = new ArrayList<>();
         Map< String, MappingTableRow> edisonNameToMappingTableRowMap = new HashMap<>();
@@ -316,17 +319,61 @@ public class TeslaAPIModel extends java.util.Observable {
                 EnumAggregationType.NORMAL);
 
         try {
-            OEResponse ttt = edisonClient.getDatapointHistories(params);
-            List<DatapointHistoriesResponse> dpr = (List<DatapointHistoriesResponse>) ttt.responseObject;
+            OEResponse getEdisonHistoriesResponse = edisonClient.getDatapointHistories(params);
+            if (getEdisonHistoriesResponse.responseCode != 200) {
+                return getEdisonHistoriesResponse;
+            }
+            List<DatapointHistoriesResponse> dpr = (List<DatapointHistoriesResponse>) getEdisonHistoriesResponse.responseObject;
             if (dpr.size() > 0) {
                 TeslaDataPointUpsertRequest tdpu = new TeslaDataPointUpsertRequest(dpr, edisonNameToMappingTableRowMap);
-                teslaStationClient.putHistory(tdpu);
+                OEResponse teslaPutResponse = teslaStationClient.putHistory(tdpu);
+                if (teslaPutResponse.responseCode != 204) {
+                    return teslaPutResponse;
+                }
             }
 
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(TeslaAPIModel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        OEResponse resp = new OEResponse();
+        resp.responseCode = 201;
+        resp.responseObject = "OK";
+        return resp;
+
+    }
+
+    public void postSparsePoints(final TeslaDataPointUpsertRequest upsertReqeust) {
+
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+
+            @Override
+            public OEResponse doInBackground() throws IOException {
+
+                OEResponse resp = teslaStationClient.putHistory(upsertReqeust);
+                return resp;
+
+            }
+
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+
+                    if (resp.responseCode == 204) {
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaSparsePushComplete.getName(), null, resp);
+                    } else {
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, model.getRRS());
+
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+        };
+        worker.execute();
     }
 
     //site creation
