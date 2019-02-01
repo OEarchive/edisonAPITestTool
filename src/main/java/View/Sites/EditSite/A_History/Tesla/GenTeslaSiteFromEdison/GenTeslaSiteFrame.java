@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
@@ -620,6 +621,16 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
         } else if (propName.equals(PropertyChangeNames.TeslaEquipmentCreated.getName())) {
             List<TeslaPostEquipResponse> equipResponses = (List<TeslaPostEquipResponse>) evt.getNewValue();
             updateEquipWithIds(equipResponses);
+
+            Object[] options = {"OK"};
+            JOptionPane.showOptionDialog(null,
+                    "Station created!",
+                    "Done",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null, options, options[0]);
+            
+            this.dispose();
 
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
             this.dispose();

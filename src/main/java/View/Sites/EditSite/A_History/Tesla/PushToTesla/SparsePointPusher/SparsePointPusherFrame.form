@@ -117,7 +117,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabelSiteName" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabelStationName" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
@@ -134,7 +134,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabelSiteName" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabelStationName" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -148,7 +148,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Site:"/>
+            <Property name="text" type="java.lang.String" value="Tesla Station:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
@@ -161,9 +161,9 @@
             <Property name="text" type="java.lang.String" value="jTextField1"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabelSiteName">
+        <Component class="javax.swing.JLabel" name="jLabelStationName">
           <Properties>
-            <Property name="text" type="java.lang.String" value="*site name*"/>
+            <Property name="text" type="java.lang.String" value="*station name*"/>
           </Properties>
         </Component>
       </SubComponents>

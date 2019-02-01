@@ -6,8 +6,6 @@ import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsert;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.PropertyChangeNames;
-import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableCellRenderer;
-import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableModel;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.SparsePointPusher.SparsePointsTable.SparsePointsTableCellRenderer;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.SparsePointPusher.SparsePointsTable.SparsePointsTableModel;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.SparsePointPusher.SparsePointsTable.SparseTableRow;
@@ -16,8 +14,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import org.joda.time.DateTime;
@@ -53,7 +50,7 @@ public class SparsePointPusherFrame extends javax.swing.JFrame implements Proper
 
     private SparsePointPusherFrame(
             final OptiCxAPIController controller,
-            String siteName,
+            String stationName,
             DateTime pushTimestamp,
             List<DatapointsAndMetadataResponse> edisonPoints,
             List<TeslaDPServiceDatapoint> listOfStationDatapoints) {
@@ -64,7 +61,7 @@ public class SparsePointPusherFrame extends javax.swing.JFrame implements Proper
         this.edisonPoints = edisonPoints;
         this.listOfStationDatapoints = listOfStationDatapoints;
 
-        this.jLabelSiteName.setText(siteName);
+        this.jLabelStationName.setText(stationName);
 
         this.jTextFieldTimestamp.setText(pushTimestamp.toString(zzFormat));
 
@@ -131,7 +128,7 @@ public class SparsePointPusherFrame extends javax.swing.JFrame implements Proper
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jTextFieldTimestamp = new javax.swing.JTextField();
-        jLabelSiteName = new javax.swing.JLabel();
+        jLabelStationName = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jButtonClose = new javax.swing.JButton();
         jButtonPushSparseValues = new javax.swing.JButton();
@@ -170,13 +167,13 @@ public class SparsePointPusherFrame extends javax.swing.JFrame implements Proper
                 .addContainerGap())
         );
 
-        jLabel1.setText("Site:");
+        jLabel1.setText("Tesla Station:");
 
         jLabel2.setText("Timestamp:");
 
         jTextFieldTimestamp.setText("jTextField1");
 
-        jLabelSiteName.setText("*site name*");
+        jLabelStationName.setText("*station name*");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -188,7 +185,7 @@ public class SparsePointPusherFrame extends javax.swing.JFrame implements Proper
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabelSiteName))
+                        .addComponent(jLabelStationName))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -200,7 +197,7 @@ public class SparsePointPusherFrame extends javax.swing.JFrame implements Proper
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jLabelSiteName))
+                    .addComponent(jLabelStationName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -301,7 +298,7 @@ public class SparsePointPusherFrame extends javax.swing.JFrame implements Proper
     private javax.swing.JButton jButtonPushSparseValues;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabelSiteName;
+    private javax.swing.JLabel jLabelStationName;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -314,9 +311,17 @@ public class SparsePointPusherFrame extends javax.swing.JFrame implements Proper
     public void propertyChange(PropertyChangeEvent evt) {
         String propName = evt.getPropertyName();
 
-        if (propName.equals(PropertyChangeNames.TeslaSitesListReturned.getName())) {
-            //List<TeslaStationInfo> stations = (List<TeslaStationInfo>) evt.getNewValue();
-            //fillTeslasSitesDropdown(stations);
+        if (propName.equals(PropertyChangeNames.TeslaSparsePushComplete.getName())) {
+            
+            Object[] options = {"OK"};
+            JOptionPane.showOptionDialog(null,
+                    "Sparse Point Values Pushed!",
+                    "Sparse Points",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null, options, options[0]);
+            
+            this.dispose();
 
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
             this.dispose();

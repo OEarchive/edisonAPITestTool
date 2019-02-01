@@ -75,18 +75,16 @@ public class DataPointsTableModel extends AbstractTableModel {
 
         }
 
-        
         for (MappingTableRow tableRow : mappingTableRows) {
 
             if (tableRow.getMapStatus() == EnumMapStatus.NoTeslaInfo) {
 
                 String overriddenName = getTeslaNameOverride(tableRow.getEdsionShortName());
-                
-                if( overriddenName.contentEquals("Ignore")){
+
+                if (overriddenName.contentEquals("Ignore")) {
                     tableRow.setTeslaName("Ignore");
                     tableRow.setMapStatus(EnumMapStatus.Overridden);
-                }
-                else if (!overriddenName.contentEquals("?")) {
+                } else if (!overriddenName.contentEquals("?")) {
                     for (TeslaDPServiceDatapoint tdp : listOfStationDatapoints) {
                         if (tdp.getShortName().contentEquals(overriddenName)) {
                             tableRow.setTeslaName(tdp.getShortName());
@@ -99,15 +97,15 @@ public class DataPointsTableModel extends AbstractTableModel {
             }
         }
     }
-        
-        /*
+
+    /*
     OEWATCHDOG = Deleted and handled with alarm logic
     OptimumControl = OptimizationControlDisabled
     EDGEMODE = Deleted in favor of CLGMODE
     ChillerCount = Deleted
     EDGEREADY = Deleted in favor of CLGMODE (I think?)
     BASCommunicationFailure = COMLOSSBAS
-         */
+     */
     private String getTeslaNameOverride(String edisonName) {
 
         Map<String, String> overrides = new HashMap<>();
@@ -119,6 +117,14 @@ public class DataPointsTableModel extends AbstractTableModel {
         overrides.put("EDGEREADY", "CLGMODE");
         overrides.put("BASCommunicationFailure", "COMLOSSBAS");
 
+        overrides.put("OptimizationStatusEnum", "Ignore");
+        overrides.put("SiteCommunicationFailure", "Ignore");
+        overrides.put("ChilledWaterSupplyTemp_EventLog", "Ignore");
+        overrides.put("StaleHistory", "Ignore");
+        overrides.put("TestAlarm", "Ignore");
+        overrides.put("CHWSTSPNotOptimized", "Ignore");
+        //overrides.put("OptimumControl", "Ignore");
+
         if (overrides.containsKey(edisonName)) {
             return overrides.get(edisonName);
         }
@@ -126,7 +132,7 @@ public class DataPointsTableModel extends AbstractTableModel {
         return "?";
 
     }
-    
+
     private boolean isEdisonGarbage(DatapointsAndMetadataResponse edisonPoint) {
 
         String filter = ".*_COV$";
