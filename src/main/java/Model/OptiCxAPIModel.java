@@ -47,6 +47,7 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
+import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
@@ -2122,8 +2123,8 @@ public class OptiCxAPIModel extends java.util.Observable {
     }
 
     // Tesla
-    public void resetTeslaClient(EnumTeslaBaseURLs baseURL) {
-        teslaAPIModel.resetTeslaClient(baseURL);
+    public void teslaLogin(final EnumTeslaBaseURLs baseUrl, final EnumTeslaUsers user) {
+        teslaAPIModel.teslaLogin(baseUrl, user);
     }
     
     public void setEdisonClient() {
@@ -2162,11 +2163,11 @@ public class OptiCxAPIModel extends java.util.Observable {
         teslaAPIModel.postEquipmentList(stationId, equipList);
     }
     
-    public void getTeslaHistory( TeslaHistoryRequest historyRequest){
+    public void getTeslaHistory(TeslaHistoryRequest historyRequest) {
         teslaAPIModel.getTeslaHistory(historyRequest);
     }
     
-    public void postSparsePoints( TeslaDataPointUpsertRequest upsertRequest) {
+    public void postSparsePoints(TeslaDataPointUpsertRequest upsertRequest) {
         teslaAPIModel.postSparsePoints(upsertRequest);
     }
     

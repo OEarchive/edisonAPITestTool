@@ -50,7 +50,7 @@ public class TeslaRestClientCommon {
     protected OEResponse getResponse(String url) throws IOException {
         List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair("content-type", "application/json"));
-        //nvps.add(new BasicNameValuePair("Authorization", "Bearer " + oauthToken));
+        nvps.add(new BasicNameValuePair("Authorization", "Bearer " + oauthToken));
         return getResponse(url, nvps);
     }
 
@@ -107,8 +107,12 @@ public class TeslaRestClientCommon {
         return retVal;
 
     }
+    
+    protected OEResponse doPostAndGetBody(String url, String payload, boolean addToken) throws UnsupportedEncodingException, IOException {
+        return doPostAndGetBody(url, payload, oauthToken, addToken);
+    }
 
-    protected OEResponse doPostAndGetBody(String url, String payload) throws UnsupportedEncodingException, IOException {
+    protected OEResponse doPostAndGetBody(String url, String payload, String token, boolean addToken) throws UnsupportedEncodingException, IOException {
 
         String responseString = "";
         List<NameValuePair> nvps = new ArrayList<>();
@@ -123,8 +127,10 @@ public class TeslaRestClientCommon {
             for (NameValuePair h : nvps) {
                 postRequest.addHeader(h.getName(), h.getValue());
             }
+            if (addToken) {
+                nvps.add(new BasicNameValuePair("Authorization", "Bearer " + oauthToken));
+            }
             postRequest.setEntity(new StringEntity(payload));
-            String temp = postRequest.toString();
 
             rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.POST, 0, url, payload));
 

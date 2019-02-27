@@ -18,8 +18,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class TeslaStationClient {
 
@@ -31,8 +33,9 @@ public class TeslaStationClient {
         this.baseURL = baseURL;
     }
 
-    public void setTeslaBaseURL(EnumTeslaBaseURLs baseURL) {
+    public void setTeslaBaseURLAndToken(EnumTeslaBaseURLs baseURL, String accessToken) {
         this.baseURL = baseURL;
+        teslaRestClient.setOauthToken(accessToken);
     }
 
     public OEResponse getStations() throws IOException {
@@ -100,7 +103,7 @@ public class TeslaStationClient {
 
         payload = "{ \"ids\" : " + payload + "}";
 
-        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
 
         if (resObj.responseCode == 200) {
             mapper = new ObjectMapper();
@@ -118,7 +121,7 @@ public class TeslaStationClient {
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(historyRequest);
 
-        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
 
         if (resObj.responseCode == 200) {
             mapper = new ObjectMapper();
@@ -137,7 +140,7 @@ public class TeslaStationClient {
 
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(dur.getListOfPoints());
-        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
 
         return resObj;
     }
@@ -149,7 +152,7 @@ public class TeslaStationClient {
 
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(postCustomer);
-        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
 
         //Created{"id":"17a8c5e2-67de-4534-b652-a0f12b923b42","name":"skdkskdks","salesforceId":null,"createdAt":"2018-12-05T15:36:59.413Z","updatedAt":"2018-12-05T15:36:59.413Z"}
         if (resObj.responseCode == 201) {
@@ -169,7 +172,7 @@ public class TeslaStationClient {
 
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(postSite);
-        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
 
         if (resObj.responseCode == 201) {
             String response = (String) resObj.responseObject;
@@ -188,7 +191,7 @@ public class TeslaStationClient {
 
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(postStation);
-        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
 
         if (resObj.responseCode == 201) {
             String response = (String) resObj.responseObject;
@@ -206,7 +209,7 @@ public class TeslaStationClient {
 
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(equip);
-        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload);
+        OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
 
         if (resObj.responseCode == 201) {
             String response = (String) resObj.responseObject;

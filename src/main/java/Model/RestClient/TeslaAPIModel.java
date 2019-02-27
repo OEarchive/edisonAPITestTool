@@ -11,16 +11,20 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostEquipResponse;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
+import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryResultPoint;
 import Model.DataModels.TeslaModels.TeslaHistoryResults;
+import Model.DataModels.TeslaModels.TeslaLoginResponse;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.OptiCxAPIModel;
 import Model.PropertyChangeNames;
 import Model.RestClient.Clients.DatapointsClient;
+import Model.RestClient.Clients.TeslaLoginClient;
+import Model.RestClient.Clients.TeslaRestClientCommon;
 import Model.RestClient.Clients.TeslaStationClient;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -42,6 +46,8 @@ public class TeslaAPIModel extends java.util.Observable {
 
     private final OptiCxAPIModel model;
     final private PropertyChangeSupport pcs;
+    private TeslaRestClientCommon teslaRestClientCommon;
+    private TeslaLoginClient teslaLoginClient;
     private TeslaStationClient teslaStationClient;
     private DatapointsClient edisonClient;
 
@@ -50,11 +56,6 @@ public class TeslaAPIModel extends java.util.Observable {
 
         this.teslaStationClient = new TeslaStationClient(EnumTeslaBaseURLs.Ninja, model.getTeslaRestClient());
         this.pcs = pcs;
-    }
-
-    public void resetTeslaClient(EnumTeslaBaseURLs baseURL) {
-        //this.teslaStationClient = new TeslaStationClient(EnumTeslaBaseURLs.Ninja, teslaRestClientCommon);
-        this.teslaStationClient.setTeslaBaseURL(baseURL);
     }
 
     public void setEdisonClient(DatapointsClient client) {
@@ -67,6 +68,49 @@ public class TeslaAPIModel extends java.util.Observable {
 
     public void removePropChangeListener(PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(listener);
+    }
+    
+    public void teslaLogin(final EnumTeslaBaseURLs baseUrl, final EnumTeslaUsers user) {
+        
+        if (baseUrl == null || user == null) {
+            return;
+        }
+        
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+            
+            @Override
+            public OEResponse doInBackground() throws IOException {
+                OEResponse results = teslaLoginClient.login(baseUrl, user);
+                return results;
+            }
+            
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+                    
+                    TeslaLoginResponse loginResponse;
+                    
+                    if (resp.responseCode == 200) {
+                        loginResponse = (TeslaLoginResponse) resp.responseObject;
+                        
+                        teslaStationClient = new TeslaStationClient(baseUrl, teslaRestClientCommon);
+                        teslaStationClient.setTeslaBaseURLAndToken(baseUrl, loginResponse.getAccessToken());
+                        
+                    } else {
+                        loginResponse = new TeslaLoginResponse();
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.TeslaLoginResponseReturned.getName(), null, loginResponse);
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, model.getRRS());
+                    
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+        };
+        worker.execute();
     }
 
     public void getTeslaStations() {
@@ -87,7 +131,7 @@ public class TeslaAPIModel extends java.util.Observable {
                     if (resp.responseCode == 200) {
                         List<TeslaStationInfo> stations = (List<TeslaStationInfo>) resp.responseObject;
 
-                        pcs.firePropertyChange(PropertyChangeNames.TeslaSitesListReturned.getName(), null, stations);
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaStationsListReturned.getName(), null, stations);
                     } else {
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
                     }

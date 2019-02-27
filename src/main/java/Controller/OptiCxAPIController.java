@@ -38,6 +38,7 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
+import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
@@ -642,8 +643,8 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
     }
 
     //Tesla
-    public void resetTeslaClient(EnumTeslaBaseURLs baseURL) {
-        model.resetTeslaClient(baseURL);
+    public void teslaLogin(final EnumTeslaBaseURLs baseUrl, final EnumTeslaUsers user) {
+        model.teslaLogin(baseUrl, user);
     }
 
     public void getTeslaStations() {
@@ -683,12 +684,12 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
     public void postEquipmentList(final String stationId, final List<TeslaGenEquipment> equipList) {
         model.postEquipmentList(stationId, equipList);
     }
-    
-    public void getTeslaHistory( TeslaHistoryRequest historyRequest){
+
+    public void getTeslaHistory(TeslaHistoryRequest historyRequest) {
         model.getTeslaHistory(historyRequest);
     }
-    
-    public void postSparsePoints( TeslaDataPointUpsertRequest upsertRequest) {
+
+    public void postSparsePoints(TeslaDataPointUpsertRequest upsertRequest) {
         model.postSparsePoints(upsertRequest);
     }
 

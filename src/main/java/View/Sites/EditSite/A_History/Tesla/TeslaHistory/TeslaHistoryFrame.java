@@ -3,6 +3,7 @@ package View.Sites.EditSite.A_History.Tesla.TeslaHistory;
 import Controller.OptiCxAPIController;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.EnumTeslaResolutions;
+import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryResults;
@@ -50,7 +51,10 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
     private static TeslaHistoryFrame thisInstance;
     private final OptiCxAPIController controller;
-    
+
+    private EnumTeslaBaseURLs selectedBaseURL;
+    private EnumTeslaUsers selectedUser;
+
     private DateTime startTime;
     private DateTime endTime;
 
@@ -76,12 +80,16 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         initComponents();
 
         this.controller = controller;
-        
+
         this.startTime = startTime;
         this.endTime = endTime;
-        
+
         fillQueryParametersPanel();
+
+        selectedBaseURL = EnumTeslaBaseURLs.LocalHost;
+        selectedUser = EnumTeslaUsers.DevOps;
         fillTeslasHostsDropdown();
+        fillUsersDropdown();
     }
 
     @Override
@@ -103,7 +111,6 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         //DateTime endTime = DateTime.now().withZone(DateTimeZone.UTC);
         //endTime = endTime.minusMillis(endTime.getMillisOfDay());
         //DateTime startTime = endTime.plusMonths(-1);
-
         this.jTextFieldStartDate.setText(startTime.toString(zzFormat));
         this.jTextFieldEndDate.setText(endTime.toString(zzFormat));
 
@@ -139,6 +146,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         for (String url : EnumTeslaBaseURLs.getURLs()) {
             jComboBoxTeslaHosts.addItem(url);
         }
+        this.jComboTeslaUsers.setSelectedItem(selectedBaseURL);
 
         this.jComboBoxTeslaHosts.addActionListener(new ActionListener() {
 
@@ -147,19 +155,43 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 JComboBox<String> combo = (JComboBox<String>) event.getSource();
                 final String name = (String) combo.getSelectedItem();
 
-                final EnumTeslaBaseURLs teslaHost = EnumTeslaBaseURLs.getHostFromName(name);
+                selectedBaseURL = EnumTeslaBaseURLs.getHostFromName(name);
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        controller.resetTeslaClient(teslaHost);
-                        controller.getTeslaStations();
+                        clearHistoryTable();
+                        initTeslaModel(selectedBaseURL, selectedUser);
                     }
                 });
             }
         });
+    }
 
-        jComboBoxTeslaHosts.setSelectedIndex(0);
+    public void fillUsersDropdown() {
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumTeslaUsers.getUsernames().toArray());
+        this.jComboTeslaUsers.setModel(comboBoxModel);
+        this.jComboTeslaUsers.setSelectedItem(selectedUser);
 
+        this.jComboTeslaUsers.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JComboBox<String> combo = (JComboBox<String>) event.getSource();
+                String name = (String) combo.getSelectedItem();
+                selectedUser = EnumTeslaUsers.getUserFromName(name);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        clearHistoryTable();
+                        initTeslaModel(selectedBaseURL, selectedUser);
+                    }
+                });
+            }
+        });
+    }
+
+    private void initTeslaModel(EnumTeslaBaseURLs baseURL, EnumTeslaUsers selectedUser) {
+        controller.teslaLogin(baseURL, selectedUser);
     }
 
     public void fillTeslasSitesDropdown(final List<TeslaStationInfo> stations) {
@@ -294,6 +326,8 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jComboBoxTeslaSites = new javax.swing.JComboBox<>();
+        jLabel9 = new javax.swing.JLabel();
+        jComboTeslaUsers = new javax.swing.JComboBox<>();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableDataPoints = new javax.swing.JTable();
@@ -481,6 +515,10 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
         jComboBoxTeslaSites.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        jLabel9.setText("User:");
+
+        jComboTeslaUsers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
@@ -491,10 +529,14 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jComboTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBoxTeslaSites, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(177, Short.MAX_VALUE))
+                .addComponent(jComboBoxTeslaSites, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -502,7 +544,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel7)
                 .addComponent(jLabel8)
-                .addComponent(jComboBoxTeslaSites, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jComboBoxTeslaSites, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel9)
+                .addComponent(jComboTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -651,7 +695,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
+                .addComponent(jSplitPane1)
                 .addContainerGap())
         );
 
@@ -787,7 +831,10 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     public void propertyChange(PropertyChangeEvent evt) {
         String propName = evt.getPropertyName();
 
-        if (propName.equals(PropertyChangeNames.TeslaSitesListReturned.getName())) {
+        if (propName.equals(PropertyChangeNames.TeslaLoginResponseReturned.getName())) {
+            controller.getTeslaStations();
+
+        } else if (propName.equals(PropertyChangeNames.TeslaStationsListReturned.getName())) {
             List<TeslaStationInfo> stations = (List<TeslaStationInfo>) evt.getNewValue();
             fillTeslasSitesDropdown(stations);
 
@@ -818,6 +865,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JComboBox<String> jComboBoxResolution;
     private javax.swing.JComboBox<String> jComboBoxTeslaHosts;
     private javax.swing.JComboBox<String> jComboBoxTeslaSites;
+    private javax.swing.JComboBox<String> jComboTeslaUsers;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -826,6 +874,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelPointCounts;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

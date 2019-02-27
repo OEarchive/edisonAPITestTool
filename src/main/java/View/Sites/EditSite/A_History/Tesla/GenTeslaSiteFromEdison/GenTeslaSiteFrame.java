@@ -10,6 +10,7 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostEquipResponse;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
+import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.Views.EnumPageViewTypes;
 import Model.DataModels.Views.ItemGroup;
 import Model.DataModels.Views.PageView;
@@ -40,6 +41,9 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
     private static GenTeslaSiteFrame thisInstance;
     private final OptiCxAPIController controller;
 
+    private EnumTeslaBaseURLs selectedBaseURL;
+    private EnumTeslaUsers selectedUser;
+
     private List<TeslaGenEquipment> equipList;
 
     private final String toBeGenerated = "*to be generated*";
@@ -59,7 +63,10 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
 
         this.controller = controller;
 
+        selectedBaseURL = EnumTeslaBaseURLs.LocalHost;
+        selectedUser = EnumTeslaUsers.DevOps;
         fillTeslasHostsDropdown();
+        fillUsersDropdown();
 
         initCustomerPanel(edisonSite.getExtSFID());
         initSitePanel(edisonSite.getName());
@@ -83,11 +90,11 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                 JComboBox<String> combo = (JComboBox<String>) event.getSource();
                 final String name = (String) combo.getSelectedItem();
 
-                final EnumTeslaBaseURLs teslaHost = EnumTeslaBaseURLs.getHostFromName(name);
+                selectedBaseURL = EnumTeslaBaseURLs.getHostFromName(name);
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        controller.resetTeslaClient(teslaHost);
+                        initTeslaModel(selectedBaseURL, selectedUser);
                     }
                 });
             }
@@ -95,6 +102,32 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
 
         jComboBoxTeslaHosts.setSelectedIndex(0);
 
+    }
+    
+    public void fillUsersDropdown() {
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumTeslaUsers.getUsernames().toArray());
+        this.jComboBoxTeslaUsers.setModel(comboBoxModel);
+        this.jComboBoxTeslaUsers.setSelectedItem(selectedUser);
+
+        this.jComboBoxTeslaUsers.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JComboBox<String> combo = (JComboBox<String>) event.getSource();
+                String name = (String) combo.getSelectedItem();
+                selectedUser = EnumTeslaUsers.getUserFromName(name);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        initTeslaModel(selectedBaseURL, selectedUser);
+                    }
+                });
+            }
+        });
+    }
+
+    private void initTeslaModel(EnumTeslaBaseURLs baseURL, EnumTeslaUsers selectedUser) {
+        controller.teslaLogin(baseURL, selectedUser);
     }
 
     private void initCustomerPanel(String sfId) {
@@ -222,6 +255,9 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
         jLabel2 = new javax.swing.JLabel();
         jTextFieldSalesForceID = new javax.swing.JTextField();
         jLabelCustId = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jComboBoxTeslaUsers = new javax.swing.JComboBox<>();
+        jLabelLoggedIn = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -505,6 +541,12 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                 .addContainerGap())
         );
 
+        jLabel8.setText("User:");
+
+        jComboBoxTeslaUsers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabelLoggedIn.setText("*logged in*");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -520,10 +562,16 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                         .addComponent(jButtonClose))
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBoxTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabelLoggedIn)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -533,7 +581,10 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8)
+                    .addComponent(jComboBoxTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelLoggedIn))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -629,7 +680,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                     JOptionPane.DEFAULT_OPTION,
                     JOptionPane.INFORMATION_MESSAGE,
                     null, options, options[0]);
-            
+
             this.dispose();
 
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
@@ -645,6 +696,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JCheckBox jCheckBoxBaslineEnabled;
     private javax.swing.JCheckBox jCheckBoxRegenerationAllowed;
     private javax.swing.JComboBox<String> jComboBoxTeslaHosts;
+    private javax.swing.JComboBox<String> jComboBoxTeslaUsers;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
@@ -656,8 +708,10 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelCustId;
+    private javax.swing.JLabel jLabelLoggedIn;
     private javax.swing.JLabel jLabelSiteId;
     private javax.swing.JLabel jLabelStationId;
     private javax.swing.JLabel jLabelStationSiteId;
