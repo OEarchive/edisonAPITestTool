@@ -46,15 +46,17 @@ public class TeslaAPIModel extends java.util.Observable {
 
     private final OptiCxAPIModel model;
     final private PropertyChangeSupport pcs;
-    private TeslaRestClientCommon teslaRestClientCommon;
-    private TeslaLoginClient teslaLoginClient;
-    private TeslaStationClient teslaStationClient;
+    private final TeslaRestClientCommon teslaRestClientCommon;
+    private final TeslaLoginClient teslaLoginClient;
+    private final TeslaStationClient teslaStationClient;
     private DatapointsClient edisonClient;
 
     public TeslaAPIModel(OptiCxAPIModel model, PropertyChangeSupport pcs) {
         this.model = model;
 
-        this.teslaStationClient = new TeslaStationClient(EnumTeslaBaseURLs.Ninja, model.getTeslaRestClient());
+        this.teslaRestClientCommon = model.getTeslaRestClient();
+        this.teslaLoginClient = new TeslaLoginClient(teslaRestClientCommon);
+        this.teslaStationClient = new TeslaStationClient(EnumTeslaBaseURLs.Ninja, teslaRestClientCommon);
         this.pcs = pcs;
     }
 
@@ -94,7 +96,6 @@ public class TeslaAPIModel extends java.util.Observable {
                     if (resp.responseCode == 200) {
                         loginResponse = (TeslaLoginResponse) resp.responseObject;
                         
-                        teslaStationClient = new TeslaStationClient(baseUrl, teslaRestClientCommon);
                         teslaStationClient.setTeslaBaseURLAndToken(baseUrl, loginResponse.getAccessToken());
                         
                     } else {

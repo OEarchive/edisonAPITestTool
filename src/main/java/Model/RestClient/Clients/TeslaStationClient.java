@@ -126,7 +126,6 @@ public class TeslaStationClient {
         if (resObj.responseCode == 200) {
             mapper = new ObjectMapper();
             String response = (String) resObj.responseObject;
-            response = response.substring("OK".length(), response.length());
             resObj.responseObject = mapper.readValue(response, new TypeReference<List<TeslaHistoryResultPoint>>() {
             });
         }

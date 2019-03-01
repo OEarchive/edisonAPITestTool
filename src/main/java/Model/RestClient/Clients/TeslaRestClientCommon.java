@@ -124,13 +124,16 @@ public class TeslaRestClientCommon {
         OEResponse resp = new OEResponse();
 
         try {
-            for (NameValuePair h : nvps) {
-                postRequest.addHeader(h.getName(), h.getValue());
-            }
             if (addToken) {
                 nvps.add(new BasicNameValuePair("Authorization", "Bearer " + oauthToken));
             }
+            
+            for (NameValuePair h : nvps) {
+                postRequest.addHeader(h.getName(), h.getValue());
+            }
+
             postRequest.setEntity(new StringEntity(payload));
+            String temp = postRequest.toString();
 
             rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.POST, 0, url, payload));
 
@@ -138,7 +141,8 @@ public class TeslaRestClientCommon {
 
             StatusLine statusLine = response.getStatusLine();
             resp.responseObject = statusLine.getReasonPhrase();
-            responseString = statusLine.getReasonPhrase();
+            //responseString = statusLine.getReasonPhrase();
+            responseString = "";
             resp.responseCode = statusLine.getStatusCode();
 
             if (resp.responseCode != 204) {
