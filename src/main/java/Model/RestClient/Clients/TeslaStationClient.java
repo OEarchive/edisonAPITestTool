@@ -18,14 +18,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class TeslaStationClient {
 
-    private TeslaRestClientCommon teslaRestClient;
+    private final TeslaRestClientCommon teslaRestClient;
     private EnumTeslaBaseURLs baseURL;
 
     public TeslaStationClient(EnumTeslaBaseURLs baseURL, TeslaRestClientCommon teslaRestClient) {
@@ -152,15 +150,14 @@ public class TeslaStationClient {
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(postCustomer);
         OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
-
-        //Created{"id":"17a8c5e2-67de-4534-b652-a0f12b923b42","name":"skdkskdks","salesforceId":null,"createdAt":"2018-12-05T15:36:59.413Z","updatedAt":"2018-12-05T15:36:59.413Z"}
+        
         if (resObj.responseCode == 201) {
             String response = (String) resObj.responseObject;
-            response = response.substring("Created".length(), response.length());
             JsonNode jsonNode = mapper.readTree(response);
             Map<String, Object> map = mapper.convertValue(jsonNode, Map.class);
             resObj.responseObject = map;
         }
+
         return resObj;
 
     }
@@ -175,7 +172,6 @@ public class TeslaStationClient {
 
         if (resObj.responseCode == 201) {
             String response = (String) resObj.responseObject;
-            response = response.substring("Created".length(), response.length());
             JsonNode jsonNode = mapper.readTree(response);
             Map<String, Object> map = mapper.convertValue(jsonNode, Map.class);
             resObj.responseObject = map;
@@ -194,7 +190,6 @@ public class TeslaStationClient {
 
         if (resObj.responseCode == 201) {
             String response = (String) resObj.responseObject;
-            response = response.substring("Created".length(), response.length());
             JsonNode jsonNode = mapper.readTree(response);
             Map<String, Object> map = mapper.convertValue(jsonNode, Map.class);
             resObj.responseObject = map;
@@ -212,12 +207,8 @@ public class TeslaStationClient {
 
         if (resObj.responseCode == 201) {
             String response = (String) resObj.responseObject;
-            response = response.substring("Created".length(), response.length());
             
             resObj.responseObject = mapper.readValue(response, TeslaPostEquipResponse.class);
-            //JsonNode jsonNode = mapper.readTree(response);
-            //Map<String, Object> map = mapper.convertValue(jsonNode, Map.class);
-            //resObj.responseObject = map;
         }
         return resObj;
 
