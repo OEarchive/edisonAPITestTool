@@ -26,7 +26,7 @@ public class TeslaGenEquipment {
 
     @JsonIgnore
     public TeslaGenEquipment(ViewItem vi, EnumEdisonGroupTypes gt, String make, String model, String id) {
-        this.name = vi.getName();
+        this.name = vi.getStationName(); //vi.getName();  <--bypassing the Ch-1 problem (a quick hack)
         this.shortName = vi.getStationName();
         this.equipmentType = gt.getTeslaName();
         this.make = make;
