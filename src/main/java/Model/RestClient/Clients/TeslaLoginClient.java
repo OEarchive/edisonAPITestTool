@@ -18,19 +18,31 @@ import java.util.Map;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-
 public class TeslaLoginClient {
-    
+
     private final String badCredentials = "incorrect credentials";
+
+    private EnumTeslaBaseURLs serviceURL = null;
+    private EnumTeslaUsers user = null;
 
     private final TeslaRestClientCommon restClient;
 
     public TeslaLoginClient(TeslaRestClientCommon restClient) {
         this.restClient = restClient;
     }
-    
-    
+
+    public String getNewToken() throws IOException {
+
+        OEResponse newTokenResponse = login(serviceURL, user);
+        TeslaLoginResponse loginResponse = (TeslaLoginResponse) newTokenResponse.responseObject;
+        return loginResponse.getAccessToken();
+
+    }
+
     public OEResponse login(EnumTeslaBaseURLs serviceURL, EnumTeslaUsers user) throws IOException {
+
+        this.serviceURL = serviceURL;
+        this.user = user;
 
         String url = serviceURL.getURL() + "/oauth/token";
 
@@ -49,7 +61,7 @@ public class TeslaLoginClient {
             resp.responseObject = mapper.readValue((String) resp.responseObject, TeslaLoginResponse.class);
             return resp;
         }
-        
+
         OEResponse resp2 = new OEResponse();
         resp2.responseCode = resp.responseCode;
         resp2.responseObject = badCredentials;

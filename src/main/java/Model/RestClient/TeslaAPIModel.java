@@ -71,40 +71,40 @@ public class TeslaAPIModel extends java.util.Observable {
     public void removePropChangeListener(PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(listener);
     }
-    
+
     public void teslaLogin(final EnumTeslaBaseURLs baseUrl, final EnumTeslaUsers user) {
-        
+
         if (baseUrl == null || user == null) {
             return;
         }
-        
+
         SwingWorker worker = new SwingWorker< OEResponse, Void>() {
-            
+
             @Override
             public OEResponse doInBackground() throws IOException {
                 OEResponse results = teslaLoginClient.login(baseUrl, user);
                 return results;
             }
-            
+
             @Override
             public void done() {
                 try {
                     OEResponse resp = get();
-                    
+
                     TeslaLoginResponse loginResponse;
-                    
+
                     if (resp.responseCode == 200) {
                         loginResponse = (TeslaLoginResponse) resp.responseObject;
-                        
+
                         teslaStationClient.setTeslaBaseURLAndToken(baseUrl, loginResponse.getAccessToken());
-                        
+
                     } else {
                         loginResponse = new TeslaLoginResponse();
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
                     }
                     pcs.firePropertyChange(PropertyChangeNames.TeslaLoginResponseReturned.getName(), null, loginResponse);
                     pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, model.getRRS());
-                    
+
                 } catch (Exception ex) {
                     Logger logger = LoggerFactory.getLogger(this.getClass().getName());
                     logger.error(this.getClass().getName(), ex);
@@ -531,6 +531,13 @@ public class TeslaAPIModel extends java.util.Observable {
                 List<TeslaPostEquipResponse> equipResponses = new ArrayList<>();
                 for (TeslaGenEquipment equip : equipList) {
                     OEResponse resp = teslaStationClient.postEquipmentList(stationId, equip);
+                    if (resp.responseCode != 201) {
+                        String newToken = teslaLoginClient.getNewToken();
+                        teslaRestClientCommon.setOauthToken(newToken);
+                        resp = teslaStationClient.postEquipmentList(stationId, equip);
+
+                    }
+
                     if (resp.responseCode != 201) {
                         return resp;
                     }

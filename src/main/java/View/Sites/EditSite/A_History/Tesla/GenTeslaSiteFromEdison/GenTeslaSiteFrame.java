@@ -1,6 +1,7 @@
 package View.Sites.EditSite.A_History.Tesla.GenTeslaSiteFromEdison;
 
 import Controller.OptiCxAPIController;
+import Model.DataModels.Sites.Address;
 import Model.DataModels.Sites.EnumProducts;
 import Model.DataModels.Sites.Site;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.EnumEdisonGroupTypes;
@@ -35,11 +36,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public final class GenTeslaSiteFrame extends javax.swing.JFrame implements PropertyChangeListener {
 
     private static GenTeslaSiteFrame thisInstance;
     private final OptiCxAPIController controller;
+
+    private final Site edisonSite;
 
     private EnumTeslaBaseURLs selectedBaseURL;
     private EnumTeslaUsers selectedUser;
@@ -63,13 +69,15 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
 
         this.controller = controller;
 
+        this.edisonSite = edisonSite;
+
         selectedBaseURL = EnumTeslaBaseURLs.LocalHost;
         selectedUser = EnumTeslaUsers.DevOps;
         fillTeslasHostsDropdown();
         fillUsersDropdown();
 
-        initCustomerPanel(edisonSite.getExtSFID());
-        initSitePanel(edisonSite.getName());
+        initCustomerPanel();
+        initSitePanel();
         initStationPanel();
 
         controller.getUIMetaData(EnumProducts.edge.getName(), edisonSite.getSid(), EnumPageViewTypes.PlantOverview.getEdisonName());
@@ -103,7 +111,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
         jComboBoxTeslaHosts.setSelectedIndex(0);
 
     }
-    
+
     public void fillUsersDropdown() {
         ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumTeslaUsers.getUsernames().toArray());
         this.jComboBoxTeslaUsers.setModel(comboBoxModel);
@@ -116,6 +124,8 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                 JComboBox<String> combo = (JComboBox<String>) event.getSource();
                 String name = (String) combo.getSelectedItem();
                 selectedUser = EnumTeslaUsers.getUserFromName(name);
+
+                jLabelLoggedIn.setText("NO");
 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -130,29 +140,40 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
         controller.teslaLogin(baseURL, selectedUser);
     }
 
-    private void initCustomerPanel(String sfId) {
-        jTextFieldCustomerName.setText("");
-        jTextFieldSalesForceID.setText(sfId);
+    private void initCustomerPanel() {
+        jTextFieldCustomerName.setText(edisonSite.getSid());
+        jTextFieldSalesForceID.setText(edisonSite.getExtSFID());
         jLabelCustId.setText(toBeGenerated);
     }
 
-    private void initSitePanel(String siteName) {
-        jTextFieldSiteName.setText(siteName);
-        jTextFieldSiteShortName.setText("");
+    private void initSitePanel() {
+        jTextFieldSiteName.setText(edisonSite.getName());
+        jTextFieldSiteShortName.setText(edisonSite.getName());
         jLabelSiteId.setText(toBeGenerated);
     }
 
     private void initStationPanel() {
-        jTextFieldStationName.setText("");
+
+        Address addr = edisonSite.getAddress();
+
+        String strAddr = String.format("%s, %s, %s, %s", addr.getStreet(), addr.getCity(), addr.getState(), addr.getPostCode());
+
+        String commDate = edisonSite.getCommissionDate();
+        if (commDate == null || commDate.length() <= 0) {
+            DateTimeFormatter commDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd");
+            commDate = DateTime.now().toString(commDateFormat);
+        }
+
+        jTextFieldStationName.setText(edisonSite.getStationID());
         jCheckBoxBaslineEnabled.setSelected(false);
         jLabelStationSiteId.setText(toBeGenerated);
-        jTextFieldStationCommissionedAt.setText("2018-11-16");
-        jTextFieldStationPlantId.setText("plant id");
+        jTextFieldStationCommissionedAt.setText(commDate);
+        jTextFieldStationPlantId.setText(edisonSite.getStationID());
         jCheckBoxRegenerationAllowed.setSelected(true);
-        jTextFieldStationProductType.setText("edge");
+        jTextFieldStationProductType.setText(edisonSite.getProduct());
         jCheckBoxAtomEnabled.setSelected(false);
-        jTextFieldStationAddress.setText("1 Center Ct, Cleveland, OH, 44115");
-        jTextFieldStationTimeZone.setText("America/New_York");
+        jTextFieldStationAddress.setText(strAddr);
+        jTextFieldStationTimeZone.setText(addr.getTimezone());
 
         jLabelStationId.setText(toBeGenerated);
 
@@ -430,20 +451,18 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                                 .addComponent(jLabel6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabelStationSiteId))
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(jPanel3Layout.createSequentialGroup()
-                                    .addComponent(jLabel13)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextFieldStationAddress))
-                                .addGroup(jPanel3Layout.createSequentialGroup()
-                                    .addComponent(jLabel12)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextFieldStationProductType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jLabel9)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextFieldStationCommissionedAt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(56, 56, 56))))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel12)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldStationProductType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldStationCommissionedAt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextFieldStationAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 763, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );

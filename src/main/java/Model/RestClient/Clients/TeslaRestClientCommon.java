@@ -144,6 +144,10 @@ public class TeslaRestClientCommon {
             //responseString = statusLine.getReasonPhrase();
             responseString = "";
             resp.responseCode = statusLine.getStatusCode();
+            
+            if(resp.responseCode != 201 ){
+                System.out.println("bad status");
+            }
 
             if (resp.responseCode != 204) {
                 try {
