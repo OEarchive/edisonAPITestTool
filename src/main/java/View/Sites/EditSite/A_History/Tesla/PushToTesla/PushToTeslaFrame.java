@@ -10,6 +10,7 @@ import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTa
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableModel;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
+import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.EnumMapStatus;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.PopupMenuForDataPointsTable;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.SparsePointPusher.SparsePointPusherFrame;
 import java.awt.Color;
@@ -98,6 +99,10 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         //DateTime pushStartTime = pushEndTime.plusMonths(-1);
         this.jTextFieldEdisonFilter.setText("");
         this.filter = "";
+
+        endDate = DateTime.now();
+        endDate = endDate.minusMillis( endDate.getMillisOfDay());
+        startDate = endDate.minusMonths(12);
 
         this.jTextFieldStartDate.setText(startDate.toString(zzFormat));
         this.jTextFieldEndDate.setText(endDate.toString(zzFormat));
@@ -340,6 +345,24 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                     break;
             }
         }
+
+    }
+
+    private boolean isValidPointToPush(MappingTableRow mappedRow) {
+
+        if (mappedRow.getMapStatus() == EnumMapStatus.Overridden && mappedRow.getTeslaName().contentEquals("Ignore")) {
+            return false;
+        }
+
+        if (mappedRow.getMapStatus() == EnumMapStatus.NoTeslaInfo) {
+            return false;
+        }
+
+        if (mappedRow.getTeslaID() == null || mappedRow.getTeslaID().contentEquals("?)")) {
+            return false;
+        }
+
+        return true;
 
     }
 
@@ -693,7 +716,10 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             for (int selectedRowNumber : rowNumbers) {
                 int modelIndex = jTablePushPoints.convertRowIndexToModel(selectedRowNumber);
                 MappingTableRow mappedRow = model.getRow(modelIndex);
-                mappedRows.add(mappedRow);
+
+                if (isValidPointToPush(mappedRow)) {
+                    mappedRows.add(mappedRow);
+                }
             }
 
             DateTime pushStartTime = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
@@ -803,7 +829,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
 
         if (propName.equals(PropertyChangeNames.TeslaLoginResponseReturned.getName())) {
             controller.getTeslaStations();
-            
+
         } else if (propName.equals(PropertyChangeNames.TeslaStationsListReturned.getName())) {
             List<TeslaStationInfo> stations = (List<TeslaStationInfo>) evt.getNewValue();
             fillTeslasSitesDropdown(stations);

@@ -372,6 +372,19 @@ public class TeslaAPIModel extends java.util.Observable {
             if (dpr.size() > 0) {
                 TeslaDataPointUpsertRequest tdpu = new TeslaDataPointUpsertRequest(dpr, edisonNameToMappingTableRowMap);
                 OEResponse teslaPutResponse = teslaStationClient.putHistory(tdpu);
+                
+                if (teslaPutResponse.responseCode >= 300) {
+                        System.out.println( "getting a new token. was:" );
+                        System.out.println( teslaRestClientCommon.getOAuthToken() );
+                        String newToken = teslaLoginClient.getNewToken();
+                        teslaRestClientCommon.setOauthToken(newToken);
+                        
+                        System.out.println( "new token is:" );
+                        System.out.println( teslaRestClientCommon.getOAuthToken() );
+                        
+                        teslaPutResponse = teslaStationClient.putHistory(tdpu);
+                }
+                  
                 if (teslaPutResponse.responseCode != 204) {
                     return teslaPutResponse;
                 }

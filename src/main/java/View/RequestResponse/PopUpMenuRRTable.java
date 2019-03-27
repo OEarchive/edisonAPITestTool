@@ -94,7 +94,7 @@ public class PopUpMenuRRTable extends JPopupMenu {
                         RRObj rrObj = rrs.getObj(ts);
 
                         if (rrObj.getCallType() == EnumCallType.REQUEST) {
-                            curl += rrObj.getCurlStatement(controller.getLoginResponse().getAccessToken());
+                            curl += rrObj.getCurlStatement();
                         } else {
                             curl += rrObj.getPayload();
                         }

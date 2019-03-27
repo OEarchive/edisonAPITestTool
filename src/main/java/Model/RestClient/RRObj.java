@@ -10,22 +10,25 @@ public class RRObj {
     private int status;
     private final String url;
     private final String payload;
+    private final String token;
 
-    public RRObj(DateTime timestamp, EnumCallType callType, EnumRequestType reqType, int status, String url, String payload) {
+    public RRObj(DateTime timestamp, EnumCallType callType, EnumRequestType reqType, int status, String url, String payload, String token) {
         this.timestamp = timestamp;
         this.callType = callType;
         this.reqType = reqType;
         this.status = status;
         this.url = url;
         this.payload = payload;
+        this.token = token;
     }
 
-    public RRObj(DateTime timestamp, EnumCallType callType, EnumRequestType reqType, String url) {
+    public RRObj(DateTime timestamp, EnumCallType callType, EnumRequestType reqType, String url, String token) {
         this.timestamp = timestamp;
         this.callType = callType;
         this.reqType = reqType;
         this.url = url;
         this.payload = "";
+        this.token = token;
     }
 
     public DateTime getTimestamp() {
@@ -51,8 +54,12 @@ public class RRObj {
     public String getPayload() {
         return this.payload;
     }
+    
+    public String getToken(){
+        return this.token;
+    }
 
-    public String getCurlStatement(String token) {
+    public String getCurlStatement() {
         String curl = "";
 
         switch (reqType) {

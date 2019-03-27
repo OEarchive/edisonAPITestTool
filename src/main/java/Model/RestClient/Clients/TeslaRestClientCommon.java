@@ -69,7 +69,7 @@ public class TeslaRestClientCommon {
                 getRequest.addHeader(h.getName(), h.getValue());
             }
 
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.GET, url));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.GET, url, oauthToken));
             response = httpClient.execute(getRequest);
             responseCode = response.getStatusLine().getStatusCode();
             retVal.responseCode = responseCode;
@@ -97,11 +97,11 @@ public class TeslaRestClientCommon {
         if (retVal.responseCode == 200) {
             retVal.objSize = responseString.length();
             retVal.responseObject = responseString;
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString, oauthToken));
         } else if (responseString != null && responseString.length() > 0) {
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString, oauthToken));
         } else {
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, (String) retVal.responseObject));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, (String) retVal.responseObject, oauthToken));
         }
 
         return retVal;
@@ -135,21 +135,26 @@ public class TeslaRestClientCommon {
             postRequest.setEntity(new StringEntity(payload));
             String temp = postRequest.toString();
 
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.POST, 0, url, payload));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.POST, 0, url, payload, oauthToken));
 
             response = httpClient.execute(postRequest);
 
             StatusLine statusLine = response.getStatusLine();
             resp.responseObject = statusLine.getReasonPhrase();
-            //responseString = statusLine.getReasonPhrase();
             responseString = "";
             resp.responseCode = statusLine.getStatusCode();
             
-            if(resp.responseCode != 201 ){
+            if(resp.responseCode >= 300 ){
+                String msg = String.format("bad status: %d ", resp.responseCode );
+                        
+                if( addToken ){
+                    msg += "token: " + oauthToken;
+                }
+                
                 System.out.println("bad status");
             }
 
-            if (resp.responseCode != 204) {
+            if (resp.responseCode < 300) {
                 try {
                     BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
                     String output;
@@ -171,10 +176,10 @@ public class TeslaRestClientCommon {
             resp.responseObject = ex.getMessage();
             resp.responseCode = 999;
             String msg = Integer.toString(resp.responseCode) + ": " + ex.getMessage();
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.POST, resp.responseCode, url, msg));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.POST, resp.responseCode, url, msg, oauthToken));
         } finally {
             if (response != null) {
-                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.POST, resp.responseCode, url, responseString));
+                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.POST, resp.responseCode, url, responseString, oauthToken));
                 response.close();
             }
             httpClient.close();

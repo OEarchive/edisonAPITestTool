@@ -95,7 +95,7 @@ public class RestClientCommon {
                 getRequest.addHeader(h.getName(), h.getValue());
             }
 
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.GET, url));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.GET, url, oauthToken));
             response = httpClient.execute(getRequest);
             responseCode = response.getStatusLine().getStatusCode();
             retVal.responseCode = responseCode;
@@ -133,11 +133,11 @@ public class RestClientCommon {
         if (retVal.responseCode == 200) {
             retVal.objSize = responseString.length();
             retVal.responseObject = responseString;
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString, oauthToken));
         } else if (responseString != null && responseString.length() > 0) {
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString, oauthToken));
         } else {
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, (String) retVal.responseObject));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, (String) retVal.responseObject, oauthToken));
         }
 
         return retVal;
@@ -159,7 +159,7 @@ public class RestClientCommon {
                 getRequest.addHeader(h.getName(), h.getValue());
             }
 
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.GET, url));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.GET, url, oauthToken));
             response = httpClient.execute(getRequest);
             responseCode = response.getStatusLine().getStatusCode();
             retVal.responseCode = responseCode;
@@ -187,11 +187,11 @@ public class RestClientCommon {
         if (retVal.responseCode == 200) {
             retVal.objSize = responseString.length();
             retVal.responseObject = responseString;
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString, oauthToken));
         } else if (responseString != null && responseString.length() > 0) {
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString, oauthToken));
         } else {
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, (String) retVal.responseObject));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, (String) retVal.responseObject, oauthToken));
         }
 
         return retVal;
@@ -223,7 +223,7 @@ public class RestClientCommon {
                 getRequest.addHeader(h.getName(), h.getValue());
             }
 
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.DELETE, url));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.DELETE, url, oauthToken));
 
             response = httpClient.execute(getRequest);
             responseCode = response.getStatusLine().getStatusCode();
@@ -241,7 +241,7 @@ public class RestClientCommon {
             }
             httpClient.close();
         }
-        rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.DELETE, responseCode, url, responseString));
+        rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.DELETE, responseCode, url, responseString, oauthToken));
         retVal.objSize = (retVal.responseCode == 200) ? responseString.length() : 0;
         retVal.responseObject = responseString;
         return retVal;
@@ -289,7 +289,7 @@ public class RestClientCommon {
             postRequest.setEntity(new StringEntity(payload));
             String temp = postRequest.toString();
             if (addToken) {
-                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.POST, 0, url, payload));
+                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.POST, 0, url, payload, oauthToken));
             } else {
 
                 ObjectMapper mapper = new ObjectMapper();
@@ -297,7 +297,7 @@ public class RestClientCommon {
                 mangledPayload.put("password", "**********");
                 payload = mapper.writeValueAsString(mangledPayload);
 
-                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.LOGIN, 0, url, payload));
+                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.LOGIN, 0, url, payload, oauthToken));
             }
             response = httpClient.execute(postRequest);
             resp.responseCode = response.getStatusLine().getStatusCode();
@@ -315,10 +315,10 @@ public class RestClientCommon {
             resp.responseObject = ex.getMessage();
             resp.responseCode = 999;
             String msg = Integer.toString(resp.responseCode) + ": " + ex.getMessage();
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.POST, resp.responseCode, url, msg));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.POST, resp.responseCode, url, msg, oauthToken));
         } finally {
             if (response != null) {
-                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.POST, resp.responseCode, url, responseString));
+                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.POST, resp.responseCode, url, responseString, oauthToken));
                 response.close();
             }
             httpClient.close();
@@ -349,7 +349,7 @@ public class RestClientCommon {
             }
             putRequest.setEntity(new StringEntity(payload));
             String temp = putRequest.toString();
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.PUT, 0, url, payload));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.REQUEST, EnumRequestType.PUT, 0, url, payload, oauthToken));
             response = httpClient.execute(putRequest);
             resp.responseCode = response.getStatusLine().getStatusCode();
             BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
@@ -362,10 +362,10 @@ public class RestClientCommon {
             resp.responseObject = ex.getMessage();
             resp.responseCode = 777;
             String msg = Integer.toString(resp.responseCode) + ": " + ex.getMessage();
-            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.PUT, resp.responseCode, url, msg));
+            rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.PUT, resp.responseCode, url, msg, oauthToken));
         } finally {
             if (response != null) {
-                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.PUT, resp.responseCode, url, responseString));
+                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.PUT, resp.responseCode, url, responseString, oauthToken));
                 response.close();
             }
             httpClient.close();
