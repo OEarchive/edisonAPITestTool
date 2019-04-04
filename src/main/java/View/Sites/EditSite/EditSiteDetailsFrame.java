@@ -4374,7 +4374,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         DateTime startDate = DateTime.parse(startDateString, zzFormat);
         DateTime endDate = DateTime.parse(endDateString, zzFormat);
 
-        TeslaHistoryFrame frame = TeslaHistoryFrame.getInstance(controller, startDate, endDate);
+        TeslaHistoryFrame frame = TeslaHistoryFrame.getInstance(controller, startDate, endDate, listOfMetadata);
 
         frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         controller.addModelListener(frame);

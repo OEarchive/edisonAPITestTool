@@ -63,6 +63,10 @@ public class TeslaAPIModel extends java.util.Observable {
     public void setEdisonClient(DatapointsClient client) {
         edisonClient = client;
     }
+    
+    public TeslaStationClient getTeslaStationClient() {
+        return teslaStationClient;
+    }
 
     public void addPropChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);

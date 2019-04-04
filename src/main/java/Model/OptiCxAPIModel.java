@@ -51,6 +51,8 @@ import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
+import Model.DataModels.TeslaModels.TeslaHistoryResultPoint;
+import Model.DataModels.TeslaModels.TeslaHistoryResults;
 import Model.DataModels.TotalSavings.TotalSavings;
 import Model.DataModels.TrendAPI.SiteInfo.EnumMobileTrendTypes;
 import Model.DataModels.Users.CreateUserRequest;
@@ -2170,5 +2172,77 @@ public class OptiCxAPIModel extends java.util.Observable {
     public void postSparsePoints(TeslaDataPointUpsertRequest upsertRequest) {
         teslaAPIModel.postSparsePoints(upsertRequest);
     }
+    
+    //Tesla and Edison Query
+    public void getTeslaAndEdisonHistory(final List<DatapointHistoriesQueryParams> listOfParams, final TeslaHistoryRequest historyRequest ) {
+        
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+            
+            @Override
+            public OEResponse doInBackground() throws IOException {
+                
+                
+                //edison 
+                 List<DatapointHistoriesResponse> history = new ArrayList<>();
+                for (DatapointHistoriesQueryParams params : listOfParams) {
+
+                    OEResponse queryResult = datapointsClient.getDatapointHistories(params);
+                    if (queryResult.responseCode == 200) {
+                        List<DatapointHistoriesResponse> datapointHistoriesResponse = (List<DatapointHistoriesResponse>) queryResult.responseObject;
+                        history.addAll(datapointHistoriesResponse);
+                    } else {
+                        Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                        logger.error(this.getClass().getName(), "History Query failed...");
+                    }
+                }
+
+                // tesla
+                OEResponse results = teslaAPIModel.getTeslaStationClient().getTeslaHistory(historyRequest);
+
+                if (results.responseCode == 200) {
+
+                    TeslaHistoryResults historyResults = new TeslaHistoryResults((List<TeslaHistoryResultPoint>) results.responseObject);
+
+                    results = new OEResponse();
+                    results.responseCode = 200;
+                    results.responseObject = historyResults;
+
+                    return results;
+
+                }
+
+                return results;
+                
+                //List<DatapointHistoriesResponse> datapointHistoriesResponse
+                //TeslaHistoryResults historyResults
+                
+          
+            }
+            
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+                    
+                    if (resp.responseCode == 200) {
+                        List<AlarmListEntry> listOfAlarmHistories = (List<AlarmListEntry>) resp.responseObject;
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaEdisonHistoryReturned.getName(), null, listOfAlarmHistories);
+                    } else {
+                        resp.responseObject = "Could not get tesla and edison combined histories";
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, getRRS());
+                    
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+            
+        };
+        
+        worker.execute();
+    }
+    
     
 }

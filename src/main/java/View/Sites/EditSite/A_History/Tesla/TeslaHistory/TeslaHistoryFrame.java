@@ -1,9 +1,14 @@
 package View.Sites.EditSite.A_History.Tesla.TeslaHistory;
 
 import Controller.OptiCxAPIController;
+import Model.DataModels.Datapoints.DatapointHistoriesQueryParams;
+import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
+import Model.DataModels.Datapoints.EnumAggregationType;
+import Model.DataModels.Datapoints.EnumResolutions;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.EnumTeslaResolutions;
 import Model.DataModels.TeslaModels.EnumTeslaUsers;
+import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryResults;
@@ -11,13 +16,14 @@ import Model.DataModels.TeslaModels.TeslaHistoryStats;
 import Model.DataModels.TeslaModels.TeslaStampsAndPoints;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.PropertyChangeNames;
+import View.Sites.EditSite.A_History.DatapointListTable.DatapointsListTableModel;
+import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableCellRenderer;
+import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableModel;
+import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.EnumDatpointsTableColumns;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.PopupMenuForDataPointsTable;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryTable.HistoryTableCellRenderer;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryTable.HistoryTableModel;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryTable.PopupMenuForHistoryTable;
-import View.Sites.EditSite.A_History.Tesla.TeslaHistory.PointsTable.DatapointsTableCellRenderer;
-import View.Sites.EditSite.A_History.Tesla.TeslaHistory.PointsTable.DatapointsTableModel;
-import View.Sites.EditSite.A_History.Tesla.TeslaHistory.PointsTable.EnumDatapointsTableColumns;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.StatsTable.PopupMenuForStatsTable;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.StatsTable.TeslaStatsTableCellRenderer;
 import View.Sites.EditSite.A_History.Tesla.TeslaHistory.StatsTable.TeslaStatsTableModel;
@@ -32,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.AbstractButton;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -58,7 +65,12 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private DateTime startTime;
     private DateTime endTime;
 
+    private List<DatapointsAndMetadataResponse> edisonPoints;
+    private String selectedSid;
+
     private List<TeslaDPServiceDatapoint> listOfStationDatapoints;
+    private boolean showAllTesla;
+    private boolean ignoreGarbage;
 
     private TeslaHistoryResults historyResults;
     private TeslaHistoryStats historyStats;
@@ -67,24 +79,26 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
     public static TeslaHistoryFrame getInstance(
-            final OptiCxAPIController controller, DateTime startTime, DateTime endTime) {
+            final OptiCxAPIController controller, DateTime startTime, DateTime endTime, List<DatapointsAndMetadataResponse> edisonPoints) {
 
         if (thisInstance == null) {
-            thisInstance = new TeslaHistoryFrame(controller, startTime, endTime);
+            thisInstance = new TeslaHistoryFrame(controller, startTime, endTime, edisonPoints);
         }
         return thisInstance;
 
     }
 
-    private TeslaHistoryFrame(OptiCxAPIController controller, DateTime startTime, DateTime endTime) {
+    private TeslaHistoryFrame(OptiCxAPIController controller, DateTime startTime, DateTime endTime, List<DatapointsAndMetadataResponse> edisonPoints) {
         initComponents();
 
         this.controller = controller;
 
         this.startTime = startTime;
         this.endTime = endTime;
+        this.edisonPoints = edisonPoints;
 
         fillQueryParametersPanel();
+        fillEdisonSidsDropdown();
 
         selectedBaseURL = EnumTeslaBaseURLs.LocalHost;
         selectedUser = EnumTeslaUsers.DevOps;
@@ -228,25 +242,93 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
     }
 
+    public void createAllTeslaCheckBoxListener() {
+
+        ActionListener actionListener = new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+                showAllTesla = abstractButton.getModel().isSelected();
+                fillPointsTable(filter);
+            }
+        };
+        this.jCheckBox1.addActionListener(actionListener);
+    }
+
+    public void createIgnoreGarbageCheckBoxListener() {
+
+        ActionListener actionListener = new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+                ignoreGarbage = abstractButton.getModel().isSelected();
+                fillPointsTable(filter);
+            }
+        };
+        this.jCheckBoxIngoreGarbage.addActionListener(actionListener);
+    }
+
+    public void fillEdisonSidsDropdown() {
+
+        List<String> edisonSids = new ArrayList<>();
+        for (DatapointsAndMetadataResponse edisonPoint : edisonPoints) {
+            if (!edisonSids.contains(edisonPoint.getSid())) {
+                edisonSids.add(edisonPoint.getSid());
+            }
+        }
+
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel();
+        this.jComboBoxEdisonSids.setModel(comboBoxModel);
+
+        jComboBoxEdisonSids.addItem("All");
+        for (String sid : edisonSids) {
+            jComboBoxEdisonSids.addItem(sid);
+        }
+
+        this.jComboBoxEdisonSids.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JComboBox<String> combo = (JComboBox<String>) event.getSource();
+                selectedSid = (String) combo.getSelectedItem();
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        fillPointsTable(filter);
+                    }
+                });
+            }
+        });
+
+        jComboBoxEdisonSids.setSelectedIndex(0);
+
+    }
+
     private void fillPointsTable(String filter) {
 
         ArrayList<TeslaDPServiceDatapoint> filteredList = new ArrayList<>();
-        for (TeslaDPServiceDatapoint point : listOfStationDatapoints) {
-            if (filter.length() == 0) {
-                filteredList.add(point);
-            } else if (!this.jCheckBoxUseRegEx.isSelected() && point.getShortName().contains(filter)) {
-                filteredList.add(point);
-            } else if (this.jCheckBoxUseRegEx.isSelected()) {
-                Pattern r = Pattern.compile(filter);
-                Matcher m = r.matcher(point.getShortName());
-                if (m.find()) {
+        if (listOfStationDatapoints != null) {
+            for (TeslaDPServiceDatapoint point : listOfStationDatapoints) {
+                if (filter.length() == 0) {
                     filteredList.add(point);
+                } else if (!this.jCheckBoxUseRegEx.isSelected() && point.getShortName().contains(filter)) {
+                    filteredList.add(point);
+                } else if (this.jCheckBoxUseRegEx.isSelected()) {
+                    Pattern r = Pattern.compile(filter);
+                    Matcher m = r.matcher(point.getShortName());
+                    if (m.find()) {
+                        filteredList.add(point);
+                    }
                 }
             }
         }
 
-        this.jTableDataPoints.setDefaultRenderer(Object.class, new DatapointsTableCellRenderer());
-        this.jTableDataPoints.setModel(new DatapointsTableModel(filteredList));
+        //List<DatapointsAndMetadataResponse> edisonPoints, 
+        //String selectedSid, 
+        //List<TeslaDPServiceDatapoint> listOfStationDatapoints, 
+        //boolean showAllTesla, 
+        //boolean ignoreGarbage
+        this.jTableDataPoints.setDefaultRenderer(Object.class, new DataPointsTableCellRenderer());
+        this.jTableDataPoints.setModel(new DataPointsTableModel(edisonPoints, selectedSid, filteredList, showAllTesla, ignoreGarbage));
         this.jTableDataPoints.setAutoCreateRowSorter(true);
         fixPointsTableColumnWidths(jTableDataPoints);
         setPointCounts();
@@ -254,7 +336,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
     private void fixPointsTableColumnWidths(JTable t) {
         for (int i = 0; i < t.getColumnCount(); i++) {
-            EnumDatapointsTableColumns colEnum = EnumDatapointsTableColumns.getColumnFromColumnNumber(i);
+            EnumDatpointsTableColumns colEnum = EnumDatpointsTableColumns.getColumnFromColumnNumber(i);
             TableColumn column = t.getColumnModel().getColumn(i);
             column.setPreferredWidth(colEnum.getWidth());
         }
@@ -336,8 +418,10 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         jTextFieldFilter = new javax.swing.JTextField();
         jCheckBoxUseRegEx = new javax.swing.JCheckBox();
         jButtonClearFilter = new javax.swing.JButton();
+        jComboBoxEdisonSids = new javax.swing.JComboBox<>();
+        jCheckBoxIngoreGarbage = new javax.swing.JCheckBox();
+        jCheckBox1 = new javax.swing.JCheckBox();
         jLabelPointCounts = new javax.swing.JLabel();
-        jScrollBar1 = new javax.swing.JScrollBar();
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
 
@@ -536,7 +620,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jComboBoxTeslaSites, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -614,6 +698,12 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             }
         });
 
+        jComboBoxEdisonSids.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jCheckBoxIngoreGarbage.setText("Ignore COV, etc.");
+
+        jCheckBox1.setText("Show All Tesla");
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -624,11 +714,16 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldFilter))
+                        .addComponent(jTextFieldFilter)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonClearFilter))
+                    .addComponent(jComboBoxEdisonSids, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jCheckBoxUseRegEx)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
-                        .addComponent(jButtonClearFilter)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBoxIngoreGarbage)))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -637,12 +732,16 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextFieldFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonClearFilter))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jCheckBoxUseRegEx)
-                    .addComponent(jButtonClearFilter))
-                .addContainerGap(43, Short.MAX_VALUE))
+                    .addComponent(jCheckBox1)
+                    .addComponent(jCheckBoxIngoreGarbage))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jComboBoxEdisonSids, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabelPointCounts.setText("*point counts*");
@@ -654,30 +753,21 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabelPointCounts)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(190, 190, 190)
-                        .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap()
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelPointCounts))
         );
 
@@ -689,7 +779,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1229, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -764,25 +854,69 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
             List<String> ids = new ArrayList<>();
 
-            DatapointsTableModel model = (DatapointsTableModel) jTableDataPoints.getModel();
-            int[] selectedRows = jTableDataPoints.getSelectedRows();
-            for (int selectedRowNumber : selectedRows) {
-                int modelIndex = jTableDataPoints.convertRowIndexToModel(selectedRowNumber);
-                TeslaDPServiceDatapoint dpServicePoint = model.getRow(modelIndex);
-                ids.add(dpServicePoint.getId());
+            //****************
+            List<MappingTableRow> listOfPoints = new ArrayList<>(); //jListHistoryDatapoints.getSelectedValuesList();
+            DataPointsTableModel tableModel = (DataPointsTableModel) (jTableDataPoints.getModel());
+            int[] selectedRowNumbers = jTableDataPoints.getSelectedRows();
+            for (int selectedRowNumber : selectedRowNumbers) {
+                int modelRowNumber = jTableDataPoints.convertRowIndexToModel(selectedRowNumber);
+                MappingTableRow dataRow = tableModel.getRow(modelRowNumber);
+                listOfPoints.add(dataRow);
             }
 
-            DateTime startAt = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
-            DateTime endAt = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
-            String res = (String) jComboBoxResolution.getSelectedItem();
-            String timeZone = jTextFieldTimeZone.getText();
+            Map<String, List<String>> pointsToQuery = new HashMap<>();
+            for (MappingTableRow pointInfo : listOfPoints) {
+                if (!pointsToQuery.containsKey(pointInfo.getEdsionSid())) {
+                    pointsToQuery.put(pointInfo.getEdsionSid(), new ArrayList<String>());
+                }
+                pointsToQuery.get(pointInfo.getEdsionSid()).add(pointInfo.getEdsionShortName());
+            }
 
-            TeslaHistoryRequest historyRequest = new TeslaHistoryRequest(ids, startAt, endAt, res, timeZone);
+            if (pointsToQuery.size() > 0) {
+                String resString = (String) jComboBoxResolution.getSelectedItem();
+                EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
 
-            controller.getTeslaHistory(historyRequest);
+                EnumAggregationType aggType = EnumAggregationType.NORMAL;
+                //if (jCheckBoxSum.isSelected()) {
+                //    aggType = EnumAggregationType.SUM;
+                //} else if (jCheckBoxAvg.isSelected()) {
+                //   aggType = EnumAggregationType.AVG;
+                //} else if (jCheckBoxCount.isSelected()) {
+                //   aggType = EnumAggregationType.COUNT;
+                //}
+
+                List<DatapointHistoriesQueryParams> listOfParams = new ArrayList<>();
+                for (String sid : pointsToQuery.keySet()) {
+                    List<String> listOfPointNames = pointsToQuery.get(sid);
+                    DatapointHistoriesQueryParams params = new DatapointHistoriesQueryParams(
+                            sid, startTime, endTime, res, true, listOfPointNames, aggType); //true = sparse data flag
+                    listOfParams.add(params);
+                }
+                
+
+                //******************
+                DataPointsTableModel model = (DataPointsTableModel) jTableDataPoints.getModel();
+                int[] selectedRows = jTableDataPoints.getSelectedRows();
+                for (int selectedRowNumber : selectedRows) {
+                    int modelIndex = jTableDataPoints.convertRowIndexToModel(selectedRowNumber);
+                    MappingTableRow dpServicePoint = model.getRow(modelIndex);
+                    ids.add(dpServicePoint.getTeslaID());
+                }
+
+                DateTime startAt = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
+                DateTime endAt = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
+                String teslaRes = (String) jComboBoxResolution.getSelectedItem();
+                String timeZone = jTextFieldTimeZone.getText();
+
+                TeslaHistoryRequest historyRequest = new TeslaHistoryRequest(ids, startAt, endAt, teslaRes, timeZone);
+
+                //controller.getTeslaAndEdisonHistory( listOfParams, historyRequest  );
+
+            }
         }
     }//GEN-LAST:event_jButtonQueryActionPerformed
 
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -861,7 +995,10 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JButton jButtonChart;
     private javax.swing.JButton jButtonClearFilter;
     private javax.swing.JButton jButtonQuery;
+    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBoxIngoreGarbage;
     private javax.swing.JCheckBox jCheckBoxUseRegEx;
+    private javax.swing.JComboBox<String> jComboBoxEdisonSids;
     private javax.swing.JComboBox<String> jComboBoxResolution;
     private javax.swing.JComboBox<String> jComboBoxTeslaHosts;
     private javax.swing.JComboBox<String> jComboBoxTeslaSites;
@@ -884,7 +1021,6 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
-    private javax.swing.JScrollBar jScrollBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

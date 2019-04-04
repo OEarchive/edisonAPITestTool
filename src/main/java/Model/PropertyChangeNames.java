@@ -172,7 +172,9 @@ public enum PropertyChangeNames {
     TeslaSiteCreated("TeslaSiteCreated"),
     TeslaStationCreated("TeslaStationCreated"),
     TeslaEquipmentCreated("TeslaEquipmentCreated"),
-    TeslaHistoryReturned("TeslaHistoryReturned");
+    TeslaHistoryReturned("TeslaHistoryReturned"),
+    
+    TeslaEdisonHistoryReturned("TeslaEdisonHistoryReturned");;
 
     private final String name;
 
