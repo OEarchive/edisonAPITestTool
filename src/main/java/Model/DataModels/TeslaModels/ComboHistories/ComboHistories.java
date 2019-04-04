@@ -3,6 +3,7 @@ package Model.DataModels.TeslaModels.ComboHistories;
 import Model.DataModels.Datapoints.DatapointHistoriesResponse;
 import Model.DataModels.TeslaModels.TeslaHistoryResults;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,31 @@ public class ComboHistories {
         //Map<DateTime, List<>
         
        
+        for( DatapointHistoriesResponse edison : datapointHistoriesResponse ){
+            for( String ts : edison.getTimestamps()){
+                DateTime timestamp = DateTime.parse(ts,zzFormat).withZone(DateTimeZone.UTC);
+                if( !timestamps.contains(timestamp)){
+                    timestamps.add(timestamp);
+                }
+            }
+        }
+        
+        for(  DateTime teslaTimeStamp : historyResults.getTimestamps() ){
+                if( !timestamps.contains(teslaTimeStamp)){
+                    timestamps.add(teslaTimeStamp);
+                }
+        }
+        
+        Collections.sort(timestamps);
+        
+        for( DateTime ts : timestamps ){
+            timestampsToValuesMap.put(ts, new ArrayList<ComboHistoryPointValuePair>());
+        }
+        
+        
+        
+        
+        ///===========
         int pointIndex = 0;
         for( DatapointHistoriesResponse edison : datapointHistoriesResponse ){
             String name = edison.getName();
