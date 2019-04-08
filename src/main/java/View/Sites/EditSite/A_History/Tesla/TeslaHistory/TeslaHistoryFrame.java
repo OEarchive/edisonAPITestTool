@@ -78,6 +78,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private String filter = "";
 
     private DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+            //   DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
     public static TeslaHistoryFrame getInstance(
             final OptiCxAPIController controller, DateTime startTime, DateTime endTime, List<DatapointsAndMetadataResponse> edisonPoints) {
@@ -853,9 +854,13 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
             clearHistoryTable();
             
-            DateTime startAt = DateTime.parse(jTextFieldStartDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
-            DateTime endAt = DateTime.parse(jTextFieldEndDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
+            //2018-02-01T00:00:00.000-05:00
+            DateTime startAt = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
+            DateTime endAt = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
 
+            DateTime startAt2 = DateTime.parse(jTextFieldStartDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
+            DateTime endAt2 = DateTime.parse(jTextFieldEndDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
+            
             List<String> ids = new ArrayList<>();
 
             //****************
@@ -894,7 +899,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 for (String sid : pointsToQuery.keySet()) {
                     List<String> listOfPointNames = pointsToQuery.get(sid);
                     DatapointHistoriesQueryParams params = new DatapointHistoriesQueryParams(
-                            sid, startAt, endAt, res, true, listOfPointNames, aggType); //true = sparse data flag
+                            sid, startAt, endAt, res, false, listOfPointNames, aggType); //true = sparse data flag
                     listOfParams.add(params);
                 }
                 
