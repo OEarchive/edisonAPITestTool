@@ -4,28 +4,28 @@ package Model.DataModels.TeslaModels.ComboHistories;
 
 public class ComboHistoryPointNamePair {
 
-    private String teslaValue;
-    private String edisonValue;
+    private String edisonName;
+    private String teslaName;
 
-    public ComboHistoryPointNamePair() {
-        teslaValue = null;
-        edisonValue = null;
+    public ComboHistoryPointNamePair( String edisonName, String teslaName  ) {
+        this.edisonName = edisonName;
+        this.teslaName = teslaName;
     }
 
-    public void setTeslaValue(String v) {
-        this.teslaValue = v;
+    public void setTeslaName(String v) {
+        this.teslaName = v;
     }
 
-    public String getTeslaValue() {
-        return this.teslaValue;
+    public String getTeslaName() {
+        return this.teslaName;
     }
 
-    public void setEdisonValue(String v) {
-        this.edisonValue = v;
+    public void setEdisonName(String v) {
+        this.edisonName = v;
     }
 
-    public String getEdisonValue() {
-        return this.edisonValue;
+    public String getEdisonName() {
+        return this.edisonName;
     }
 
 }

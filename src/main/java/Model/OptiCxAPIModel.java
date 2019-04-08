@@ -42,6 +42,7 @@ import Model.DataModels.Stations.StationLogHistory;
 import Model.DataModels.Stations.WizardStationStatus;
 import Model.DataModels.Stations.StationValidateQueryParams;
 import Model.DataModels.Stations.StationsHeartbeat;
+import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
@@ -2183,7 +2184,7 @@ public class OptiCxAPIModel extends java.util.Observable {
                 
                 
                 //edison 
-                 List<DatapointHistoriesResponse> history = new ArrayList<>();
+                List<DatapointHistoriesResponse> history = new ArrayList<>();
                 for (DatapointHistoriesQueryParams params : listOfParams) {
 
                     OEResponse queryResult = datapointsClient.getDatapointHistories(params);
@@ -2193,30 +2194,30 @@ public class OptiCxAPIModel extends java.util.Observable {
                     } else {
                         Logger logger = LoggerFactory.getLogger(this.getClass().getName());
                         logger.error(this.getClass().getName(), "History Query failed...");
+                        //return queryResult;
                     }
                 }
 
                 // tesla
                 OEResponse results = teslaAPIModel.getTeslaStationClient().getTeslaHistory(historyRequest);
-
-                if (results.responseCode == 200) {
-
-                    TeslaHistoryResults historyResults = new TeslaHistoryResults((List<TeslaHistoryResultPoint>) results.responseObject);
-
-                    results = new OEResponse();
-                    results.responseCode = 200;
-                    results.responseObject = historyResults;
-
+                
+                if (results.responseCode != 200) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), "Tesla History Query failed...");
                     return results;
-
                 }
+                    
+                
+                TeslaHistoryResults historyResults = new TeslaHistoryResults((List<TeslaHistoryResultPoint>) results.responseObject);
+                ComboHistories comboHistories = new ComboHistories(history, historyResults);
+                
+                results = new OEResponse();
+
+                results.responseCode = 200;
+                results.responseObject = comboHistories;
 
                 return results;
                 
-                //List<DatapointHistoriesResponse> datapointHistoriesResponse
-                //TeslaHistoryResults historyResults
-                
-          
             }
             
             @Override
@@ -2225,8 +2226,8 @@ public class OptiCxAPIModel extends java.util.Observable {
                     OEResponse resp = get();
                     
                     if (resp.responseCode == 200) {
-                        List<AlarmListEntry> listOfAlarmHistories = (List<AlarmListEntry>) resp.responseObject;
-                        pcs.firePropertyChange(PropertyChangeNames.TeslaEdisonHistoryReturned.getName(), null, listOfAlarmHistories);
+                        ComboHistories comboHistory = (ComboHistories) resp.responseObject;
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaEdisonHistoryReturned.getName(), null, comboHistory);
                     } else {
                         resp.responseObject = "Could not get tesla and edison combined histories";
                         pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);

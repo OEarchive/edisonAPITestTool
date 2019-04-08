@@ -688,6 +688,10 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
     public void getTeslaHistory(TeslaHistoryRequest historyRequest) {
         model.getTeslaHistory(historyRequest);
     }
+    
+    public void getTeslaAndEdisonHistory( List<DatapointHistoriesQueryParams> listOfParams, TeslaHistoryRequest historyRequest ){
+        model.getTeslaAndEdisonHistory(listOfParams, historyRequest);
+    }
 
     public void postSparsePoints(TeslaDataPointUpsertRequest upsertRequest) {
         model.postSparsePoints(upsertRequest);

@@ -1,6 +1,8 @@
 
 package Model.DataModels.TeslaModels;
 
+import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
+import Model.DataModels.TeslaModels.ComboHistories.ComboHistoryPointNamePair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,19 +15,21 @@ public class TeslaHistoryStats {
     private final List<String> pointNames;
 
     
-    public TeslaHistoryStats( TeslaHistoryResults historyResults ){
+    public TeslaHistoryStats( ComboHistories historyResults ){
         
         this.pointNameToStatsMap = new HashMap<>();
-        this.pointNames = historyResults.getPointNames();
         
+        
+        pointNames = historyResults.getAllPointNames();
+
         Map<String, List<Object> > uNameToValuesMap = new HashMap<>();
         int pointIndex = 0;
-        for( String pointName : historyResults.getPointNames() ){
+        
+        for( String pointName : pointNames ){
             
             List<Object> values = new ArrayList<>();
             for( DateTime ts : historyResults.getTimestamps() ){
-                Map<DateTime, List<Object>> ddd = historyResults.getTimeStampToValuesArray();
-                List<Object> valuesAtThisTime = historyResults.getTimeStampToValuesArray().get(ts);
+                List<Object> valuesAtThisTime = historyResults.getTimeStampToAllValuesArray().get(ts);
                 values.add( valuesAtThisTime.get(pointIndex));
             }
             

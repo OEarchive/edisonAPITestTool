@@ -3,7 +3,6 @@ package Model.DataModels.TeslaModels.ComboHistories;
 public class ComboHistoryPointValuePair {
 
     private Object teslaValue;
-
     private Object edisonValue;
 
     public ComboHistoryPointValuePair() {

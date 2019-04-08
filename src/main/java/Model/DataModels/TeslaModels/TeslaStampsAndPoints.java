@@ -1,6 +1,7 @@
 package Model.DataModels.TeslaModels;
 
 import Model.DataModels.Datapoints.DatapointHistoriesResponse;
+import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,15 +13,15 @@ public class TeslaStampsAndPoints {
     private final List<DateTime> timeStamps;
     private final Map<String, List<Object>> pointsMap;
 
-    public TeslaStampsAndPoints(TeslaHistoryResults historyResults) {
+    public TeslaStampsAndPoints(ComboHistories historyResults) {
         this.timeStamps = historyResults.getTimestamps();
         this.pointsMap = new HashMap<>();
 
         int pointIndex = 0;
-        for (String pointName : historyResults.getPointNames()) {
+        for (String pointName : historyResults.getAllPointNames()) {
             List<Object> values = new ArrayList<>();
             for (DateTime ts : historyResults.getTimestamps()) {
-                values.add(historyResults.getTimeStampToValuesArray().get(ts).get(pointIndex));
+                values.add(historyResults.getTimeStampToAllValuesArray().get(ts).get(pointIndex));
             }
 
             pointsMap.put(pointName, values);

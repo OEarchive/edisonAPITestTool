@@ -5,6 +5,7 @@ import Model.DataModels.Datapoints.DatapointHistoriesQueryParams;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
 import Model.DataModels.Datapoints.EnumAggregationType;
 import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.EnumTeslaResolutions;
 import Model.DataModels.TeslaModels.EnumTeslaUsers;
@@ -72,7 +73,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private boolean showAllTesla;
     private boolean ignoreGarbage;
 
-    private TeslaHistoryResults historyResults;
+    private ComboHistories historyResults;
     private TeslaHistoryStats historyStats;
     private String filter = "";
 
@@ -851,6 +852,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         if (jTableDataPoints.getSelectedRowCount() > 0) {
 
             clearHistoryTable();
+            
+            DateTime startAt = DateTime.parse(jTextFieldStartDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
+            DateTime endAt = DateTime.parse(jTextFieldEndDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
 
             List<String> ids = new ArrayList<>();
 
@@ -874,7 +878,8 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
             if (pointsToQuery.size() > 0) {
                 String resString = (String) jComboBoxResolution.getSelectedItem();
-                EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
+                EnumResolutions res = EnumResolutions.MINUTE5;
+                //EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
 
                 EnumAggregationType aggType = EnumAggregationType.NORMAL;
                 //if (jCheckBoxSum.isSelected()) {
@@ -889,7 +894,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 for (String sid : pointsToQuery.keySet()) {
                     List<String> listOfPointNames = pointsToQuery.get(sid);
                     DatapointHistoriesQueryParams params = new DatapointHistoriesQueryParams(
-                            sid, startTime, endTime, res, true, listOfPointNames, aggType); //true = sparse data flag
+                            sid, startAt, endAt, res, true, listOfPointNames, aggType); //true = sparse data flag
                     listOfParams.add(params);
                 }
                 
@@ -903,14 +908,13 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                     ids.add(dpServicePoint.getTeslaID());
                 }
 
-                DateTime startAt = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
-                DateTime endAt = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
+
                 String teslaRes = (String) jComboBoxResolution.getSelectedItem();
                 String timeZone = jTextFieldTimeZone.getText();
 
                 TeslaHistoryRequest historyRequest = new TeslaHistoryRequest(ids, startAt, endAt, teslaRes, timeZone);
 
-                //controller.getTeslaAndEdisonHistory( listOfParams, historyRequest  );
+                controller.getTeslaAndEdisonHistory( listOfParams, historyRequest  );
 
             }
         }
@@ -976,9 +980,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             this.listOfStationDatapoints = (List<TeslaDPServiceDatapoint>) evt.getNewValue();
             fillPointsTable(filter);
 
-        } else if (propName.equals(PropertyChangeNames.TeslaHistoryReturned.getName())) {
+        } else if (propName.equals(PropertyChangeNames.TeslaEdisonHistoryReturned.getName())) {
 
-            historyResults = (TeslaHistoryResults) evt.getNewValue();
+            historyResults = (ComboHistories) evt.getNewValue();
             historyStats = new TeslaHistoryStats(historyResults);
             int prec = (int) jSpinnerPrec.getModel().getValue();
             fillHistoryTable(prec);

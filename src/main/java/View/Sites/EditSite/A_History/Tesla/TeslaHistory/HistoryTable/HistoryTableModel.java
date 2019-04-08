@@ -1,6 +1,7 @@
 
 package View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryTable;
 
+import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
 import Model.DataModels.TeslaModels.TeslaHistoryResults;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
@@ -9,9 +10,9 @@ import org.joda.time.DateTime;
 
 public class HistoryTableModel extends AbstractTableModel {
 
-    private final TeslaHistoryResults historyResults;
+    private final ComboHistories historyResults;
 
-    public HistoryTableModel(TeslaHistoryResults historyResults) {
+    public HistoryTableModel(ComboHistories historyResults) {
         super();
         this.historyResults = historyResults;
     }
@@ -27,13 +28,13 @@ public class HistoryTableModel extends AbstractTableModel {
             return "TimeStamp";
         }
         else {
-            return historyResults.getPointNames().get(col-1);
+            return historyResults.getAllPointNames().get(col-1);
         }
     }
 
     @Override
     public int getColumnCount() {
-        return historyResults.getPointNames().size() + 1;
+        return historyResults.getAllPointNames().size() + 1;
     }
 
     @Override
@@ -46,7 +47,9 @@ public class HistoryTableModel extends AbstractTableModel {
             val = timeStamp;
         }
         else{
-            List< Object> values = ( List< Object> )historyResults.getTimeStampToValuesArray().get(timeStamp);
+            
+           
+            List< Object> values = ( List< Object> )historyResults.getTimeStampToAllValuesArray().get(timeStamp);
             val = values.get(columnIndex-1);
         }
 
