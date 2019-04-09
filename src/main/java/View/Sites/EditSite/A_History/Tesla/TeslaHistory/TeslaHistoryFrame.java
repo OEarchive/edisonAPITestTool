@@ -124,9 +124,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         String timeZone = "America/Los_Angeles";
         jTextFieldTimeZone.setText(timeZone);
 
-        //DateTime endTime = DateTime.now().withZone(DateTimeZone.UTC);
-        //endTime = endTime.minusMillis(endTime.getMillisOfDay());
-        //DateTime startTime = endTime.plusMonths(-1);
+        endTime = DateTime.now().withZone(DateTimeZone.UTC);
+        endTime = endTime.minusMillis(endTime.getMillisOfDay());
+        startTime = endTime.plusMonths(-1);
         this.jTextFieldStartDate.setText(startTime.toString(zzFormat));
         this.jTextFieldEndDate.setText(endTime.toString(zzFormat));
 
@@ -307,35 +307,22 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
     private void fillPointsTable(String filter) {
 
-        ArrayList<TeslaDPServiceDatapoint> filteredList = new ArrayList<>();
-        if (listOfStationDatapoints != null) {
-            for (TeslaDPServiceDatapoint point : listOfStationDatapoints) {
-                if (filter.length() == 0) {
-                    filteredList.add(point);
-                } else if (!this.jCheckBoxUseRegEx.isSelected() && point.getShortName().contains(filter)) {
-                    filteredList.add(point);
-                } else if (this.jCheckBoxUseRegEx.isSelected()) {
-                    Pattern r = Pattern.compile(filter);
-                    Matcher m = r.matcher(point.getShortName());
-                    if (m.find()) {
-                        filteredList.add(point);
-                    }
-                }
-            }
-        }
-
-        //List<DatapointsAndMetadataResponse> edisonPoints, 
-        //String selectedSid, 
-        //List<TeslaDPServiceDatapoint> listOfStationDatapoints, 
-        //boolean showAllTesla, 
-        //boolean ignoreGarbage
         this.jTableDataPoints.setDefaultRenderer(Object.class, new DataPointsTableCellRenderer());
-        this.jTableDataPoints.setModel(new DataPointsTableModel(edisonPoints, selectedSid, filteredList, showAllTesla, ignoreGarbage));
+        this.jTableDataPoints.setModel(new DataPointsTableModel(
+                edisonPoints, 
+                selectedSid, 
+                listOfStationDatapoints,
+                showAllTesla, 
+                ignoreGarbage, 
+                this.jCheckBoxUseRegEx.isSelected(),
+                filter )
+        );
         this.jTableDataPoints.setAutoCreateRowSorter(true);
         fixPointsTableColumnWidths(jTableDataPoints);
         setPointCounts();
+        
     }
-
+    
     private void fixPointsTableColumnWidths(JTable t) {
         for (int i = 0; i < t.getColumnCount(); i++) {
             EnumDatpointsTableColumns colEnum = EnumDatpointsTableColumns.getColumnFromColumnNumber(i);

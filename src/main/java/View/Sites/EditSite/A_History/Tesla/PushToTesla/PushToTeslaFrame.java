@@ -294,24 +294,10 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     }
 
     private void fillPointsTable(String filter) {
-
-        List<DatapointsAndMetadataResponse> filteredList = new ArrayList<>();
-        for (DatapointsAndMetadataResponse point : edisonPoints) {
-            if (filter.length() == 0) {
-                filteredList.add(point);
-            } else if (!this.jCheckBoxUseRegEx.isSelected() && point.getName().contains(filter)) {
-                filteredList.add(point);
-            } else if (this.jCheckBoxUseRegEx.isSelected()) {
-                Pattern r = Pattern.compile(filter);
-                Matcher m = r.matcher(point.getName());
-                if (m.find()) {
-                    filteredList.add(point);
-                }
-            }
-        }
-
         this.jTablePushPoints.setDefaultRenderer(Object.class, new DataPointsTableCellRenderer());
-        this.jTablePushPoints.setModel(new DataPointsTableModel(filteredList, selectedSid, listOfStationDatapoints, showAllTesla, ignoreGarbage));
+        this.jTablePushPoints.setModel(new DataPointsTableModel(
+                edisonPoints, selectedSid, listOfStationDatapoints, showAllTesla, 
+                ignoreGarbage, jCheckBoxUseRegEx.isSelected(), filter ));
         this.jTablePushPoints.setAutoCreateRowSorter(true);
         fixPointsTableColumnWidths(jTablePushPoints);
         setPointCounts();

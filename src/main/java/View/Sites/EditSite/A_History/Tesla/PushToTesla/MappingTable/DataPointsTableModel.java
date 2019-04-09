@@ -3,9 +3,6 @@ package View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
-import Model.DataModels.TeslaModels.TeslaStationInfoDataPoint;
-import Model.DataModels.TeslaModels.TeslaEquipment;
-import Model.DataModels.TeslaModels.TeslaStationInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,14 +15,19 @@ public class DataPointsTableModel extends AbstractTableModel {
 
     private final List<MappingTableRow> mappingTableRows;
 
-    public DataPointsTableModel(List<DatapointsAndMetadataResponse> edisonPoints, String selectedSid, List<TeslaDPServiceDatapoint> listOfStationDatapoints, boolean showAllTesla, boolean ignoreGarbage) {
+    public DataPointsTableModel(List<DatapointsAndMetadataResponse> edisonPoints,
+            String selectedSid, List<TeslaDPServiceDatapoint> listOfStationDatapoints,
+            boolean showAllTesla,
+            boolean ignoreGarbage,
+            boolean useRegEx,
+            String edisonFilter) {
         super();
 
         List<DatapointsAndMetadataResponse> filteredList = new ArrayList<>();
 
         for (DatapointsAndMetadataResponse point : edisonPoints) {
 
-            if (!isEdisonGarbage(point)) {
+            if (matchesEdisonFilter(point, edisonFilter, ignoreGarbage, useRegEx)) {
                 filteredList.add(point);
             }
 
@@ -85,12 +87,14 @@ public class DataPointsTableModel extends AbstractTableModel {
                     tableRow.setTeslaName("Ignore");
                     tableRow.setMapStatus(EnumMapStatus.Overridden);
                 } else if (!overriddenName.contentEquals("?")) {
-                    for (TeslaDPServiceDatapoint tdp : listOfStationDatapoints) {
-                        if (tdp.getShortName().contentEquals(overriddenName)) {
-                            tableRow.setTeslaName(tdp.getShortName());
-                            tableRow.setTeslaID(tdp.getPointType());
-                            tableRow.setTeslaID(tdp.getId());
-                            tableRow.setMapStatus(EnumMapStatus.Overridden);
+                    if (listOfStationDatapoints != null) {
+                        for (TeslaDPServiceDatapoint tdp : listOfStationDatapoints) {
+                            if (tdp.getShortName().contentEquals(overriddenName)) {
+                                tableRow.setTeslaName(tdp.getShortName());
+                                tableRow.setTeslaID(tdp.getPointType());
+                                tableRow.setTeslaID(tdp.getId());
+                                tableRow.setMapStatus(EnumMapStatus.Overridden);
+                            }
                         }
                     }
                 }
@@ -98,14 +102,31 @@ public class DataPointsTableModel extends AbstractTableModel {
         }
     }
 
-    /*
-    OEWATCHDOG = Deleted and handled with alarm logic
-    OptimumControl = OptimizationControlDisabled
-    EDGEMODE = Deleted in favor of CLGMODE
-    ChillerCount = Deleted
-    EDGEREADY = Deleted in favor of CLGMODE (I think?)
-    BASCommunicationFailure = COMLOSSBAS
-     */
+    private boolean matchesEdisonFilter(DatapointsAndMetadataResponse edisonPoint, String filter, boolean ignoreGarbage, boolean useRegEx) {
+
+        if (ignoreGarbage && isEdisonGarbage(edisonPoint)) {
+            return false;
+        }
+
+        if (filter.length() == 0) {
+            return true;
+        }
+
+        if (!useRegEx && edisonPoint.getName().contains(filter)) {
+            return true;
+        }
+
+        if (useRegEx) {
+            Pattern r = Pattern.compile(filter);
+            Matcher m = r.matcher(edisonPoint.getName());
+            if (m.find()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private String getTeslaNameOverride(String edisonName) {
 
         Map<String, String> overrides = new HashMap<>();
