@@ -50,7 +50,7 @@ public class TeslaLoginClient {
         nvps.add(new BasicNameValuePair("content-type", "application/json"));
 
         Map<String, String> postBody = new HashMap<>();
-        postBody.put("grantType", "password");
+        postBody.put("grant_type", "password");
         postBody.put("email", user.getEmail());
         postBody.put("password", user.getPassword());
 

@@ -102,7 +102,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         fillQueryParametersPanel();
         fillEdisonSidsDropdown();
 
-        selectedBaseURL = EnumTeslaBaseURLs.LocalHost;
+        selectedBaseURL = EnumTeslaBaseURLs.Ninja;
         selectedUser = EnumTeslaUsers.DevOps;
         fillTeslasHostsDropdown();
         fillUsersDropdown();
@@ -162,7 +162,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         for (String url : EnumTeslaBaseURLs.getURLs()) {
             jComboBoxTeslaHosts.addItem(url);
         }
-        this.jComboTeslaUsers.setSelectedItem(selectedBaseURL);
+        this.jComboBoxTeslaHosts.setSelectedItem(selectedBaseURL.getURL());
 
         this.jComboBoxTeslaHosts.addActionListener(new ActionListener() {
 
