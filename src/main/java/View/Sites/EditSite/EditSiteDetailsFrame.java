@@ -6,7 +6,7 @@ import Model.DataModels.Datapoints.DatapointHistoriesQueryParams;
 import Model.DataModels.Datapoints.DatapointHistoriesResponse;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
 import Model.DataModels.Datapoints.EnumAggregationType;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.Graph.EdisonNode;
 import Model.DataModels.Graph.EnumGraphNodeTypes;
 import Model.DataModels.Graph.GetChildrenResponse;
@@ -754,8 +754,8 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
     }
 
     private void fillHistoryResolutionDropdown() {
-        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumResolutions.getNames().toArray());
-        EnumResolutions res = EnumResolutions.MINUTE5;
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumEdisonResolutions.getNames().toArray());
+        EnumEdisonResolutions res = EnumEdisonResolutions.MINUTE5;
         this.jComboBoxHistoryResolution.setModel(comboBoxModel);
         this.jComboBoxHistoryResolution.setSelectedIndex(res.getDropDownIndex());
         this.jComboBoxHistoryResolution.setEnabled(true);
@@ -1074,9 +1074,9 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
     }
 
     public void fillSiteTrendResolutionsDropdown() {
-        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumResolutions.getNames().toArray());
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumEdisonResolutions.getNames().toArray());
         this.jComboBoxSiteTrendResolutions.setModel(comboBoxModel);
-        this.jComboBoxSiteTrendResolutions.setSelectedIndex(EnumResolutions.MINUTE5.getDropDownIndex());
+        this.jComboBoxSiteTrendResolutions.setSelectedIndex(EnumEdisonResolutions.MINUTE5.getDropDownIndex());
         this.jComboBoxSiteTrendResolutions.setEnabled(true);
     }
 
@@ -3967,7 +3967,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         String startDateString = this.jTextFieldSiteTrendStartTime.getText();
         String endDateString = this.jTextFieldSiteTrendEndTime.getText();
 
-        EnumResolutions res = EnumResolutions.getResolutionFromName((String) this.jComboBoxSiteTrendResolutions.getSelectedItem());
+        EnumEdisonResolutions res = EnumEdisonResolutions.getResolutionFromName((String) this.jComboBoxSiteTrendResolutions.getSelectedItem());
 
         SiteTrendAndKPIRequest siteTrendReq = new SiteTrendAndKPIRequest(
                 DateTime.parse(startDateString, fmt),
@@ -4080,7 +4080,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
 
         if (pointsToQuery.size() > 0) {
             String resString = (String) jComboBoxHistoryResolution.getSelectedItem();
-            EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
+            EnumEdisonResolutions res = EnumEdisonResolutions.getResolutionFromName(resString);
 
             EnumAggregationType aggType = EnumAggregationType.NORMAL;
             if (jCheckBoxSum.isSelected()) {

@@ -39,7 +39,7 @@ public class HistoryTableCellRenderer extends DefaultTableCellRenderer {
 
         if (value == null) {
             color = Color.lightGray;
-            value = "---";
+            value = "-null ret-";
         } else if (value instanceof String) {
             color = Color.WHITE;
             String temp = (String) value;

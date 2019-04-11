@@ -1,7 +1,7 @@
 package Model.RestClient;
 
 import Model.DataModels.Datapoints.DatapointHistoriesResponse;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.Datapoints.simulator.DGArgs;
 import Model.DataModels.Datapoints.simulator.Patterns.LinearPattern;
 import Model.DataModels.Datapoints.simulator.Patterns.SawPattern;
@@ -710,7 +710,7 @@ public class StationsModel extends java.util.Observable {
         worker.execute();
     }
 
-    private HistoryPushPoint getHistoryPushPoint(EnumGraphNodeTypes scope, EnumResolutions res, DateTime intervalStart, DateTime intervalEnd, DGTableRow tableRow) {
+    private HistoryPushPoint getHistoryPushPoint(EnumGraphNodeTypes scope, EnumEdisonResolutions res, DateTime intervalStart, DateTime intervalEnd, DGTableRow tableRow) {
 
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
@@ -805,7 +805,7 @@ public class StationsModel extends java.util.Observable {
         return hpp;
     }
 
-    private List<String> getTimeStamps(EnumResolutions res, DateTime start, DateTime end) {
+    private List<String> getTimeStamps(EnumEdisonResolutions res, DateTime start, DateTime end) {
 
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         List<String> timeStamps = new ArrayList<>();

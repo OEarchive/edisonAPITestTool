@@ -6,7 +6,7 @@ import Model.DataModels.Datapoints.DatapointHistoriesQueryParams;
 import Model.DataModels.Datapoints.DatapointHistoriesResponse;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
 import Model.DataModels.Datapoints.EnumAggregationType;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.PropertyChangeNames;
 import Model.RestClient.OEResponse;
 import View.Sites.EditSite.A_History.DatapointListTable.DatapointsListTableModel;

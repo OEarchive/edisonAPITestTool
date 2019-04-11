@@ -1,6 +1,6 @@
 package Model.DataModels.Datapoints.simulator;
 
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
@@ -11,7 +11,7 @@ public class DGArgs {
     private final String stationId;
     private final String stationName;
     private final String sendingSid;
-    private EnumResolutions res;
+    private EnumEdisonResolutions res;
 
     public DGArgs(
             DateTime startDate,
@@ -19,7 +19,7 @@ public class DGArgs {
             String stationId,
             String stationName,
             String sendingSid,
-            EnumResolutions res
+            EnumEdisonResolutions res
     ) {
         this.startDate = startDate;
         this.endDate = endDate;
@@ -57,11 +57,11 @@ public class DGArgs {
         return sendingSid;
     }
 
-    public EnumResolutions getRes() {
+    public EnumEdisonResolutions getRes() {
         return res;
     }
 
-    public void setRes(EnumResolutions res) {
+    public void setRes(EnumEdisonResolutions res) {
         this.res = res;
     }
 

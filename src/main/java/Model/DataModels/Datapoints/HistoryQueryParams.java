@@ -13,11 +13,11 @@ public class HistoryQueryParams {
 
     private final DateTime start;
     private final DateTime end;
-    private final EnumResolutions resolution;
+    private final EnumEdisonResolutions resolution;
     private final List<String> points;
     private final EnumAggregationType aggType;
     
-    public HistoryQueryParams( DateTime start, DateTime end, EnumResolutions resolution, List<String> points, EnumAggregationType aggType ){
+    public HistoryQueryParams( DateTime start, DateTime end, EnumEdisonResolutions resolution, List<String> points, EnumAggregationType aggType ){
         
         this.start = start;
         this.end = end;

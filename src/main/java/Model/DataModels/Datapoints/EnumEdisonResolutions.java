@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public enum EnumResolutions {
+public enum EnumEdisonResolutions {
     MINUTE("minute", 0),
     MINUTE5("fiveMinutes", 1),
     HOUR("hour", 2),
@@ -17,7 +17,7 @@ public enum EnumResolutions {
     private final String friendlyName;
     private final int dropDownIndex;
 
-    EnumResolutions(String name, int dropDownIndex) {
+    EnumEdisonResolutions(String name, int dropDownIndex) {
         this.friendlyName = name;
         this.dropDownIndex = dropDownIndex;
 
@@ -33,14 +33,14 @@ public enum EnumResolutions {
 
     static public List<String> getNames() {
         List<String> names = new ArrayList<>();
-        for (EnumResolutions res : EnumResolutions.values()) {
+        for (EnumEdisonResolutions res : EnumEdisonResolutions.values()) {
             names.add(res.getFriendlyName());
         }
         return names;
     }
     
-    static public EnumResolutions getResolutionFromName( String name ){
-        for (EnumResolutions res : EnumResolutions.values()) {
+    static public EnumEdisonResolutions getResolutionFromName( String name ){
+        for (EnumEdisonResolutions res : EnumEdisonResolutions.values()) {
             if( res.getFriendlyName().compareTo(name) == 0 ){
                 return res;
             }

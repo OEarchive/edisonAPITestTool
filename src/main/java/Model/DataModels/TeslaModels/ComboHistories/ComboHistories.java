@@ -3,6 +3,7 @@ package Model.DataModels.TeslaModels.ComboHistories;
 import Model.DataModels.Datapoints.DatapointHistoriesResponse;
 import Model.DataModels.TeslaModels.TeslaHistoryResults;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,8 @@ public class ComboHistories {
                 timestamps.add(teslaTimeStamp);
             }
         }
+        
+        Collections.sort(timestamps);
 
         //create the names pair ====================
         Map< String, Integer> teslaNameToIndexMap = new HashMap<>();
@@ -115,7 +118,7 @@ public class ComboHistories {
             for (ComboHistoryPointNamePair pointNamePair : pointNamePairs) {
 
                 //get the edsion value
-                Object edisonValue = "?";
+                Object edisonValue = "nodata";
                 if (tempEdisonTimeStampToValuesMap.containsKey(ts)) {
                     List<Object> pointValues = tempEdisonTimeStampToValuesMap.get(ts);
                     int edisonPointIndex = edisonPointNameToIndexMap.get(pointNamePair.getEdisonName());
@@ -123,7 +126,7 @@ public class ComboHistories {
                 }
 
                 //get the tesla value
-                Object teslaValue = "?";
+                Object teslaValue = "nodata";
                 if (historyResults.getTimeStampToValuesArray().containsKey(ts)) {
                     List<Object> teslaValues = historyResults.getTimeStampToValuesArray().get(ts);
                     int teslaPointIndex2 = teslaNameToIndexMap.get(pointNamePair.getTeslaName());

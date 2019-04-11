@@ -1,4 +1,3 @@
-
 package View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryTable;
 
 import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
@@ -6,7 +5,6 @@ import Model.DataModels.TeslaModels.TeslaHistoryResults;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.joda.time.DateTime;
-
 
 public class HistoryTableModel extends AbstractTableModel {
 
@@ -24,12 +22,17 @@ public class HistoryTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int col) {
-        if( col == 0){
+        if (col == 0) {
             return "TimeStamp";
         }
-        else {
-            return historyResults.getAllPointNames().get(col-1);
-        }
+
+        int index = col - 1;
+        
+        String decorator = (index%2==0)? "(E)" : "(T)";
+
+        String colName = historyResults.getAllPointNames().get(col - 1) + decorator;
+        return colName;
+
     }
 
     @Override
@@ -42,15 +45,13 @@ public class HistoryTableModel extends AbstractTableModel {
         Object val = "?";
 
         DateTime timeStamp = historyResults.getTimestamps().get(rowIndex);
-        
-        if( columnIndex == 0 ){
+
+        if (columnIndex == 0) {
             val = timeStamp;
-        }
-        else{
-            
-           
-            List< Object> values = ( List< Object> )historyResults.getTimeStampToAllValuesArray().get(timeStamp);
-            val = values.get(columnIndex-1);
+        } else {
+
+            List< Object> values = (List< Object>) historyResults.getTimeStampToAllValuesArray().get(timeStamp);
+            val = values.get(columnIndex - 1);
         }
 
         return val;

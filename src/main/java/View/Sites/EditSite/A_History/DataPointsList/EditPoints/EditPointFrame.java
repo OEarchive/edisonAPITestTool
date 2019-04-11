@@ -2,7 +2,7 @@ package View.Sites.EditSite.A_History.DataPointsList.EditPoints;
 
 import Controller.OptiCxAPIController;
 import Model.DataModels.Datapoints.DatapointMetadata;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import View.CommonLibs.MapTableCellRenderer;
 import View.CommonLibs.MapTableModel;
 import View.CommonLibs.TagsTableCellRenderer;
@@ -59,8 +59,8 @@ public class EditPointFrame extends javax.swing.JFrame implements PropertyChange
     }
     
     private void fillResolutionDropdown() {
-        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumResolutions.getNames().toArray());
-        EnumResolutions res = EnumResolutions.MINUTE5;
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumEdisonResolutions.getNames().toArray());
+        EnumEdisonResolutions res = EnumEdisonResolutions.MINUTE5;
         this.jComboBoxDefaultRes.setModel(comboBoxModel);
         this.jComboBoxDefaultRes.setSelectedIndex(res.getDropDownIndex());
         this.jComboBoxDefaultRes.setEnabled(true);

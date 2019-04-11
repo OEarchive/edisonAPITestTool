@@ -1,7 +1,7 @@
 
 import Model.DataModels.Customers.Customer;
 import Model.DataModels.Datapoints.EnumAggregationType;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.Datapoints.GetDatapointHistoryResponse;
 import Model.DataModels.Datapoints.HistoryQueryDataPointValues;
 import Model.DataModels.Datapoints.HistoryQueryParams;

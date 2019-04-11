@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -32,7 +33,7 @@ public class TeslaHistoryResults {
             int timeStampsIndex = 0;
             for (String timeStamp : ldp.getTimestamps()) {
 
-                DateTime ts = DateTime.parse(timeStamp, zzFormat);
+                DateTime ts = DateTime.parse(timeStamp, zzFormat).withZone(DateTimeZone.UTC);
 
                 if (!timeStamps.contains(ts)) {
                     timeStamps.add(ts);

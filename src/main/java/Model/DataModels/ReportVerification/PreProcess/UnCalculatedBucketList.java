@@ -1,7 +1,7 @@
 
 package Model.DataModels.ReportVerification.PreProcess;
 
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.ReportVerification.CalcPointClassification.EnumCalcPointFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import org.joda.time.format.DateTimeFormatter;
 public final class UnCalculatedBucketList {
     
     private final EnumCalcPointFilter bucketListType;
-    private final EnumResolutions bucketResolution;
+    private final EnumEdisonResolutions bucketResolution;
     private final int numOfDays;
     private final Map< DateTime, UnCalculatedBucket> bucketDateToBucketMap;
     private final PreProcessMaps ppMaps;
@@ -32,7 +32,7 @@ public final class UnCalculatedBucketList {
     
     public UnCalculatedBucketList( 
             EnumCalcPointFilter bucketListType,
-            EnumResolutions bucketResolution,
+            EnumEdisonResolutions bucketResolution,
             int numOfDays,
             DateTimeZone siteTimeZone,
             PreProcessMaps ppMaps ){
@@ -151,7 +151,7 @@ public final class UnCalculatedBucketList {
         return siteTimeZone;
     }
     
-    public EnumResolutions getBucketResolution(){
+    public EnumEdisonResolutions getBucketResolution(){
         return bucketResolution;
     }
 

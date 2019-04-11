@@ -2,7 +2,7 @@ package Model.DataModels.Datapoints.simulator;
 
 import Controller.OptiCxAPIController;
 import Model.DataModels.Datapoints.DatapointMetadata;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.Stations.HistoryPushObject;
 import Model.DataModels.Stations.HistoryPushPoint;
 import java.beans.PropertyChangeEvent;
@@ -16,7 +16,7 @@ import org.joda.time.format.DateTimeFormatter;
 public class HistoryPusher implements PropertyChangeListener {
 
     private final OptiCxAPIController controller;
-    private final EnumResolutions res;
+    private final EnumEdisonResolutions res;
     private final DateTime start;
     private final DateTime end;
     
@@ -32,7 +32,7 @@ public class HistoryPusher implements PropertyChangeListener {
 
     public HistoryPusher(
             OptiCxAPIController controller,
-            EnumResolutions res, 
+            EnumEdisonResolutions res, 
             DateTime start, 
             DateTime end, 
             
@@ -61,7 +61,7 @@ public class HistoryPusher implements PropertyChangeListener {
 
     }
 
-    private int getMinutes(EnumResolutions res) {
+    private int getMinutes(EnumEdisonResolutions res) {
         switch (res) {
             case MINUTE:
                 return 1;

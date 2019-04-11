@@ -3,7 +3,7 @@ package Model.RestClient;
 import Model.DataModels.Datapoints.DatapointHistoriesQueryParams;
 import Model.DataModels.Datapoints.DatapointHistoriesResponse;
 import Model.DataModels.Datapoints.EnumAggregationType;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.Stations.StationStatusResponse;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
@@ -362,7 +362,7 @@ public class TeslaAPIModel extends java.util.Observable {
                 querySid,
                 pushStartTime,
                 pushEndTime,
-                EnumResolutions.MINUTE5,
+                EnumEdisonResolutions.MINUTE5,
                 true,
                 edisonPointNames,
                 EnumAggregationType.NORMAL);

@@ -27,6 +27,16 @@ public class ComboHistoryPointNamePair {
     public String getEdisonName() {
         return this.edisonName;
     }
+    
+    
+    public String getEdisonDecorated(){
+        return this.edisonName + "(E)";
+    }
+
+    
+    public String getTeslaDecorated(){
+        return this.teslaName + "(T)";
+    }
 
 }
 

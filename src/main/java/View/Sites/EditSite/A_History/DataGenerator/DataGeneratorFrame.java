@@ -4,7 +4,7 @@ import Model.DataModels.Datapoints.simulator.DGArgs;
 import Controller.OptiCxAPIController;
 import Model.DataModels.Datapoints.DatapointMetadata;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.Datapoints.simulator.EnumPattern;
 import Model.DataModels.Datapoints.simulator.EnumPeriod;
 import Model.DataModels.Datapoints.simulator.EnumPointType;
@@ -604,7 +604,7 @@ public class DataGeneratorFrame extends javax.swing.JFrame implements PropertyCh
                 args.setEndDate(endDate);
 
                 String resString = (String) this.jComboBoxResolution.getSelectedItem();
-                EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
+                EnumEdisonResolutions res = EnumEdisonResolutions.getResolutionFromName(resString);
                 args.setRes(res);
 
                 jProgressBar.setMaximum(args.getNumberOfHours());
@@ -756,9 +756,9 @@ public class DataGeneratorFrame extends javax.swing.JFrame implements PropertyCh
     // End of variables declaration//GEN-END:variables
 
     public final void fillResolutionsDropdown() {
-        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumResolutions.getNames().toArray());
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumEdisonResolutions.getNames().toArray());
         this.jComboBoxResolution.setModel(comboBoxModel);
-        this.jComboBoxResolution.setSelectedIndex(EnumResolutions.MINUTE5.getDropDownIndex());
+        this.jComboBoxResolution.setSelectedIndex(EnumEdisonResolutions.MINUTE5.getDropDownIndex());
         this.jComboBoxResolution.setEnabled(true);
     }
 

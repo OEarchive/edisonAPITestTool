@@ -4,8 +4,9 @@ import Controller.OptiCxAPIController;
 import Model.DataModels.Datapoints.DatapointHistoriesQueryParams;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
 import Model.DataModels.Datapoints.EnumAggregationType;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
+import Model.DataModels.TeslaModels.EnumComboResolutions;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.EnumTeslaResolutions;
 import Model.DataModels.TeslaModels.EnumTeslaUsers;
@@ -147,8 +148,8 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     }
 
     private void fillResolutionDropdown() {
-        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumTeslaResolutions.getNames().toArray());
-        EnumTeslaResolutions res = EnumTeslaResolutions.FIVEMINUTE;
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumComboResolutions.getNames().toArray());
+        EnumComboResolutions res = EnumComboResolutions.FIVEMINUTE;
         this.jComboBoxResolution.setModel(comboBoxModel);
         this.jComboBoxResolution.setSelectedIndex(res.getDropDownIndex());
         this.jComboBoxResolution.setEnabled(true);
@@ -870,8 +871,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
             if (pointsToQuery.size() > 0) {
                 String resString = (String) jComboBoxResolution.getSelectedItem();
-                EnumResolutions res = EnumResolutions.MINUTE5;
-                //EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
+                EnumComboResolutions res = EnumComboResolutions.getResolutionFromName(resString);
 
                 EnumAggregationType aggType = EnumAggregationType.NORMAL;
                 //if (jCheckBoxSum.isSelected()) {
@@ -886,7 +886,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 for (String sid : pointsToQuery.keySet()) {
                     List<String> listOfPointNames = pointsToQuery.get(sid);
                     DatapointHistoriesQueryParams params = new DatapointHistoriesQueryParams(
-                            sid, startAt, endAt, res, false, listOfPointNames, aggType); //true = sparse data flag
+                            sid, startAt, endAt, res.getEdisonResolution(), false, listOfPointNames, aggType); //true = sparse data flag
                     listOfParams.add(params);
                 }
                 
@@ -900,11 +900,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                     ids.add(dpServicePoint.getTeslaID());
                 }
 
-
-                String teslaRes = (String) jComboBoxResolution.getSelectedItem();
                 String timeZone = jTextFieldTimeZone.getText();
 
-                TeslaHistoryRequest historyRequest = new TeslaHistoryRequest(ids, startAt, endAt, teslaRes, timeZone);
+                TeslaHistoryRequest historyRequest = new TeslaHistoryRequest(ids, startAt, endAt, res.getTeslaResolution().getName(), timeZone);
 
                 controller.getTeslaAndEdisonHistory( listOfParams, historyRequest  );
 

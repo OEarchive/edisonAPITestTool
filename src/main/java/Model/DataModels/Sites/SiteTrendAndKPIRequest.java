@@ -1,6 +1,6 @@
 package Model.DataModels.Sites;
 
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import org.joda.time.DateTime;
@@ -11,12 +11,12 @@ public class SiteTrendAndKPIRequest {
 
     private DateTime start;
     private DateTime end;
-    private EnumResolutions resolution;
+    private EnumEdisonResolutions resolution;
 
     public SiteTrendAndKPIRequest(
             DateTime start,
             DateTime end,
-            EnumResolutions resolution
+            EnumEdisonResolutions resolution
     ) {
         this.start = start;
         this.end = end;

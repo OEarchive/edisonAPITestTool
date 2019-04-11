@@ -5,7 +5,7 @@ import Model.DataModels.Datapoints.DatapointHistoriesQueryParams;
 import Model.DataModels.Datapoints.DatapointHistoriesResponse;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
 import Model.DataModels.Datapoints.EnumAggregationType;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.Graph.EnumGraphNodeTypes;
 import Model.DataModels.ReportVerification.CalcPointClassification.EnumCalcPointFilter;
 import Model.DataModels.ReportVerification.CalcPointClassification.AssociatedPoints;
@@ -356,8 +356,8 @@ public final class ReportVerificationFrame extends javax.swing.JFrame implements
     }
 
     private void fillHistoryResolutionDropdown() {
-        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumResolutions.getNames().toArray());
-        EnumResolutions res = EnumResolutions.MINUTE5;
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumEdisonResolutions.getNames().toArray());
+        EnumEdisonResolutions res = EnumEdisonResolutions.MINUTE5;
         this.jComboBoxResolution.setModel(comboBoxModel);
         this.jComboBoxResolution.setSelectedIndex(res.getDropDownIndex());
         this.jComboBoxResolution.setEnabled(true);
@@ -1008,11 +1008,11 @@ public final class ReportVerificationFrame extends javax.swing.JFrame implements
             //TODO: Check this w/ the date range
             //EnumCalcPointMinimumResolution rrr = selectedCalculatedPointEnum.getMinResolution();
             String resString = (String) jComboBoxResolution.getSelectedItem();
-            EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
+            EnumEdisonResolutions res = EnumEdisonResolutions.getResolutionFromName(resString);
 
             ReportHistoryQueryParams reportHistoryParams = new ReportHistoryQueryParams();
             reportHistoryParams.addQuery(getHistoryParams(mainPointsToQuery, res, EnumAggregationType.NORMAL));
-            reportHistoryParams.addQuery(getHistoryParams(pointsToQuery, EnumResolutions.MINUTE5, EnumAggregationType.NORMAL));
+            reportHistoryParams.addQuery(getHistoryParams(pointsToQuery, EnumEdisonResolutions.MINUTE5, EnumAggregationType.NORMAL));
 
             controller.getHistoryForReportVerification(reportHistoryParams);
             //this.jButtonHistoryChart.setEnabled(true);
@@ -1022,7 +1022,7 @@ public final class ReportVerificationFrame extends javax.swing.JFrame implements
 
     }//GEN-LAST:event_jButtonRunQueryActionPerformed
 
-    private List<DatapointHistoriesQueryParams> getHistoryParams(Map<String, List<String>> pointsToQuery, EnumResolutions res, EnumAggregationType aggType) {
+    private List<DatapointHistoriesQueryParams> getHistoryParams(Map<String, List<String>> pointsToQuery, EnumEdisonResolutions res, EnumAggregationType aggType) {
 
         boolean showSparseDate = this.jCheckBoxSparse.isSelected();
 
@@ -1175,7 +1175,7 @@ public final class ReportVerificationFrame extends javax.swing.JFrame implements
             EnumCalcPointFilter bucketListType = EnumCalcPointFilter.getEnumFromPointName(bucketTypeName);
 
             String resString = (String) jComboBoxResolution.getSelectedItem();
-            EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
+            EnumEdisonResolutions res = EnumEdisonResolutions.getResolutionFromName(resString);
 
             UnCalculatedBucketList uncalculatedBucketList = new UnCalculatedBucketList(
                     bucketListType,

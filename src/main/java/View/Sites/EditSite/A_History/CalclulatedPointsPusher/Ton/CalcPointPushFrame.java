@@ -3,7 +3,7 @@ package View.Sites.EditSite.A_History.CalclulatedPointsPusher.Ton;
 import Controller.OptiCxAPIController;
 import Model.DataModels.Datapoints.DatapointMetadata;
 import Model.DataModels.Datapoints.EnumAggregationType;
-import Model.DataModels.Datapoints.EnumResolutions;
+import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.Datapoints.GetDatapointHistoryResponse;
 import Model.DataModels.Datapoints.HistoryQueryParams;
 import Model.DataModels.Datapoints.simulator.DGArgs;
@@ -119,8 +119,8 @@ public class CalcPointPushFrame extends javax.swing.JFrame implements PropertyCh
     }
 
     private void fillResolutionDropdown() {
-        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumResolutions.getNames().toArray());
-        EnumResolutions res = EnumResolutions.MINUTE5;
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumEdisonResolutions.getNames().toArray());
+        EnumEdisonResolutions res = EnumEdisonResolutions.MINUTE5;
         this.jComboBoxResolutions.setModel(comboBoxModel);
         this.jComboBoxResolutions.setSelectedIndex(res.getDropDownIndex());
         this.jComboBoxResolutions.setEnabled(true);
@@ -632,7 +632,7 @@ public class CalcPointPushFrame extends javax.swing.JFrame implements PropertyCh
 
         if (listOfPoints.size() > 0) {
             String resString = (String) jComboBoxResolutions.getSelectedItem();
-            EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
+            EnumEdisonResolutions res = EnumEdisonResolutions.getResolutionFromName(resString);
 
             /*
              EnumAggregationType aggType = EnumAggregationType.NORMAL;
@@ -724,7 +724,7 @@ public class CalcPointPushFrame extends javax.swing.JFrame implements PropertyCh
                 DateTime end = DateTime.parse(endDateString).withZone(DateTimeZone.UTC);
                 
                 String resString = (String) this.jComboBoxResolutions.getSelectedItem();
-                EnumResolutions res = EnumResolutions.getResolutionFromName(resString);
+                EnumEdisonResolutions res = EnumEdisonResolutions.getResolutionFromName(resString);
                 
                 DGArgs args = new DGArgs(start, end, site.getStationID(), site.getStationID(), site.getSid() + ".st:1", res);
                 
