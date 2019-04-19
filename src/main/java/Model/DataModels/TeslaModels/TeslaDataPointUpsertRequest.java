@@ -35,6 +35,12 @@ public class TeslaDataPointUpsertRequest {
                     System.out.println("bad date!!!");
                 }
                 Object val = history.getValues().get(tsIndex);
+                
+                if( val instanceof Boolean){
+                    Boolean tempBool = (Boolean) val;
+                    val = (tempBool)? 1.0 : 0.0;
+                }
+                
                 tsIndex++;
 
                 MappingTableRow mtr = edisonNameToMappingTableRowMap.get(history.getName());

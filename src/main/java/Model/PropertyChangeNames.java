@@ -165,7 +165,7 @@ public enum PropertyChangeNames {
     TeslaStationsListReturned("TeslaStationsListReturned"),
     TeslaStationInfoRetrieved("TeslaStationInfoRetrieved"),
     TeslaStationDatapointsReturned("TeslaStationDatapointsReturned"),
-    TeslaBatchPushed("TeslaBatchPushed"),
+    TeslaIntervalPushed("TeslaIntervalPushed"),
     TeslaPushComplete("TeslaPushComplete"),
     TeslaSparsePushComplete("TeslaSparsePushComplete"),
     TeslaCustomerCreated("TeslaCustomerCreated"),

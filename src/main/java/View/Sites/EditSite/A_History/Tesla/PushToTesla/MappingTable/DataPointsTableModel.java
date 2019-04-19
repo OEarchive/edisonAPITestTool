@@ -104,7 +104,7 @@ public class DataPointsTableModel extends AbstractTableModel {
 
     private boolean matchesEdisonFilter(DatapointsAndMetadataResponse edisonPoint, String filter, boolean ignoreGarbage, boolean useRegEx) {
 
-        if (ignoreGarbage && isEdisonGarbage(edisonPoint)) {
+        if (ignoreGarbage && isEdisonCOVPoint(edisonPoint)) {
             return false;
         }
 
@@ -154,7 +154,7 @@ public class DataPointsTableModel extends AbstractTableModel {
 
     }
 
-    private boolean isEdisonGarbage(DatapointsAndMetadataResponse edisonPoint) {
+    private boolean isEdisonCOVPoint(DatapointsAndMetadataResponse edisonPoint) {
 
         String filter = ".*_COV$";
 

@@ -1,16 +1,13 @@
-
 package Model.DataModels.TeslaModels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-
 public class TeslaStationInfo {
-    
 
     @JsonProperty("id")
     private String stationId;
-    
+
     @JsonProperty("name")
     private String name;
 
@@ -25,6 +22,9 @@ public class TeslaStationInfo {
 
     @JsonProperty("siteId")
     private String siteId;
+
+    @JsonProperty("salesforceId")
+    private String salesforceId;
 
     @JsonProperty("commissionedAt")
     private String commissionedAt;
@@ -74,7 +74,7 @@ public class TeslaStationInfo {
     public String getStationId() {
         return stationId;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -93,6 +93,10 @@ public class TeslaStationInfo {
 
     public String getSiteId() {
         return siteId;
+    }
+
+    public String getSalesforceId() {
+        return salesforceId;
     }
 
     public String getcommissionedAt() {

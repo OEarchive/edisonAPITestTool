@@ -307,7 +307,7 @@ public class TeslaAPIModel extends java.util.Observable {
                         if (pullPushResponse.responseCode != 201) {
                             System.out.println("could not pull / push");
                         }
-                        pcs.firePropertyChange(PropertyChangeNames.TeslaBatchPushed.getName(), null, 1);
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaIntervalPushed.getName(), null, 1);
                         startPushIndex += maxPointsPerPush;
                     }
 
@@ -376,8 +376,12 @@ public class TeslaAPIModel extends java.util.Observable {
             if (dpr.size() > 0) {
                 TeslaDataPointUpsertRequest tdpu = new TeslaDataPointUpsertRequest(dpr, edisonNameToMappingTableRowMap);
                 OEResponse teslaPutResponse = teslaStationClient.putHistory(tdpu);
+                if (teslaPutResponse.responseCode == 422) {
+                    System.out.println( "unprocessable entity" );
+                    return teslaPutResponse;
+                }
                 
-                if (teslaPutResponse.responseCode >= 300) {
+                if (teslaPutResponse.responseCode == 401) {
                         System.out.println( "getting a new token. was:" );
                         System.out.println( teslaRestClientCommon.getOAuthToken() );
                         String newToken = teslaLoginClient.getNewToken();

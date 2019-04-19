@@ -32,7 +32,7 @@ public class TeslaRestClientCommon {
     static Logger logger = LoggerFactory.getLogger(RestClientCommon.class.getName());
 
     private String oauthToken;
-    private RequestsResponses rrs;
+    private final RequestsResponses rrs;
 
     public TeslaRestClientCommon(RequestsResponses rrs) {
         this.rrs = rrs;
@@ -98,7 +98,7 @@ public class TeslaRestClientCommon {
             retVal.objSize = responseString.length();
             retVal.responseObject = responseString;
             rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString, oauthToken));
-        } else if (responseString != null && responseString.length() > 0) {
+        } else if (responseString.length() > 0) {
             rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, responseString, oauthToken));
         } else {
             rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.GET, retVal.responseCode, url, (String) retVal.responseObject, oauthToken));
@@ -150,8 +150,7 @@ public class TeslaRestClientCommon {
                 if( addToken ){
                     msg += "token: " + oauthToken;
                 }
-                
-                System.out.println("bad status");
+                System.out.println(msg);
             }
 
             if (resp.responseCode < 300) {

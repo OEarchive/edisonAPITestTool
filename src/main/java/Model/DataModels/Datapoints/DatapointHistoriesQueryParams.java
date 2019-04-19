@@ -34,7 +34,7 @@ public class DatapointHistoriesQueryParams {
           
     public String getQueryParamsString() throws UnsupportedEncodingException{
         
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         String startDateStr = start.toString(fmt);
         String endDateStr = end.toString(fmt);
         

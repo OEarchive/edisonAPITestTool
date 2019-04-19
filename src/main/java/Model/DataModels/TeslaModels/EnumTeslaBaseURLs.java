@@ -6,7 +6,7 @@ import java.util.List;
 public enum EnumTeslaBaseURLs {
     LocalHost("http://localhost/v1"),
     Ninja("https://api.optimumenergy.ninja/v1"),
-    Prod("https://api.optimumenergy.ninja/v1");
+    Prod("https://api.optimumenergyco.com/v1");
 
     private String url;
 
