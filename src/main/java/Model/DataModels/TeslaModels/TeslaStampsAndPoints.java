@@ -18,10 +18,10 @@ public class TeslaStampsAndPoints {
         this.pointsMap = new HashMap<>();
 
         int pointIndex = 0;
-        for (String pointName : historyResults.getAllPointNames()) {
+        for (String pointName : historyResults.getFlatPointNames()) {
             List<Object> values = new ArrayList<>();
             for (DateTime ts : historyResults.getTimestamps()) {
-                values.add(historyResults.getTimeStampToAllValuesArray().get(ts).get(pointIndex));
+                values.add(historyResults.getFlatTimestampsToValuesMap().get(ts).get(pointIndex));
             }
 
             pointsMap.put(pointName, values);

@@ -20,7 +20,7 @@ public class TeslaHistoryStats {
         this.pointNameToStatsMap = new HashMap<>();
         
         
-        pointNames = historyResults.getAllPointNames();
+        pointNames = historyResults.getFlatPointNames();
 
         Map<String, List<Object> > uNameToValuesMap = new HashMap<>();
         int pointIndex = 0;
@@ -29,7 +29,7 @@ public class TeslaHistoryStats {
             
             List<Object> values = new ArrayList<>();
             for( DateTime ts : historyResults.getTimestamps() ){
-                List<Object> valuesAtThisTime = historyResults.getTimeStampToAllValuesArray().get(ts);
+                List<Object> valuesAtThisTime = historyResults.getFlatTimestampsToValuesMap().get(ts);
                 values.add( valuesAtThisTime.get(pointIndex));
             }
             

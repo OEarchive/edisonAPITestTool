@@ -20,6 +20,9 @@ public class ComboHistories {
     private final List<ComboHistoryPointNamePair> pointNamePairs;
     private final Map<DateTime, List<ComboHistoryPointValuePair>> timestampsToValuesMap;
 
+    private final List<String> flatPointNames;
+    private final Map< DateTime, List<Object>> flatTimestampsToValuesMap;
+
     public ComboHistories(
             List<DatapointHistoriesResponse> datapointHistoriesResponse,
             TeslaHistoryResults historyResults) {
@@ -78,7 +81,7 @@ public class ComboHistories {
                 timestamps.add(teslaTimeStamp);
             }
         }
-        
+
         Collections.sort(timestamps);
 
         //create the names pair ====================
@@ -143,6 +146,30 @@ public class ComboHistories {
 
             timestampsToValuesMap.put(ts, listOfValuePairs);
         }
+
+        //make flat list and map
+        flatPointNames = new ArrayList<>();
+
+        for (ComboHistoryPointNamePair namePair : pointNamePairs) {
+            flatPointNames.add(namePair.getEdisonName() + "(E)");
+            flatPointNames.add(namePair.getTeslaName() + "(T)");
+        }
+
+        flatTimestampsToValuesMap = new HashMap<>();
+
+        for (DateTime ts : this.timestamps) {
+            List<Object> values = new ArrayList<>();
+            List<ComboHistoryPointValuePair> valuePairs = timestampsToValuesMap.get(ts);
+
+            for (ComboHistoryPointValuePair vp : valuePairs) {
+                values.add(vp.getEdisonValue());
+                values.add(vp.getTeslaValue());
+
+            }
+
+            flatTimestampsToValuesMap.put(ts, values);
+        }
+
     }
 
     private boolean setTeslaNameIfThere(String teslaName) {
@@ -167,37 +194,14 @@ public class ComboHistories {
         return this.timestampsToValuesMap;
     }
 
-    public List<String> getAllPointNames() {
+    public List<String> getFlatPointNames() {
 
-        List<String> allPointNames = new ArrayList<>();
-
-        for (ComboHistoryPointNamePair namePair : pointNamePairs) {
-            allPointNames.add(namePair.getEdisonName());
-            allPointNames.add(namePair.getTeslaName());
-        }
-
-        return allPointNames;
+        return flatPointNames;
     }
 
-    //historyResults.getTimeStampToValuesArray().get(timeStamp);
-    public Map< DateTime, List<Object>> getTimeStampToAllValuesArray() {
+    public Map< DateTime, List<Object>> getFlatTimestampsToValuesMap() {
 
-        Map< DateTime, List<Object>> allValues = new HashMap<>();
-
-        for (DateTime ts : this.timestamps) {
-            List<Object> values = new ArrayList<>();
-            List<ComboHistoryPointValuePair> valuePairs = timestampsToValuesMap.get(ts);
-
-            for (ComboHistoryPointValuePair vp : valuePairs) {
-                values.add(vp.getEdisonValue());
-                values.add(vp.getTeslaValue());
-
-            }
-
-            allValues.put(ts, values);
-        }
-
-        return allValues;
+        return flatTimestampsToValuesMap;
     }
 
 }
