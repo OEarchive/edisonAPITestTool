@@ -35,6 +35,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,8 +183,8 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private void initTeslaModel(EnumTeslaBaseURLs baseURL, EnumTeslaUsers selectedUser) {
         controller.teslaLogin(baseURL, selectedUser);
     }
-    
-    public void clearTeslaSitesDropdown(){
+
+    public void clearTeslaSitesDropdown() {
         for (ActionListener oldListener : jComboBoxTeslaStations.getActionListeners()) {
             this.jComboBoxTeslaStations.removeActionListener(oldListener);
         }
@@ -304,6 +305,28 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
     }
 
+    private List<String> getSpecialPointNames() {
+
+        return Arrays.asList(new String[]{
+            "CDWSTSPNotOptimized",
+            "CHWDPSPNotOptimized",
+            "CH1CHWSTSPNotOptimized",
+            "CH2CHWSTSPNotOptimized",
+            "CH3CHWSTSPNotOptimized",
+            "CT1SPDNotOptimized",
+            "CT2SPDNotOptimized",
+            "PCHWP1SPDNotOptimized",
+            "PCHWP2SPDNotOptimized",
+            "PCHWP3SPDNotOptimized",
+            "SCHWP1SPDNotOptimized",
+            "SCHWP2SPDNotOptimized",
+            "SCHWP3SPDNotOptimized",
+            "CDWP1SPDNotOptimized",
+            "CDWP2SPDNotOptimized",
+            "CDWP3SPDNotOptimized"});
+
+    }
+
     private void fixPointsTableColumnWidths(JTable t) {
         for (int i = 0; i < t.getColumnCount(); i++) {
             EnumDatpointsTableColumns colEnum = EnumDatpointsTableColumns.getColumnFromColumnNumber(i);
@@ -392,6 +415,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         jComboBoxEdisonSids = new javax.swing.JComboBox<>();
         jCheckBoxIngoreGarbage = new javax.swing.JCheckBox();
         jCheckBoxShowAllTesla = new javax.swing.JCheckBox();
+        jButtonSpecialSelect = new javax.swing.JButton();
         jLabelPointCounts = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -686,6 +710,13 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
         jCheckBoxShowAllTesla.setText("Show All Tesla");
 
+        jButtonSpecialSelect.setText("Special Select");
+        jButtonSpecialSelect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSpecialSelectActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -699,14 +730,17 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                         .addComponent(jTextFieldFilter)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonClearFilter))
-                    .addComponent(jComboBoxEdisonSids, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jComboBoxEdisonSids, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonSpecialSelect))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jCheckBoxUseRegEx)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBoxShowAllTesla)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBoxIngoreGarbage)))
-                .addContainerGap())
+                        .addComponent(jCheckBoxIngoreGarbage)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -722,7 +756,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                     .addComponent(jCheckBoxShowAllTesla)
                     .addComponent(jCheckBoxIngoreGarbage))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBoxEdisonSids, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxEdisonSids, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonSpecialSelect))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -735,11 +771,11 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabelPointCounts)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -748,7 +784,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 .addContainerGap()
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelPointCounts))
         );
@@ -761,7 +797,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1229, Short.MAX_VALUE)
+                .addComponent(jSplitPane1)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -953,6 +989,21 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         initTeslaModel(selectedBaseURL, selectedUser);
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
+    private void jButtonSpecialSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSpecialSelectActionPerformed
+
+        List<String> specialPoints = getSpecialPointNames();
+        
+        DataPointsTableModel tableModel = (DataPointsTableModel) (jTableDataPoints.getModel());
+        
+        for (int row = 0; row < jTableDataPoints.getRowCount(); row++ ) {
+            int modelRowNumber = jTableDataPoints.convertRowIndexToModel(row);
+            MappingTableRow dataRow = tableModel.getRow(modelRowNumber);
+            if( specialPoints.contains( dataRow.getTeslaName() ) ){
+                jTableDataPoints.addRowSelectionInterval(row, row);
+            }
+        }
+    }//GEN-LAST:event_jButtonSpecialSelectActionPerformed
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         String propName = evt.getPropertyName();
@@ -972,10 +1023,10 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         } else if (propName.equals(PropertyChangeNames.TeslaEdisonHistoryReturned.getName())) {
 
             historyResults = (ComboHistories) evt.getNewValue();
-            historyStats = new TeslaHistoryStats(historyResults);
+            //historyStats = new TeslaHistoryStats(historyResults);
             int prec = (int) jSpinnerPrec.getModel().getValue();
             fillHistoryTable(prec);
-            fillTeslaStatsTable(prec);
+            //fillTeslaStatsTable(prec);
 
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
             this.dispose();
@@ -989,6 +1040,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JButton jButtonClearFilter;
     private javax.swing.JButton jButtonLogin;
     private javax.swing.JButton jButtonQuery;
+    private javax.swing.JButton jButtonSpecialSelect;
     private javax.swing.JCheckBox jCheckBoxIngoreGarbage;
     private javax.swing.JCheckBox jCheckBoxShowAllTesla;
     private javax.swing.JCheckBox jCheckBoxUseRegEx;
