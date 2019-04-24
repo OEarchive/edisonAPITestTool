@@ -152,6 +152,24 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         }
         jComboBoxTeslaHosts.setSelectedItem(this.selectedBaseURL.getURL());
 
+        this.jComboBoxTeslaHosts.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JComboBox<String> combo = (JComboBox<String>) event.getSource();
+                String name = (String) combo.getSelectedItem();
+                selectedBaseURL = EnumTeslaBaseURLs.getHostFromName(name);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        //clearStationsTable();
+                        //clearDatapointsTable();
+                    }
+                });
+
+            }
+        });
+
     }
 
     public void fillUsersDropdown() {
@@ -159,6 +177,24 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumTeslaUsers.getUsernames().toArray());
         this.jComboBoxTeslaUsers.setModel(comboBoxModel);
         this.jComboBoxTeslaUsers.setSelectedItem(selectedUser.name());
+
+        this.jComboBoxTeslaUsers.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JComboBox<String> combo = (JComboBox<String>) event.getSource();
+                String name = (String) combo.getSelectedItem();
+                selectedUser = EnumTeslaUsers.getUserFromName(name);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        //clearStationsTable();
+                        //clearDatapointsTable();
+                    }
+                });
+
+            }
+        });
     }
 
     private void initTeslaModel(EnumTeslaBaseURLs baseURL, EnumTeslaUsers selectedUser) {
@@ -320,8 +356,8 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         if (mappedRow.getMapStatus() == EnumMapStatus.NoTeslaInfo) {
             return false;
         }
-        
-        if( mappedRow.getTeslaType().contentEquals("calculated")){
+
+        if (mappedRow.getTeslaType().contentEquals("calculated")) {
             return false;
         }
 

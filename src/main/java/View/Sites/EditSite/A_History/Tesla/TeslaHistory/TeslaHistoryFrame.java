@@ -4,21 +4,17 @@ import Controller.OptiCxAPIController;
 import Model.DataModels.Datapoints.DatapointHistoriesQueryParams;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
 import Model.DataModels.Datapoints.EnumAggregationType;
-import Model.DataModels.Datapoints.EnumEdisonResolutions;
 import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
 import Model.DataModels.TeslaModels.EnumComboResolutions;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
-import Model.DataModels.TeslaModels.EnumTeslaResolutions;
 import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
-import Model.DataModels.TeslaModels.TeslaHistoryResults;
 import Model.DataModels.TeslaModels.TeslaHistoryStats;
 import Model.DataModels.TeslaModels.TeslaStampsAndPoints;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.PropertyChangeNames;
-import View.Sites.EditSite.A_History.DatapointListTable.DatapointsListTableModel;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableCellRenderer;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableModel;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.EnumDatpointsTableColumns;
@@ -39,9 +35,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.swing.AbstractButton;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -78,7 +71,6 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private String filter = "";
 
     private DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
-    //   DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
     public static TeslaHistoryFrame getInstance(
             final OptiCxAPIController controller, DateTime startTime, DateTime endTime, List<DatapointsAndMetadataResponse> edisonPoints) {
@@ -125,7 +117,8 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
         fillResolutionDropdown();
 
-        String timeZone = "America/Los_Angeles";
+        //String timeZone = "America/Los_Angeles";
+        String timeZone = "UTC";
         jTextFieldTimeZone.setText(timeZone);
 
         endTime = DateTime.now().withZone(DateTimeZone.UTC);
@@ -167,6 +160,24 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             jComboBoxTeslaHosts.addItem(url);
         }
         this.jComboBoxTeslaHosts.setSelectedItem(selectedBaseURL.getURL());
+
+        this.jComboBoxTeslaHosts.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JComboBox<String> combo = (JComboBox<String>) event.getSource();
+                String name = (String) combo.getSelectedItem();
+                selectedBaseURL = EnumTeslaBaseURLs.getHostFromName(name);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        //clearStationsTable();
+                        //clearDatapointsTable();
+                    }
+                });
+
+            }
+        });
     }
 
     public void fillUsersDropdown() {
@@ -177,6 +188,24 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             jComboTeslaUsers.addItem(user);
         }
         this.jComboTeslaUsers.setSelectedItem(selectedUser.name());
+
+        this.jComboTeslaUsers.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JComboBox<String> combo = (JComboBox<String>) event.getSource();
+                String name = (String) combo.getSelectedItem();
+                selectedUser = EnumTeslaUsers.getUserFromName(name);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        //clearStationsTable();
+                        //clearDatapointsTable();
+                    }
+                });
+
+            }
+        });
 
     }
 
@@ -214,6 +243,8 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        clearPointsTable();
+                        clearHistoryTable();
                         JComboBox<String> combo = (JComboBox<String>) event.getSource();
                         final String name = (String) combo.getSelectedItem();
                         controller.getTeslaStationDatapoints(stationNameToStationIdMap.get(name));
@@ -284,6 +315,13 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         });
 
         jComboBoxEdisonSids.setSelectedIndex(0);
+
+    }
+
+    private void clearPointsTable() {
+
+        this.jTableDataPoints.setDefaultRenderer(Object.class, new DefaultTableCellRenderer());
+        this.jTableDataPoints.setModel(new DefaultTableModel());
 
     }
 
@@ -870,12 +908,8 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
 
             clearHistoryTable();
 
-            //2018-02-01T00:00:00.000-05:00
-            DateTime startAt = DateTime.parse(jTextFieldStartDate.getText(), zzFormat);
-            DateTime endAt = DateTime.parse(jTextFieldEndDate.getText(), zzFormat);
-
-            DateTime startAt2 = DateTime.parse(jTextFieldStartDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
-            DateTime endAt2 = DateTime.parse(jTextFieldEndDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
+            DateTime startAt = DateTime.parse(jTextFieldStartDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
+            DateTime endAt = DateTime.parse(jTextFieldEndDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
 
             List<String> ids = new ArrayList<>();
 
@@ -986,19 +1020,20 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         clearTeslaSitesDropdown();
         jComboBoxTeslaStations.setEnabled(false);
         clearHistoryTable();
+        clearPointsTable();
         initTeslaModel(selectedBaseURL, selectedUser);
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
     private void jButtonSpecialSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSpecialSelectActionPerformed
 
         List<String> specialPoints = getSpecialPointNames();
-        
+
         DataPointsTableModel tableModel = (DataPointsTableModel) (jTableDataPoints.getModel());
-        
-        for (int row = 0; row < jTableDataPoints.getRowCount(); row++ ) {
+
+        for (int row = 0; row < jTableDataPoints.getRowCount(); row++) {
             int modelRowNumber = jTableDataPoints.convertRowIndexToModel(row);
             MappingTableRow dataRow = tableModel.getRow(modelRowNumber);
-            if( specialPoints.contains( dataRow.getTeslaName() ) ){
+            if (specialPoints.contains(dataRow.getTeslaName())) {
                 jTableDataPoints.addRowSelectionInterval(row, row);
             }
         }
