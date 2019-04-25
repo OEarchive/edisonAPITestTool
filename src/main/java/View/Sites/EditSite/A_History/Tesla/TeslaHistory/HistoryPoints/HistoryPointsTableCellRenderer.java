@@ -1,22 +1,22 @@
-package View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable;
 
-import Model.DataModels.TeslaModels.EnumMapStatus;
+package View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryPoints;
+
 import Model.DataModels.TeslaModels.MappingTableRow;
+import Model.DataModels.TeslaModels.EnumMapStatus;
 import java.awt.Color;
 import java.awt.Component;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class DataPointsTableCellRenderer extends DefaultTableCellRenderer {
+
+public class HistoryPointsTableCellRenderer extends DefaultTableCellRenderer {
 
     final Color limeGreen;
 
-    public DataPointsTableCellRenderer() {
+    public HistoryPointsTableCellRenderer() {
 
         limeGreen = new Color(204, 255, 204);
 
@@ -35,8 +35,8 @@ public class DataPointsTableCellRenderer extends DefaultTableCellRenderer {
         setBackground(isSelected ? color : color);
         this.setHorizontalAlignment(JLabel.LEFT);
 
-        EnumDatpointsTableColumns enumColumn = EnumDatpointsTableColumns.getColumnFromColumnNumber(column);
-        DataPointsTableModel model = (DataPointsTableModel) table.getModel();
+        EnumHistoryPointsTableColumns enumColumn = EnumHistoryPointsTableColumns.getColumnFromColumnNumber(column);
+        HistoryPointsTableModel model = (HistoryPointsTableModel) table.getModel();
         int modelIndex = table.convertRowIndexToModel(row);
         MappingTableRow mappedRow = model.getRow(modelIndex);
 

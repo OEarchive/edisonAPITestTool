@@ -1,5 +1,5 @@
 
-package View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable;
+package Model.DataModels.TeslaModels;
 
 
 public enum EnumMapStatus {

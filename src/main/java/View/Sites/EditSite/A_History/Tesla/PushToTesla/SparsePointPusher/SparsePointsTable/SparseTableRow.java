@@ -1,7 +1,7 @@
 
 package View.Sites.EditSite.A_History.Tesla.PushToTesla.SparsePointPusher.SparsePointsTable;
 
-import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.EnumMapStatus;
+import Model.DataModels.TeslaModels.EnumMapStatus;
 
 
 public class SparseTableRow {

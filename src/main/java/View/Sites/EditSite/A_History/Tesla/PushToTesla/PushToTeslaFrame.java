@@ -10,7 +10,7 @@ import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTa
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableModel;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
-import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.EnumMapStatus;
+import Model.DataModels.TeslaModels.EnumMapStatus;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.PopupMenuForDataPointsTable;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.SparsePointPusher.SparsePointPusherFrame;
 import java.awt.Color;

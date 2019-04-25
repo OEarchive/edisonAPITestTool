@@ -2,7 +2,7 @@ package View.Sites.EditSite.A_History.Tesla.PushToTesla.SparsePointPusher.Sparse
 
 import Model.DataModels.TeslaModels.MappingTableRow;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableModel;
-import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.EnumMapStatus;
+import Model.DataModels.TeslaModels.EnumMapStatus;
 import java.awt.Color;
 import java.awt.Component;
 import java.text.DecimalFormat;

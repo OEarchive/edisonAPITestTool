@@ -1,9 +1,10 @@
-package View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable;
 
-import Model.DataModels.TeslaModels.EnumMapStatus;
-import Model.DataModels.TeslaModels.MappingTableRow;
+package View.Sites.EditSite.A_History.Tesla.TeslaHistory.HistoryPoints;
+
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
+import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
+import Model.DataModels.TeslaModels.EnumMapStatus;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +13,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.table.AbstractTableModel;
 
-public class DataPointsTableModel extends AbstractTableModel {
+
+public class HistoryPointsTableModel extends AbstractTableModel {
 
     private final List<MappingTableRow> mappingTableRows;
 
-    public DataPointsTableModel(List<DatapointsAndMetadataResponse> edisonPoints,
+    public HistoryPointsTableModel(List<DatapointsAndMetadataResponse> edisonPoints,
             String selectedSid, List<TeslaDPServiceDatapoint> listOfStationDatapoints,
             boolean showAllTesla,
             boolean ignoreGarbage,
@@ -24,41 +26,19 @@ public class DataPointsTableModel extends AbstractTableModel {
             String edisonFilter) {
         super();
 
-        List<DatapointsAndMetadataResponse> filteredList = new ArrayList<>();
+        List<MappingTableRow> allRows = getAllRows(edisonPoints, listOfStationDatapoints );
 
-        for (DatapointsAndMetadataResponse point : edisonPoints) {
+        List<MappingTableRow> filteredList = new ArrayList<>();
+        for (MappingTableRow row : allRows) {
 
-            if (matchesEdisonFilter(point, edisonFilter, ignoreGarbage, useRegEx)) {
-                filteredList.add(point);
+            if (matchesFilter(row, edisonFilter, ignoreGarbage, useRegEx )) {
+                filteredList.add(row);
             }
 
         }
 
-        List<MappingTableRow> allRows = new ArrayList<>();
 
-        for (DatapointsAndMetadataResponse edisonPoint : filteredList) {
-            MappingTableRow row = new MappingTableRow();
-            row.setEdisonShortName(edisonPoint.getName());
-            row.setEdisonSid(edisonPoint.getSid());
-            allRows.add(row);
-        }
-
-        if (listOfStationDatapoints != null) {
-            for (TeslaDPServiceDatapoint teslaPoint : listOfStationDatapoints) {
-                setMappingTableRow(teslaPoint, allRows, showAllTesla);
-            }
-
-        }
-
-        mappingTableRows = new ArrayList<>();
-        for (MappingTableRow tableRow : allRows) {
-
-            if (selectedSid.compareTo("All") == 0 || tableRow.getEdsionSid().compareTo(selectedSid) == 0 || tableRow.getEdsionSid().compareTo("?") == 0) {
-                mappingTableRows.add(tableRow);
-            }
-        }
-
-        for (MappingTableRow tableRow : mappingTableRows) {
+        for (MappingTableRow tableRow : filteredList) {
 
             if (tableRow.getEdsionSid().contentEquals("?") && tableRow.getTeslaID().contentEquals("?")) {
                 tableRow.setMapStatus(EnumMapStatus.NoInfo);
@@ -77,7 +57,19 @@ public class DataPointsTableModel extends AbstractTableModel {
             }
 
         }
-
+        
+        mappingTableRows = new ArrayList<>();
+        for (MappingTableRow tableRow : filteredList) {
+            if (selectedSid.compareTo("All") == 0 || tableRow.getEdsionSid().compareTo(selectedSid) == 0 || tableRow.getEdsionSid().compareTo("?") == 0) {
+                
+                if( tableRow.getMapStatus() == EnumMapStatus.NoEdisonInfo && !showAllTesla ){
+                    continue;
+                }
+                mappingTableRows.add(tableRow);
+            }
+        }
+        
+        
         for (MappingTableRow tableRow : mappingTableRows) {
 
             if (tableRow.getMapStatus() == EnumMapStatus.NoTeslaInfo) {
@@ -102,27 +94,75 @@ public class DataPointsTableModel extends AbstractTableModel {
             }
         }
     }
+    
+    private List<MappingTableRow> getAllRows( List<DatapointsAndMetadataResponse> edisonPoints, List<TeslaDPServiceDatapoint> listOfStationDatapoints ){
+                    List<MappingTableRow> allRows = new ArrayList<>();
 
-    private boolean matchesEdisonFilter(DatapointsAndMetadataResponse edisonPoint, String filter, boolean ignoreGarbage, boolean useRegEx) {
-
-        if (ignoreGarbage && isEdisonCOVPoint(edisonPoint)) {
-            return false;
+        for (DatapointsAndMetadataResponse edisonPoint : edisonPoints) {
+            MappingTableRow row = new MappingTableRow();
+            row.setEdisonShortName(edisonPoint.getName());
+            row.setEdisonSid(edisonPoint.getSid());
+            allRows.add(row);
         }
 
+        if (listOfStationDatapoints != null) {
+            for (TeslaDPServiceDatapoint teslaPoint : listOfStationDatapoints) {
+                setTeslaInfoOrAddRow(teslaPoint, allRows);
+            }
+        }
+        
+        return allRows;
+        
+    }
+
+
+
+    private boolean matchesFilter(MappingTableRow row, String filter, boolean ignoreGarbage, boolean useRegEx ) {
+
+        if (ignoreGarbage && isEdisonCOVPoint(row.getEdsionShortName())) {
+            return false;
+        }
+        
         if (filter.length() == 0) {
             return true;
         }
+        
+        if( matchesOnName( useRegEx, filter, row.getEdsionShortName() )){
+            return true;
+        }
+        
+        if( matchesOnName( useRegEx, filter, row.getTeslaName() )){
+            return true;
+        }
 
-        if (!useRegEx && edisonPoint.getName().contains(filter)) {
+        return false;
+    }
+
+    private boolean matchesOnName(boolean useRegEx, String filter, String pointName) {
+
+        if (!useRegEx && pointName.contains(filter)) {
             return true;
         }
 
         if (useRegEx) {
             Pattern r = Pattern.compile(filter);
-            Matcher m = r.matcher(edisonPoint.getName());
+            Matcher m = r.matcher(pointName);
             if (m.find()) {
                 return true;
             }
+        }
+
+        return false;
+    }
+    
+    private boolean isEdisonCOVPoint(String pointName) {
+
+        String filter = ".*_COV$";
+
+        Pattern r = Pattern.compile(filter);
+        Matcher m = r.matcher(pointName);
+        if (m.find()) {
+            return true;
         }
 
         return false;
@@ -155,20 +195,9 @@ public class DataPointsTableModel extends AbstractTableModel {
 
     }
 
-    private boolean isEdisonCOVPoint(DatapointsAndMetadataResponse edisonPoint) {
 
-        String filter = ".*_COV$";
 
-        Pattern r = Pattern.compile(filter);
-        Matcher m = r.matcher(edisonPoint.getName());
-        if (m.find()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private void setMappingTableRow(TeslaDPServiceDatapoint teslaPoint, List<MappingTableRow> allRows, boolean showAllTesla) {
+    private void setTeslaInfoOrAddRow(TeslaDPServiceDatapoint teslaPoint, List<MappingTableRow> allRows) {
 
         for (MappingTableRow mtr : allRows) {
             if (mtr.getEdsionShortName().compareToIgnoreCase(teslaPoint.getShortName()) == 0) {
@@ -179,13 +208,11 @@ public class DataPointsTableModel extends AbstractTableModel {
             }
         }
 
-        if (showAllTesla) { //&& teslaPoint.getPointType().contentEquals("raw")) {
-            MappingTableRow row = new MappingTableRow();
-            row.setTeslaName(teslaPoint.getShortName());
-            row.setTeslaID(teslaPoint.getId());
-            row.setTeslaType(teslaPoint.getPointType());
-            allRows.add(row);
-        }
+        MappingTableRow row = new MappingTableRow();
+        row.setTeslaName(teslaPoint.getShortName());
+        row.setTeslaID(teslaPoint.getId());
+        row.setTeslaType(teslaPoint.getPointType());
+        allRows.add(row);
 
     }
 
@@ -211,19 +238,19 @@ public class DataPointsTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int col) {
-        return EnumDatpointsTableColumns.getColumnFromColumnNumber(col).getFriendlyName();
+        return EnumHistoryPointsTableColumns.getColumnFromColumnNumber(col).getFriendlyName();
     }
 
     @Override
     public int getColumnCount() {
-        return EnumDatpointsTableColumns.getColumnNames().size();
+        return EnumHistoryPointsTableColumns.getColumnNames().size();
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object val = "?";
 
-        EnumDatpointsTableColumns enumCol = EnumDatpointsTableColumns.getColumnFromColumnNumber(columnIndex);
+        EnumHistoryPointsTableColumns enumCol = EnumHistoryPointsTableColumns.getColumnFromColumnNumber(columnIndex);
 
         MappingTableRow dataRow = mappingTableRows.get(rowIndex);
 
