@@ -1058,10 +1058,10 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         } else if (propName.equals(PropertyChangeNames.TeslaEdisonHistoryReturned.getName())) {
 
             historyResults = (ComboHistories) evt.getNewValue();
-            //historyStats = new TeslaHistoryStats(historyResults);
+            historyStats = new TeslaHistoryStats(historyResults);
             int prec = (int) jSpinnerPrec.getModel().getValue();
             fillHistoryTable(prec);
-            //fillTeslaStatsTable(prec);
+            fillTeslaStatsTable(prec);
 
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
             this.dispose();

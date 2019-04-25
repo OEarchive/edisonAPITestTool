@@ -28,16 +28,14 @@ public class HistoryTableModel extends AbstractTableModel {
 
         int index = col - 1;
         
-        String decorator = (index%2==0)? "(E)" : "(T)";
-
-        String colName = historyResults.getAllPointNames().get(col - 1) + decorator;
+        String colName = historyResults.getFlatPointNames().get(col - 1);
         return colName;
 
     }
 
     @Override
     public int getColumnCount() {
-        return historyResults.getAllPointNames().size() + 1;
+        return historyResults.getFlatPointNames().size() + 1;
     }
 
     @Override
@@ -50,7 +48,7 @@ public class HistoryTableModel extends AbstractTableModel {
             val = timeStamp;
         } else {
 
-            List< Object> values = (List< Object>) historyResults.getTimeStampToAllValuesArray().get(timeStamp);
+            List< Object> values = (List< Object>) historyResults.getFlatTimestampsToValuesMap().get(timeStamp);
             val = values.get(columnIndex - 1);
         }
 
