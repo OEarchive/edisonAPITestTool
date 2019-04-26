@@ -16,12 +16,16 @@ import org.joda.time.format.DateTimeFormatter;
 public class HistoryTableCellRenderer extends DefaultTableCellRenderer {
 
     final int prec;
-    final Color limeGreen;
     private final DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
 
+    final Color pastelBlue = new Color(190,242,244);
+    final Color pastelYellow = new Color(247,247,32);
+    final Color pastelGreen = new Color(188,239,93);
+    final Color pastelRed = new Color(239,155,155);
+    final Color pastelGrey = new Color(15,11,12);
+    
     public HistoryTableCellRenderer( int prec ) {
         this.prec = prec;
-        limeGreen = new Color(204, 255, 204);
     }
 
     @Override
@@ -38,14 +42,19 @@ public class HistoryTableCellRenderer extends DefaultTableCellRenderer {
         this.setHorizontalAlignment(JLabel.LEFT);
 
         if (value == null) {
-            color = Color.lightGray;
+            color = pastelGrey;
             value = "-null ret-";
         } else if (value instanceof String) {
             color = Color.WHITE;
             String temp = (String) value;
-            if (temp.compareTo("NaN") == 0) {
-                value = "'NaN'";
+            if( temp.contentEquals("nodata")){
+                color = pastelYellow;
             }
+            else if (temp.compareTo("NaN") == 0) {
+                value = "'NaN'";
+                 color = pastelRed;
+            }
+            value = temp;
         } else if (value instanceof Double) {
             try {
                 String precFormatString = "#0";
@@ -58,11 +67,11 @@ public class HistoryTableCellRenderer extends DefaultTableCellRenderer {
                 value = formatter.format(value);
             } catch (Exception ex) {
                 color = Color.pink;
-                value = "oops";
+                value = "bad value";
             }
         } else if (value instanceof Boolean) {
             boolean b = (Boolean) value;
-            color = (b) ? limeGreen : Color.lightGray;
+            color = (b) ? pastelGreen : pastelBlue;
 
         } else if (value instanceof DateTime ){
             DateTime ts = (DateTime)value;

@@ -1075,7 +1075,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
             //int returnValue = jfc.showOpenDialog(null);
-            int returnValue = jfc.showSaveDialog(null);
+            int returnValue = jfc.showSaveDialog(this);
             
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 this.jButtonExportCSV.setEnabled(false);
