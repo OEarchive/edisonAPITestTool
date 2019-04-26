@@ -42,6 +42,7 @@ import Model.DataModels.Stations.StationLogHistory;
 import Model.DataModels.Stations.WizardStationStatus;
 import Model.DataModels.Stations.StationValidateQueryParams;
 import Model.DataModels.Stations.StationsHeartbeat;
+import Model.DataModels.TeslaModels.CSVMaker.CSVMaker;
 import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
@@ -2242,6 +2243,48 @@ public class OptiCxAPIModel extends java.util.Observable {
             
         };
         
+        worker.execute();
+    }
+    
+    
+        public void createCSV(final String filePath, final ComboHistories comboHistories) {
+
+        SwingWorker worker = new SwingWorker< OEResponse, Void>() {
+
+            @Override
+            public OEResponse doInBackground() throws IOException {
+
+                CSVMaker csvMaker = new CSVMaker(filePath, comboHistories);
+                boolean flag = csvMaker.makeCSV();
+
+                OEResponse results = new OEResponse();
+                results.responseCode = 200;
+                results.responseObject = flag;
+
+                return results;
+
+            }
+
+            @Override
+            public void done() {
+                try {
+                    OEResponse resp = get();
+
+                    if (resp.responseCode == 200) {
+                        boolean flag = (boolean) resp.responseObject;
+
+                        pcs.firePropertyChange(PropertyChangeNames.CSVCreated.getName(), null, flag);
+                    } else {
+                        pcs.firePropertyChange(PropertyChangeNames.ErrorResponse.getName(), null, resp);
+                    }
+                    pcs.firePropertyChange(PropertyChangeNames.RequestResponseChanged.getName(), null, getRRS());
+
+                } catch (Exception ex) {
+                    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+                    logger.error(this.getClass().getName(), ex);
+                }
+            }
+        };
         worker.execute();
     }
     

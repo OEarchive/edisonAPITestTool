@@ -106,7 +106,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         this.jTextFieldEndDate.setText(endDate.toString(zzFormat));
 
         this.jTextFieldMaxNumHoursPerPush.setText("12");
-        this.jTextFieldMaxNumPointsPerPush.setText("20");
+        this.jTextFieldMaxNumPointsPerPush.setText("50");
 
         selectedBaseURL = EnumTeslaBaseURLs.Prod;
         selectedUser = EnumTeslaUsers.ProdUser;

@@ -43,6 +43,8 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jComboBoxTeslaUsers" min="-2" pref="200" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jButtonLogin" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabelLoggedIn" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
@@ -62,6 +64,7 @@
                   <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jComboBoxTeslaUsers" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabelLoggedIn" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButtonLogin" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
@@ -180,6 +183,7 @@
     <Component class="javax.swing.JButton" name="jButtonGenerateSite">
       <Properties>
         <Property name="text" type="java.lang.String" value="Generate Site"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonGenerateSiteActionPerformed"/>
@@ -212,7 +216,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" pref="286" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="284" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -591,8 +595,16 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabelLoggedIn">
       <Properties>
-        <Property name="text" type="java.lang.String" value="*logged in*"/>
+        <Property name="text" type="java.lang.String" value="*not logged in*"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButtonLogin">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Login"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonLoginActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

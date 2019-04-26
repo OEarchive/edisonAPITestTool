@@ -31,6 +31,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,10 +41,12 @@ import javax.swing.AbstractButton;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -53,21 +56,21 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public final class TeslaHistoryFrame extends javax.swing.JFrame implements PropertyChangeListener {
-
+    
     private static TeslaHistoryFrame thisInstance;
     private final OptiCxAPIController controller;
-
+    
     private EnumTeslaBaseURLs selectedBaseURL;
     private EnumTeslaUsers selectedUser;
-
+    
     private DateTime startTime;
     private DateTime endTime;
-
+    
     private final List<DatapointsAndMetadataResponse> edisonPoints;
     private String selectedSid;
-
+    
     private List<TeslaDPServiceDatapoint> listOfStationDatapoints;
-
+    
     private ComboHistories historyResults;
     private TeslaHistoryStats historyStats;
     
@@ -75,71 +78,71 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private boolean useRegEx = false;
     private boolean showAllTesla = false;
     private boolean ignoreCOV = true;
-
+    
     private DateTimeFormatter zzFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
-
+    
     public static TeslaHistoryFrame getInstance(
             final OptiCxAPIController controller, DateTime startTime, DateTime endTime, List<DatapointsAndMetadataResponse> edisonPoints) {
-
+        
         if (thisInstance == null) {
             thisInstance = new TeslaHistoryFrame(controller, startTime, endTime, edisonPoints);
         }
         return thisInstance;
-
+        
     }
-
+    
     private TeslaHistoryFrame(OptiCxAPIController controller, DateTime startTime, DateTime endTime, List<DatapointsAndMetadataResponse> edisonPoints) {
         initComponents();
-
+        
         this.controller = controller;
-
+        
         this.startTime = startTime;
         this.endTime = endTime;
         this.edisonPoints = edisonPoints;
-
+        
         fillQueryParametersPanel();
         fillEdisonSidsDropdown();
-
+        
         selectedBaseURL = EnumTeslaBaseURLs.Prod;
         selectedUser = EnumTeslaUsers.ProdUser;
         fillTeslasHostsDropdown();
         fillUsersDropdown();
-
+        
         createAllTeslaCheckBoxListener();
         createIgnoreGarbageCheckBoxListener();
         createUseRegExCheckBoxListener();
-
+        
     }
-
+    
     @Override
     public void dispose() {
         controller.removePropChangeListener(this);
         thisInstance = null;
         super.dispose();
     }
-
+    
     public void fillQueryParametersPanel() {
         this.filter = "";
         this.jTextFieldFilter.setText(filter);
-
+        
         fillResolutionDropdown();
 
         //String timeZone = "America/Los_Angeles";
         String timeZone = "UTC";
         jTextFieldTimeZone.setText(timeZone);
-
+        
         endTime = DateTime.now().withZone(DateTimeZone.UTC);
         endTime = endTime.minusMillis(endTime.getMillisOfDay());
         startTime = endTime.plusMonths(-1);
         this.jTextFieldStartDate.setText(startTime.toString(zzFormat));
         this.jTextFieldEndDate.setText(endTime.toString(zzFormat));
-
+        
         SpinnerNumberModel spinModel = new SpinnerNumberModel(3, 0, 6, 1);
         this.jSpinnerPrec.setModel(spinModel);
         jSpinnerPrec.addChangeListener(new javax.swing.event.ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-
+                
                 if (historyResults != null && historyResults.getTimestamps().size() > 0) {
                     int prec = (int) jSpinnerPrec.getModel().getValue();
                     fillHistoryTable(prec);
@@ -147,9 +150,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 }
             }
         });
-
+        
     }
-
+    
     private void fillResolutionDropdown() {
         ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumComboResolutions.getNames().toArray());
         EnumComboResolutions res = EnumComboResolutions.FIVEMINUTE;
@@ -162,31 +165,31 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     public void fillTeslasHostsDropdown() {
         ComboBoxModel comboBoxModel = new DefaultComboBoxModel();
         this.jComboBoxTeslaHosts.setModel(comboBoxModel);
-
+        
         for (String url : EnumTeslaBaseURLs.getURLs()) {
             jComboBoxTeslaHosts.addItem(url);
         }
         this.jComboBoxTeslaHosts.setSelectedItem(selectedBaseURL.getURL());
-
+        
         this.jComboBoxTeslaHosts.addActionListener(new ActionListener() {
-
+            
             @Override
             public void actionPerformed(ActionEvent event) {
                 JComboBox<String> combo = (JComboBox<String>) event.getSource();
                 String name = (String) combo.getSelectedItem();
                 selectedBaseURL = EnumTeslaBaseURLs.getHostFromName(name);
-
+                
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         //clearStationsTable();
                         //clearDatapointsTable();
                     }
                 });
-
+                
             }
         });
     }
-
+    
     public void fillUsersDropdown() {
         ComboBoxModel comboBoxModel = new DefaultComboBoxModel();
         this.jComboTeslaUsers.setModel(comboBoxModel);
@@ -195,31 +198,31 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             jComboTeslaUsers.addItem(user);
         }
         this.jComboTeslaUsers.setSelectedItem(selectedUser.name());
-
+        
         this.jComboTeslaUsers.addActionListener(new ActionListener() {
-
+            
             @Override
             public void actionPerformed(ActionEvent event) {
                 JComboBox<String> combo = (JComboBox<String>) event.getSource();
                 String name = (String) combo.getSelectedItem();
                 selectedUser = EnumTeslaUsers.getUserFromName(name);
-
+                
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         //clearStationsTable();
                         //clearDatapointsTable();
                     }
                 });
-
+                
             }
         });
-
+        
     }
-
+    
     private void initTeslaModel(EnumTeslaBaseURLs baseURL, EnumTeslaUsers selectedUser) {
         controller.teslaLogin(baseURL, selectedUser);
     }
-
+    
     public void clearTeslaSitesDropdown() {
         for (ActionListener oldListener : jComboBoxTeslaStations.getActionListeners()) {
             this.jComboBoxTeslaStations.removeActionListener(oldListener);
@@ -227,26 +230,26 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         ComboBoxModel comboBoxModel = new DefaultComboBoxModel();
         this.jComboBoxTeslaStations.setModel(comboBoxModel);
     }
-
+    
     public void fillTeslasStationsDropdown(final List<TeslaStationInfo> stations) {
-
+        
         for (ActionListener oldListener : jComboBoxTeslaStations.getActionListeners()) {
             this.jComboBoxTeslaStations.removeActionListener(oldListener);
         }
         ComboBoxModel comboBoxModel = new DefaultComboBoxModel();
         this.jComboBoxTeslaStations.setModel(comboBoxModel);
         final Map< String, String> stationNameToStationIdMap = new HashMap<>();
-
+        
         for (TeslaStationInfo station : stations) {
             jComboBoxTeslaStations.addItem(station.getName());
             stationNameToStationIdMap.put(station.getName(), station.getStationId());
         }
-
+        
         this.jComboBoxTeslaStations.addActionListener(new ActionListener() {
-
+            
             @Override
             public void actionPerformed(final ActionEvent event) {
-
+                
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -259,16 +262,13 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 });
             }
         });
-
+        
         jComboBoxTeslaStations.setSelectedIndex(0);
-
+        
     }
-
     
-    
-
     public void createAllTeslaCheckBoxListener() {
-
+        
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
@@ -280,7 +280,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     }
     
     public void createUseRegExCheckBoxListener() {
-
+        
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
@@ -290,9 +290,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         };
         this.jCheckBoxUseRegEx.addActionListener(actionListener);
     }
-
+    
     public void createIgnoreGarbageCheckBoxListener() {
-
+        
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
@@ -302,31 +302,31 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         };
         this.jCheckBoxIngoreGarbage.addActionListener(actionListener);
     }
-
+    
     public void fillEdisonSidsDropdown() {
-
+        
         List<String> edisonSids = new ArrayList<>();
         for (DatapointsAndMetadataResponse edisonPoint : edisonPoints) {
             if (!edisonSids.contains(edisonPoint.getSid())) {
                 edisonSids.add(edisonPoint.getSid());
             }
         }
-
+        
         ComboBoxModel comboBoxModel = new DefaultComboBoxModel();
         this.jComboBoxEdisonSids.setModel(comboBoxModel);
-
+        
         jComboBoxEdisonSids.addItem("All");
         for (String sid : edisonSids) {
             jComboBoxEdisonSids.addItem(sid);
         }
-
+        
         this.jComboBoxEdisonSids.addActionListener(new ActionListener() {
-
+            
             @Override
             public void actionPerformed(ActionEvent event) {
                 JComboBox<String> combo = (JComboBox<String>) event.getSource();
                 selectedSid = (String) combo.getSelectedItem();
-
+                
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -335,20 +335,20 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 });
             }
         });
-
+        
         jComboBoxEdisonSids.setSelectedIndex(0);
-
+        
     }
-
+    
     private void clearPointsTable() {
-
+        
         this.jTableDataPoints.setDefaultRenderer(Object.class, new DefaultTableCellRenderer());
         this.jTableDataPoints.setModel(new DefaultTableModel());
-
+        
     }
-
+    
     private void fillPointsTable() {
-
+        
         this.jTableDataPoints.setDefaultRenderer(Object.class, new HistoryPointsTableCellRenderer());
         this.jTableDataPoints.setModel(new HistoryPointsTableModel(
                 edisonPoints,
@@ -362,11 +362,11 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         this.jTableDataPoints.setAutoCreateRowSorter(true);
         fixPointsTableColumnWidths(jTableDataPoints);
         setPointCounts();
-
+        
     }
-
+    
     private List<String> getSpecialPointNames() {
-
+        
         return Arrays.asList(new String[]{
             "CDWSTSPNotOptimized",
             "CHWDPSPNotOptimized",
@@ -384,9 +384,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             "CDWP1SPDNotOptimized",
             "CDWP2SPDNotOptimized",
             "CDWP3SPDNotOptimized"});
-
+        
     }
-
+    
     private void fixPointsTableColumnWidths(JTable t) {
         for (int i = 0; i < t.getColumnCount(); i++) {
             EnumHistoryPointsTableColumns colEnum = EnumHistoryPointsTableColumns.getColumnFromColumnNumber(i);
@@ -394,25 +394,25 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             column.setPreferredWidth(colEnum.getWidth());
         }
     }
-
+    
     private void setPointCounts() {
         String msg = String.format("num points: %d (%d selected)", jTableDataPoints.getRowCount(), jTableDataPoints.getSelectedRowCount());
         jLabelPointCounts.setText(msg);
     }
-
+    
     public void clearHistoryTable() {
         this.jTableHistory.setDefaultRenderer(Object.class, new DefaultTableCellRenderer());
         this.jTableHistory.setModel(new DefaultTableModel());
         this.jTableHistory.setAutoCreateRowSorter(true);
     }
-
+    
     private void fillHistoryTable(int prec) {
         this.jTableHistory.setDefaultRenderer(Object.class, new HistoryTableCellRenderer(prec));
         this.jTableHistory.setModel(new HistoryTableModel(historyResults));
         this.jTableHistory.setAutoCreateRowSorter(true);
         fixHistoryTableColumnWidths(jTableHistory);
     }
-
+    
     public void fixHistoryTableColumnWidths(JTable t) {
         for (int i = 0; i < t.getColumnCount(); i++) {
             TableColumn column = t.getColumnModel().getColumn(i);
@@ -423,14 +423,14 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             }
         }
     }
-
+    
     private void fillTeslaStatsTable(int prec) {
         this.jTableStatistics.setDefaultRenderer(Object.class, new TeslaStatsTableCellRenderer(prec));
         this.jTableStatistics.setModel(new TeslaStatsTableModel(historyStats));
         this.jTableStatistics.setAutoCreateRowSorter(true);
         fixHistoryTableColumnWidths(jTableStatistics);
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -456,6 +456,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         jScrollPane3 = new javax.swing.JScrollPane();
         jTableStatistics = new javax.swing.JTable();
         jButtonChart = new javax.swing.JButton();
+        jButtonExportCSV = new javax.swing.JButton();
         jPanel8 = new javax.swing.JPanel();
         jComboBoxTeslaHosts = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
@@ -610,6 +611,13 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
             }
         });
 
+        jButtonExportCSV.setText("Export CSV");
+        jButtonExportCSV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonExportCSVActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
@@ -618,12 +626,14 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jButtonExportCSV)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButtonChart)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSpinnerPrec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane3)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -636,7 +646,9 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                         .addComponent(jLabel1))
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButtonChart)))
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButtonChart)
+                            .addComponent(jButtonExportCSV))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -915,21 +927,21 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTableDataPointsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableDataPointsMousePressed
-
+        
         if (evt.isPopupTrigger()) {
             PopupMenuForHistoryPointsTable popup = new PopupMenuForHistoryPointsTable(evt, jTableDataPoints);
         }
     }//GEN-LAST:event_jTableDataPointsMousePressed
 
     private void jButtonQueryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonQueryActionPerformed
-
+        
         if (jTableDataPoints.getSelectedRowCount() > 0) {
-
+            
             clearHistoryTable();
-
+            
             DateTime startAt = DateTime.parse(jTextFieldStartDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
             DateTime endAt = DateTime.parse(jTextFieldEndDate.getText(), zzFormat).withZone(DateTimeZone.UTC);
-
+            
             List<String> ids = new ArrayList<>();
 
             //****************
@@ -941,7 +953,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 MappingTableRow dataRow = tableModel.getRow(modelRowNumber);
                 listOfPoints.add(dataRow);
             }
-
+            
             Map<String, List<String>> pointsToQuery = new HashMap<>();
             for (MappingTableRow pointInfo : listOfPoints) {
                 if (!pointsToQuery.containsKey(pointInfo.getEdsionSid())) {
@@ -949,11 +961,11 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                 }
                 pointsToQuery.get(pointInfo.getEdsionSid()).add(pointInfo.getEdsionShortName());
             }
-
+            
             if (pointsToQuery.size() > 0) {
                 String resString = (String) jComboBoxResolution.getSelectedItem();
                 EnumComboResolutions res = EnumComboResolutions.getResolutionFromName(resString);
-
+                
                 EnumAggregationType aggType = EnumAggregationType.NORMAL;
                 //if (jCheckBoxSum.isSelected()) {
                 //    aggType = EnumAggregationType.SUM;
@@ -979,17 +991,17 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
                     MappingTableRow dpServicePoint = model.getRow(modelIndex);
                     ids.add(dpServicePoint.getTeslaID());
                 }
-
+                
                 String timeZone = jTextFieldTimeZone.getText();
-
+                
                 TeslaHistoryRequest historyRequest = new TeslaHistoryRequest(ids, startAt, endAt, res.getTeslaResolution().getName(), timeZone);
-
+                
                 controller.getTeslaAndEdisonHistory(listOfParams, historyRequest);
-
+                
             }
         }
     }//GEN-LAST:event_jButtonQueryActionPerformed
-
+    
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         dispose();
@@ -1007,19 +1019,19 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     }//GEN-LAST:event_jButtonClearFilterActionPerformed
 
     private void jButtonChartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonChartActionPerformed
-
+        
         if (historyResults != null) {
-
+            
             DateTimeZone siteTimeZone = DateTimeZone.forID(this.jTextFieldTimeZone.getText());
             int maxPoints = 20;
-
+            
             TeslaStampsAndPoints sp = new TeslaStampsAndPoints(historyResults);
             TeslaChartFrame chartFrame = new TeslaChartFrame(controller, sp, maxPoints, siteTimeZone);
             controller.addModelListener(chartFrame);
             chartFrame.pack();
             chartFrame.setLocationRelativeTo(this);
             chartFrame.setVisible(true);
-
+            
         }
     }//GEN-LAST:event_jButtonChartActionPerformed
 
@@ -1044,11 +1056,11 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
     private void jButtonSpecialSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSpecialSelectActionPerformed
-
+        
         List<String> specialPoints = getSpecialPointNames();
-
+        
         HistoryPointsTableModel tableModel = (HistoryPointsTableModel) (jTableDataPoints.getModel());
-
+        
         for (int row = 0; row < jTableDataPoints.getRowCount(); row++) {
             int modelRowNumber = jTableDataPoints.convertRowIndexToModel(row);
             MappingTableRow dataRow = tableModel.getRow(modelRowNumber);
@@ -1058,30 +1070,49 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
         }
     }//GEN-LAST:event_jButtonSpecialSelectActionPerformed
 
+    private void jButtonExportCSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExportCSVActionPerformed
+        if (historyResults != null && historyResults.getTimestamps().size() > 0) {
+            JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+
+            //int returnValue = jfc.showOpenDialog(null);
+            int returnValue = jfc.showSaveDialog(null);
+            
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                this.jButtonExportCSV.setEnabled(false);
+                File selectedFile = jfc.getSelectedFile();
+                System.out.println(selectedFile.getAbsolutePath());
+                controller.createCSV(selectedFile.getAbsolutePath(), historyResults);
+            }
+        }
+    }//GEN-LAST:event_jButtonExportCSVActionPerformed
+    
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         String propName = evt.getPropertyName();
-
+        
         if (propName.equals(PropertyChangeNames.TeslaLoginResponseReturned.getName())) {
             controller.getTeslaStations();
-
+            
         } else if (propName.equals(PropertyChangeNames.TeslaStationsListReturned.getName())) {
             jComboBoxTeslaStations.setEnabled(true);
             List<TeslaStationInfo> stations = (List<TeslaStationInfo>) evt.getNewValue();
             fillTeslasStationsDropdown(stations);
-
+            
         } else if (propName.equals(PropertyChangeNames.TeslaStationDatapointsReturned.getName())) {
             this.listOfStationDatapoints = (List<TeslaDPServiceDatapoint>) evt.getNewValue();
             fillPointsTable();
-
+            
         } else if (propName.equals(PropertyChangeNames.TeslaEdisonHistoryReturned.getName())) {
-
+            
             historyResults = (ComboHistories) evt.getNewValue();
             historyStats = new TeslaHistoryStats(historyResults);
             int prec = (int) jSpinnerPrec.getModel().getValue();
             fillHistoryTable(prec);
             fillTeslaStatsTable(prec);
-
+            
+        } else if (propName.equals(PropertyChangeNames.CSVCreated.getName())) {
+            this.jButtonExportCSV.setEnabled(true);
+            
         } else if (propName.equals(PropertyChangeNames.LoginResponse.getName())) {
             this.dispose();
         }
@@ -1092,6 +1123,7 @@ public final class TeslaHistoryFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonChart;
     private javax.swing.JButton jButtonClearFilter;
+    private javax.swing.JButton jButtonExportCSV;
     private javax.swing.JButton jButtonLogin;
     private javax.swing.JButton jButtonQuery;
     private javax.swing.JButton jButtonSpecialSelect;

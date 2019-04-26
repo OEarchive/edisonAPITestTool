@@ -12,6 +12,7 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
 import Model.DataModels.TeslaModels.EnumTeslaUsers;
+import Model.DataModels.TeslaModels.TeslaLoginResponse;
 import Model.DataModels.Views.EnumPageViewTypes;
 import Model.DataModels.Views.ItemGroup;
 import Model.DataModels.Views.PageView;
@@ -97,14 +98,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
             public void actionPerformed(ActionEvent event) {
                 JComboBox<String> combo = (JComboBox<String>) event.getSource();
                 final String name = (String) combo.getSelectedItem();
-
                 selectedBaseURL = EnumTeslaBaseURLs.getHostFromName(name);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        initTeslaModel(selectedBaseURL, selectedUser);
-                    }
-                });
             }
         });
 
@@ -124,14 +118,6 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                 JComboBox<String> combo = (JComboBox<String>) event.getSource();
                 String name = (String) combo.getSelectedItem();
                 selectedUser = EnumTeslaUsers.getUserFromName(name);
-
-                jLabelLoggedIn.setText("NO");
-
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        initTeslaModel(selectedBaseURL, selectedUser);
-                    }
-                });
             }
         });
     }
@@ -279,6 +265,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
         jLabel8 = new javax.swing.JLabel();
         jComboBoxTeslaUsers = new javax.swing.JComboBox<>();
         jLabelLoggedIn = new javax.swing.JLabel();
+        jButtonLogin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -339,6 +326,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
         });
 
         jButtonGenerateSite.setText("Generate Site");
+        jButtonGenerateSite.setEnabled(false);
         jButtonGenerateSite.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonGenerateSiteActionPerformed(evt);
@@ -376,7 +364,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -564,7 +552,14 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
 
         jComboBoxTeslaUsers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jLabelLoggedIn.setText("*logged in*");
+        jLabelLoggedIn.setText("*not logged in*");
+
+        jButtonLogin.setText("Login");
+        jButtonLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLoginActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -589,6 +584,8 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBoxTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonLogin)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabelLoggedIn)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -603,7 +600,8 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                     .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
                     .addComponent(jComboBoxTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelLoggedIn))
+                    .addComponent(jLabelLoggedIn)
+                    .addComponent(jButtonLogin))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -636,11 +634,22 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
         controller.postCustomer(postCustomer);
     }//GEN-LAST:event_jButtonGenerateSiteActionPerformed
 
+    private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
+        jLabelLoggedIn.setText("*not logged in*");
+        this.jButtonGenerateSite.setEnabled(false);
+        initTeslaModel(selectedBaseURL, selectedUser);
+    }//GEN-LAST:event_jButtonLoginActionPerformed
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         String propName = evt.getPropertyName();
+        
+        if (propName.equals(PropertyChangeNames.TeslaLoginResponseReturned.getName())) {
+            TeslaLoginResponse loginResponse = (TeslaLoginResponse) evt.getNewValue();
+            jLabelLoggedIn.setText( loginResponse.getAccessToken().substring(0, 20) + "..." );
+            jButtonGenerateSite.setEnabled(true);
 
-        if (propName.equals(PropertyChangeNames.UIMetaDataReturned.getName())) {
+        } else if (propName.equals(PropertyChangeNames.UIMetaDataReturned.getName())) {
             try {
                 PageView pageView = (PageView) evt.getNewValue();
                 setTeslaEquipList(pageView);
@@ -711,6 +720,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonClose;
     private javax.swing.JButton jButtonGenerateSite;
+    private javax.swing.JButton jButtonLogin;
     private javax.swing.JCheckBox jCheckBoxAtomEnabled;
     private javax.swing.JCheckBox jCheckBoxBaslineEnabled;
     private javax.swing.JCheckBox jCheckBoxRegenerationAllowed;

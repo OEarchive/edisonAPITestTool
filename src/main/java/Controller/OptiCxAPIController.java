@@ -33,6 +33,7 @@ import Model.DataModels.Stations.StationLogHistory;
 import Model.DataModels.Stations.WizardStationStatus;
 import Model.DataModels.Stations.StationValidateQueryParams;
 import Model.DataModels.Stations.StationsHeartbeat;
+import Model.DataModels.TeslaModels.ComboHistories.ComboHistories;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaGenEquipment;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
@@ -695,6 +696,10 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
 
     public void postSparsePoints(TeslaDataPointUpsertRequest upsertRequest) {
         model.postSparsePoints(upsertRequest);
+    }
+    
+    public void createCSV(final String filePath, final ComboHistories comboHistories){
+        model.createCSV(filePath, comboHistories);
     }
 
     /*
