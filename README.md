@@ -1,4 +1,4 @@
-# OptiCx API GUI Testing Tool
+# OptiCx API Testing Tool
 
 ## This tool exercises the OpticCx & Tesla APIs
 
