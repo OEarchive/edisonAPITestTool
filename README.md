@@ -1,6 +1,6 @@
-#OptiCx API GUI Testing Tool
+# OptiCx API GUI Testing Tool
 
-## This tool exercises the OpticCx APIs
+## This tool exercises the OpticCx & Tesla APIs
 
 ### Dependencies
 
