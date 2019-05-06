@@ -66,14 +66,13 @@ public class EdisonCSVMaker {
                                 precFormatString = precFormatString.concat(stringOfZeros.substring(0, prec));
                             }
                             NumberFormat formatter = new DecimalFormat(precFormatString);
-                            value = formatter.format(value);
+                            String str = formatter.format(value);
+                            writer.write( str);
 
                         } catch (Exception ex) {
                             value = "oops";
                         }
 
-                        Double dee = (Double) value;
-                        writer.write(dee.toString());
                     } else if (value instanceof Integer) {
                         String str = Integer.toString((Integer) value);
                         writer.write(str);
