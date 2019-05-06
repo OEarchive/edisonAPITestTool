@@ -92,6 +92,7 @@ import View.Sites.EditSite.A_History.DatapointListTable.DataPointAssiationsTable
 import View.Sites.EditSite.A_History.DatapointListTable.DatapointsListTableModel;
 import View.Sites.EditSite.A_History.DatapointListTable.DatapointsListTableCellRenderer;
 import View.Sites.EditSite.A_History.DatapointListTable.PopupMenuForDataPointsListTable;
+import View.Sites.EditSite.A_History.DatapointListTable.SpecialPointGroups;
 import View.Sites.EditSite.A_History.Tesla.GenTeslaSiteFromEdison.GenTeslaSiteFrame;
 import View.Sites.EditSite.A_History.PushLiveData.OptimizationStatus.PushOptimizationInfoFrame;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.PushToTeslaFrame;
@@ -119,6 +120,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -136,11 +138,13 @@ import javax.swing.AbstractButton;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -533,7 +537,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jLabelUTCEndDate.setText(utcEndDate.toString(zzFormat) + " (UTC)");
          */
         reportMonth = EnumReportMonths.Jan;
-        reportYear = EnumReportYears.y2018;
+        reportYear = EnumReportYears.y2019;
         reportDateType = EnumDateTypes.MNTH;
 
         setStartAndEndDates(reportMonth, reportYear, reportDateType);
@@ -552,6 +556,33 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         mapOfSidsAndPoints.put(this.site.getSid() + ".st:1", new ArrayList<String>());
 
         controller.getDatapointsUnion(mapOfSidsAndPoints);
+    }
+
+    private void fillSpecialQueryDropdown() {
+
+        List<String> groupNames = SpecialPointGroups.getGroupNames();
+        
+        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(groupNames.toArray());
+        this.jComboBoxSpecialQueries.setModel(comboBoxModel);
+        this.jComboBoxSpecialQueries.setSelectedIndex(0);
+        this.jComboBoxSpecialQueries.setEnabled(true);
+
+        this.jComboBoxSpecialQueries.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JComboBox<String> combo = (JComboBox<String>) event.getSource();
+                String name = (String) combo.getSelectedItem();
+                reportMonth = EnumReportMonths.getMonthFromName(name);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        setStartAndEndDates(reportMonth, reportYear, reportDateType);
+                    }
+                });
+
+            }
+        });
     }
 
     private void fillReportMonthDropDown() {
@@ -707,19 +738,27 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
 
         List<DatapointsAndMetadataResponse> filteredList = new ArrayList<>();
 
+        String[] pointNameFilters = filter.split(" ");
+
         for (DatapointsAndMetadataResponse point : listOfMetadata) {
 
             String uName = getUName(point.getSid(), point.getName());
 
             if (filter.length() == 0) {
                 filteredList.add(point);
-            } else if (!this.jCheckBoxUseRegEx.isSelected() && uName.contains(filter)) {
-                filteredList.add(point);
-            } else if (this.jCheckBoxUseRegEx.isSelected()) {
-                Pattern r = Pattern.compile(filter);
-                Matcher m = r.matcher(uName);
-                if (m.find()) {
+                continue;
+            }
+
+            for (String pointNameFilter : Arrays.asList(pointNameFilters)) {
+
+                if (!this.jCheckBoxUseRegEx.isSelected() && uName.contains(pointNameFilter)) {
                     filteredList.add(point);
+                } else if (this.jCheckBoxUseRegEx.isSelected()) {
+                    Pattern r = Pattern.compile(pointNameFilter);
+                    Matcher m = r.matcher(uName);
+                    if (m.find()) {
+                        filteredList.add(point);
+                    }
                 }
             }
         }
@@ -1378,6 +1417,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jComboBoxReportMonth = new javax.swing.JComboBox<>();
         jComboBoxReportYear = new javax.swing.JComboBox<>();
         jComboBoxDateType = new javax.swing.JComboBox<>();
+        jButtonEdisonRepush = new javax.swing.JButton();
         jPanelSytheticJaceSettings = new javax.swing.JPanel();
         jButtonHistoryToTesla = new javax.swing.JButton();
         jButtonHistoryChart = new javax.swing.JButton();
@@ -1388,6 +1428,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jButtonOptimizationLivePush = new javax.swing.JButton();
         jButtonTeslaHistory = new javax.swing.JButton();
         jButtonReportVerification = new javax.swing.JButton();
+        jButtonCSV = new javax.swing.JButton();
         jPanelHistoryQueryResults = new javax.swing.JPanel();
         jScrollPane16 = new javax.swing.JScrollPane();
         jTableHistoryQueryResults = new javax.swing.JTable();
@@ -1413,7 +1454,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jTableDatapointsList = new javax.swing.JTable();
         jScrollPane19 = new javax.swing.JScrollPane();
         jTableDatapointsAssociations = new javax.swing.JTable();
-        jComboBoxEquipType = new javax.swing.JComboBox<>();
+        jComboBoxSpecialQueries = new javax.swing.JComboBox<>();
         jLabel33 = new javax.swing.JLabel();
         jButtonClearFilter = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
@@ -1703,6 +1744,13 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
 
         jComboBoxDateType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        jButtonEdisonRepush.setText("Edison Repush");
+        jButtonEdisonRepush.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonEdisonRepushActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelQueryParametersLayout = new javax.swing.GroupLayout(jPanelQueryParameters);
         jPanelQueryParameters.setLayout(jPanelQueryParametersLayout);
         jPanelQueryParametersLayout.setHorizontalGroup(
@@ -1762,6 +1810,8 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                             .addGroup(jPanelQueryParametersLayout.createSequentialGroup()
                                 .addComponent(jLabelHistoryLiveId)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButtonEdisonRepush)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonHistoryQuery))
                             .addGroup(jPanelQueryParametersLayout.createSequentialGroup()
                                 .addGroup(jPanelQueryParametersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1827,7 +1877,9 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                         .addGap(0, 6, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelQueryParametersLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButtonHistoryQuery)))
+                        .addGroup(jPanelQueryParametersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButtonHistoryQuery)
+                            .addComponent(jButtonEdisonRepush))))
                 .addContainerGap())
         );
 
@@ -1893,6 +1945,13 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             }
         });
 
+        jButtonCSV.setText("CSV");
+        jButtonCSV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCSVActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelSytheticJaceSettingsLayout = new javax.swing.GroupLayout(jPanelSytheticJaceSettings);
         jPanelSytheticJaceSettings.setLayout(jPanelSytheticJaceSettingsLayout);
         jPanelSytheticJaceSettingsLayout.setHorizontalGroup(
@@ -1908,15 +1967,17 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                 .addComponent(jButtonOptimizationLivePush)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonPushXLS)
-                .addGap(154, 154, 154)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonReportVerification)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
                 .addComponent(jLabel39)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextFieldHistoryMaxPoints, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonHistoryChart)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonReportVerification)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jButtonCSV)
+                .addContainerGap())
         );
         jPanelSytheticJaceSettingsLayout.setVerticalGroup(
             jPanelSytheticJaceSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1931,7 +1992,8 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                     .addComponent(jButtonOptimizationLivePush)
                     .addComponent(jButtonTeslaHistory)
                     .addComponent(jButtonReportVerification)
-                    .addComponent(jButtonPushXLS))
+                    .addComponent(jButtonPushXLS)
+                    .addComponent(jButtonCSV))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -2184,9 +2246,9 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
 
         jSplitPane1.setRightComponent(jScrollPane19);
 
-        jComboBoxEquipType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxSpecialQueries.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jLabel33.setText("EquipType");
+        jLabel33.setText("Special");
 
         jButtonClearFilter.setText("Clear Filter");
         jButtonClearFilter.addActionListener(new java.awt.event.ActionListener() {
@@ -2209,7 +2271,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel33)
                                 .addGap(13, 13, 13)
-                                .addComponent(jComboBoxEquipType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jComboBoxSpecialQueries, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonClearFilter)))
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -2222,7 +2284,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBoxEquipType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBoxSpecialQueries, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel33)
                     .addComponent(jButtonClearFilter))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2308,7 +2370,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jPanelHistory.setLayout(jPanelHistoryLayout);
         jPanelHistoryLayout.setHorizontalGroup(
             jPanelHistoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1461, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1461, Short.MAX_VALUE)
         );
         jPanelHistoryLayout.setVerticalGroup(
             jPanelHistoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -4111,16 +4173,6 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
 
         if (listOfMetadata != null && listOfMetadata.size() > 0) {
 
-            /* this was from the old repush stuff before changing button behavior to push to tesla
-            String timestamp = DateTime.now().toString();
-            RepushFrame frame = RepushFrame.getInstance(controller, timestamp, site.getStationID(), listOfDataPointHistories);
-
-            frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-            controller.addModelListener(frame);
-            frame.pack();
-            frame.setLocationRelativeTo(this);
-            frame.setVisible(true);
-             */
             PushToTeslaFrame frame = PushToTeslaFrame.getInstance(controller, siteLocalStartDate, siteLocalEndDate, listOfMetadata);
 
             frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -4223,7 +4275,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
 
         String dateString = this.jTextFieldHistoryStartDate.getText();
         siteLocalStartDate = DateTime.parse(dateString, zzFormat);
-        utcStartDate = siteLocalStartDate.withZone(DateTimeZone.UTC);
+        utcStartDate = DateTime.parse(dateString, zzFormat).withZone(DateTimeZone.UTC);
         jLabelUTCStartDate.setText(utcStartDate.toString(utcLabelFormat) + " (UTC)");
 
     }//GEN-LAST:event_jTextFieldHistoryStartDateActionPerformed
@@ -4232,7 +4284,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
 
         String dateString = this.jTextFieldHistoryEndDate.getText();
         siteLocalEndDate = DateTime.parse(dateString, zzFormat);
-        utcEndDate = siteLocalEndDate.withZone(DateTimeZone.UTC);
+        utcEndDate = DateTime.parse(dateString, zzFormat).withZone(DateTimeZone.UTC);
         jLabelUTCEndDate.setText(utcEndDate.toString(utcLabelFormat) + " (UTC)");
 
     }//GEN-LAST:event_jTextFieldHistoryEndDateActionPerformed
@@ -4370,7 +4422,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
 
         String startDateString = this.jTextFieldHistoryStartDate.getText();
         String endDateString = this.jTextFieldHistoryEndDate.getText();
-        
+
         DateTime startDate = DateTime.parse(startDateString, zzFormat);
         DateTime endDate = DateTime.parse(endDateString, zzFormat);
 
@@ -4460,6 +4512,37 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         controller.getReportsSchema(reportItem.getID());
     }//GEN-LAST:event_jTableReportsListMousePressed
 
+    private void jButtonEdisonRepushActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEdisonRepushActionPerformed
+
+        if (listOfDataPointHistories.size() > 0) {
+
+            String timestamp = DateTime.now().toString();
+            RepushFrame frame = RepushFrame.getInstance(controller, timestamp, site.getStationID(), listOfDataPointHistories);
+
+            frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            controller.addModelListener(frame);
+            frame.pack();
+            frame.setLocationRelativeTo(this);
+            frame.setVisible(true);
+        }
+
+    }//GEN-LAST:event_jButtonEdisonRepushActionPerformed
+
+    private void jButtonCSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCSVActionPerformed
+                
+        DPHistoryTableModel model = (DPHistoryTableModel)jTableHistoryQueryResults.getModel();
+        if(model.getTimeStamps().size() > 0){
+            JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+
+            if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                this.jButtonCSV.setEnabled(false);
+                File selectedFile = jfc.getSelectedFile();
+                int prec = (int) this.jSpinnerHistoryPrec.getModel().getValue();
+                controller.createEdisonCSV(selectedFile.getAbsolutePath(), prec, model.getUNames(), model.getTimeStamps(), model.getTimestampToPointNameValueMap());
+            }
+        }
+    }//GEN-LAST:event_jButtonCSVActionPerformed
+
     @Override
     public void propertyChange(PropertyChangeEvent evt
     ) {
@@ -4486,11 +4569,12 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
 
             if (!restOfThePointsReceived) {
                 restOfThePointsReceived = true;
+
                 this.getTheRestOfThePoints(listOfMetadata);
             } else {
                 fillHistoryPointsTable(jTextFieldHistoryDPFilter.getText());
                 //check clarks list
-                boolean clarksListIsValid = pointInClarkList(listOfMetadata);
+                //boolean clarksListIsValid = pointInClarkList(listOfMetadata);
             }
 
         } else if (propName.equals(PropertyChangeNames.DatapointHistoriesResponseReturned.getName())) {
@@ -4503,7 +4587,12 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             DPHistoryTableModel mod = (DPHistoryTableModel) jTableHistoryQueryResults.getModel();
             stat = new Statistics(mod.getUNames(), listOfDataPointHistories);
             fillDatapointsAveragesTable(prec);
-
+            
+        } else if (propName.equals(PropertyChangeNames.EdisonCSVCreated.getName())) {
+            boolean flag = (boolean) evt.getNewValue();
+            System.out.println("done! : " + ((flag) ? "created" : "failed"));
+            this.jButtonCSV.setEnabled(true);
+       
         } else if (propName.equals(PropertyChangeNames.GraphRulesInfoReturned.getName())) {
 
         } else if (propName.equals(PropertyChangeNames.DatapointMetadataReturned.getName())) {
@@ -4686,9 +4775,11 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonActivateSite;
     private javax.swing.JButton jButtonActivateStation;
+    private javax.swing.JButton jButtonCSV;
     private javax.swing.JButton jButtonCheckActivationStatus;
     private javax.swing.JButton jButtonCheckForUpdates;
     private javax.swing.JButton jButtonClearFilter;
+    private javax.swing.JButton jButtonEdisonRepush;
     private javax.swing.JButton jButtonEditAlarms;
     private javax.swing.JButton jButtonGenTeslaSite;
     private javax.swing.JButton jButtonGetConfigProfile;
@@ -4732,7 +4823,6 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
     private javax.swing.JComboBox jComboBoxDPConfigGroupType;
     private javax.swing.JComboBox<String> jComboBoxDPConfigSubGroup;
     private javax.swing.JComboBox<String> jComboBoxDateType;
-    private javax.swing.JComboBox<String> jComboBoxEquipType;
     private javax.swing.JComboBox<String> jComboBoxHistoryResolution;
     private javax.swing.JComboBox<String> jComboBoxLicenseTypes;
     private javax.swing.JComboBox<String> jComboBoxPageViewTypes;
@@ -4741,6 +4831,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
     private javax.swing.JComboBox<String> jComboBoxSiteInfoProducts;
     private javax.swing.JComboBox jComboBoxSiteTrendKPI;
     private javax.swing.JComboBox<String> jComboBoxSiteTrendResolutions;
+    private javax.swing.JComboBox<String> jComboBoxSpecialQueries;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

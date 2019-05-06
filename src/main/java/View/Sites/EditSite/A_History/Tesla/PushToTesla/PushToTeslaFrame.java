@@ -98,12 +98,15 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         this.jTextFieldEdisonFilter.setText("");
         this.filter = "";
 
-        endDate = DateTime.now();
+        endDate = DateTime.now().withZone(DateTimeZone.UTC);
         endDate = endDate.minusMillis(endDate.getMillisOfDay());
-        startDate = endDate.minusMonths(12);
+        startDate = endDate.minusMonths(6);
+        
+        String tempStartDate =  startDate.toString(zzFormat);
+        String tempEndDate =  endDate.toString(zzFormat);
 
-        this.jTextFieldStartDate.setText(startDate.toString(zzFormat));
-        this.jTextFieldEndDate.setText(endDate.toString(zzFormat));
+        this.jTextFieldStartDate.setText(tempStartDate);
+        this.jTextFieldEndDate.setText(tempEndDate);
 
         this.jTextFieldMaxNumHoursPerPush.setText("12");
         this.jTextFieldMaxNumPointsPerPush.setText("50");
@@ -858,7 +861,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             fillPointsTable(filter);
             this.jLabelLapsedTime.setText("complete");
 
-        } else if (propName.equals(PropertyChangeNames.TeslaIntervalPushed.getName())) {
+        } else if (propName.equals(PropertyChangeNames.TeslaBucketPushed.getName())) {
             completedBatches += 1;
             double percComplete = (double) completedBatches / (double) totalBatchesToPush;
             percComplete *= 100;

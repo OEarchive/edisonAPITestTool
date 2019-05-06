@@ -63,7 +63,7 @@ public class TeslaAPIModel extends java.util.Observable {
     public void setEdisonClient(DatapointsClient client) {
         edisonClient = client;
     }
-    
+
     public TeslaStationClient getTeslaStationClient() {
         return teslaStationClient;
     }
@@ -284,13 +284,11 @@ public class TeslaAPIModel extends java.util.Observable {
                 Hours hours = Hours.hoursBetween(intervalStart, pushEndTime);
                 DateTime endOfPeriod = intervalStart.plusHours(hours.getHours());
 
-                //if the endDate was not on an hour boundary, and an hour to cover the remainder.
+                //if the endDate was not on an hour boundary, add an hour to cover the remainder.
                 //e.g., if endDate was ...03:45:37 we want to push data to ...04:00:00
                 if (pushEndTime.isAfter(endOfPeriod)) {
                     endOfPeriod = endOfPeriod.plusHours(1);
                 }
-
-                DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
                 while (intervalStart.isBefore(endOfPeriod)) {
 
@@ -303,11 +301,8 @@ public class TeslaAPIModel extends java.util.Observable {
                         int endIndex = Math.min(startPushIndex + maxPointsPerPush, mappedRows.size());
 
                         List<MappingTableRow> pointsToPush = mappedRows.subList(startPushIndex, endIndex);
-                        OEResponse pullPushResponse = pullFromEdisonPushToTeslaInterval(querySid, intervalStart, intervalEnd, pointsToPush);
-                        if (pullPushResponse.responseCode != 201) {
-                            System.out.println("could not pull / push");
-                        }
-                        pcs.firePropertyChange(PropertyChangeNames.TeslaIntervalPushed.getName(), null, 1);
+                        pullFromEdisonPushToTeslaInterval(querySid, intervalStart, intervalEnd, pointsToPush);
+                        pcs.firePropertyChange(PropertyChangeNames.TeslaBucketPushed.getName(), null, 1);
                         startPushIndex += maxPointsPerPush;
                     }
 
@@ -373,39 +368,45 @@ public class TeslaAPIModel extends java.util.Observable {
                 return getEdisonHistoriesResponse;
             }
             List<DatapointHistoriesResponse> dpr = (List<DatapointHistoriesResponse>) getEdisonHistoriesResponse.responseObject;
-            if (dpr.size() > 0) {
-                TeslaDataPointUpsertRequest tdpu = new TeslaDataPointUpsertRequest(dpr, edisonNameToMappingTableRowMap);
-                OEResponse teslaPutResponse = teslaStationClient.putHistory(tdpu);
-                if (teslaPutResponse.responseCode == 422) {
-                    System.out.println( "unprocessable entity" );
-                    return teslaPutResponse;
-                }
-                
-                if (teslaPutResponse.responseCode == 401) {
-                        System.out.println( "getting a new token. was:" );
-                        System.out.println( teslaRestClientCommon.getOAuthToken() );
-                        String newToken = teslaLoginClient.getNewToken();
-                        teslaRestClientCommon.setOauthToken(newToken);
-                        
-                        System.out.println( "new token is:" );
-                        System.out.println( teslaRestClientCommon.getOAuthToken() );
-                        
-                        teslaPutResponse = teslaStationClient.putHistory(tdpu);
-                }
-                  
-                if (teslaPutResponse.responseCode != 204) {
-                    return teslaPutResponse;
-                }
+            if (dpr.size() == 0) {
+                OEResponse resp = new OEResponse();
+                resp.responseCode = 201;
+                resp.responseObject = "no histories from edison";
+                return getEdisonHistoriesResponse;
             }
 
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(TeslaAPIModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            TeslaDataPointUpsertRequest tdpu = new TeslaDataPointUpsertRequest(dpr, edisonNameToMappingTableRowMap);
+            OEResponse teslaPutResponse = teslaStationClient.putHistory(tdpu);
+            if (teslaPutResponse.responseCode == 422) {
+                System.out.println("unprocessable entity");
+                return teslaPutResponse;
+            }
 
-        OEResponse resp = new OEResponse();
-        resp.responseCode = 201;
-        resp.responseObject = "OK";
-        return resp;
+            if (teslaPutResponse.responseCode >= 500) {
+                System.out.println("retrying...");
+                teslaPutResponse = teslaStationClient.putHistory(tdpu);
+                
+            } else if (teslaPutResponse.responseCode == 401) {
+                System.out.println("getting a new token. was:");
+                System.out.println(teslaRestClientCommon.getOAuthToken());
+                String newToken = teslaLoginClient.getNewToken();
+                teslaRestClientCommon.setOauthToken(newToken);
+
+                System.out.println("new token is:");
+                System.out.println(teslaRestClientCommon.getOAuthToken());
+
+                teslaPutResponse = teslaStationClient.putHistory(tdpu);
+            }
+
+            return teslaPutResponse;
+
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(TeslaAPIModel.class.getName()).log(Level.SEVERE, null, ex);
+            OEResponse resp = new OEResponse();
+            resp.responseCode = 999;
+            resp.responseObject = "not sure";
+            return resp;
+        }
 
     }
 

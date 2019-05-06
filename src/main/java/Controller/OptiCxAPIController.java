@@ -701,6 +701,10 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
     public void createCSV(final String filePath, final ComboHistories comboHistories){
         model.createCSV(filePath, comboHistories);
     }
+    
+    public void createEdisonCSV( String filePath, int prec, List<String> uNames, List<String> timestamps, Map< String, Map<String, Object>> timestampToUNameValueMap ) {
+        model.createEdisonCSV(filePath, prec, uNames, timestamps, timestampToUNameValueMap);
+    }
 
     /*
     public void getHistory(String sid, HistoryQueryParams params) {

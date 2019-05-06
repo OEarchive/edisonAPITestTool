@@ -501,7 +501,6 @@ public class StationsModel extends java.util.Observable {
 
                 HistoryPushObject hpp = new HistoryPushObject( timeStamp, stationId, oldhistory  );
                 
-                
                 OEResponse results = stationsClient.postDataPointHistory(hpp);
                 return results;
             }

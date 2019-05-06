@@ -120,6 +120,7 @@ public class TeslaStationClient {
         String payload = mapper.writeValueAsString(historyRequest);
 
         OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
+        
 
         if (resObj.responseCode == 200) {
             mapper = new ObjectMapper();
@@ -138,7 +139,7 @@ public class TeslaStationClient {
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(dur.getListOfPoints());
         OEResponse resObj = teslaRestClient.doPostAndGetBody(url, payload, true);
-
+        
         return resObj;
     }
 

@@ -7,10 +7,12 @@ import Model.RestClient.RRObj;
 import Model.RestClient.RequestsResponses;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
@@ -22,6 +24,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +110,7 @@ public class TeslaRestClientCommon {
         return retVal;
 
     }
-    
+
     protected OEResponse doPostAndGetBody(String url, String payload, boolean addToken) throws UnsupportedEncodingException, IOException {
         return doPostAndGetBody(url, payload, oauthToken, addToken);
     }
@@ -127,7 +130,7 @@ public class TeslaRestClientCommon {
             if (addToken) {
                 nvps.add(new BasicNameValuePair("Authorization", "Bearer " + oauthToken));
             }
-            
+
             for (NameValuePair h : nvps) {
                 postRequest.addHeader(h.getName(), h.getValue());
             }
@@ -143,32 +146,45 @@ public class TeslaRestClientCommon {
             resp.responseObject = statusLine.getReasonPhrase();
             responseString = "";
             resp.responseCode = statusLine.getStatusCode();
-            
-            if(resp.responseCode >= 300 ){
-                String msg = String.format("bad status: %d ", resp.responseCode );
-                        
-                if( addToken ){
+
+            String logts = DateTime.now().withZone(DateTimeZone.UTC).toString();
+            if (resp.responseCode >= 500) { 
+                
+                String msg = String.format("%s - bad status: %d ", logts, resp.responseCode);
+                System.out.println(msg);
+                System.out.println("url= " + url);
+                System.out.println("payload:");
+                System.out.println(payload);
+                System.out.println("");
+                
+                rrs.addRequest(new RRObj(DateTime.now(), EnumCallType.RESPONSE, EnumRequestType.POST, resp.responseCode, url, payload, oauthToken));
+                
+            } else if (resp.responseCode >= 300) {
+                String msg = String.format("%s - bad status: %d ", logts, resp.responseCode);
+                if (addToken) {
                     msg += "token: " + oauthToken;
                 }
                 System.out.println(msg);
             }
 
-            if (resp.responseCode < 300) {
-                try {
-                    BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+            try {
+                HttpEntity httpEntity = response.getEntity();
+                if (httpEntity != null) {
+                    InputStream inputStream = httpEntity.getContent();
+                    BufferedReader br = new BufferedReader(new InputStreamReader((inputStream)));
                     String output;
                     while ((output = br.readLine()) != null) {
                         responseString += output;
                     }
-
-                    resp.responseCode = response.getStatusLine().getStatusCode();
-                    if (resp.responseCode == 401) {
-                        responseString = badCredentials;
-                    }
-                    resp.responseObject = responseString;
-                } catch (Exception ex) {
-
                 }
+
+                resp.responseCode = response.getStatusLine().getStatusCode();
+                if (resp.responseCode == 401) {
+                    responseString = badCredentials;
+                }
+                resp.responseObject = responseString;
+            } catch (Exception ex) {
+                System.out.println("caught exception");
             }
 
         } catch (Exception ex) {

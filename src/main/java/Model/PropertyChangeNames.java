@@ -165,7 +165,7 @@ public enum PropertyChangeNames {
     TeslaStationsListReturned("TeslaStationsListReturned"),
     TeslaStationInfoRetrieved("TeslaStationInfoRetrieved"),
     TeslaStationDatapointsReturned("TeslaStationDatapointsReturned"),
-    TeslaIntervalPushed("TeslaIntervalPushed"),
+    TeslaBucketPushed("TeslaBucketPushed"),
     TeslaPushComplete("TeslaPushComplete"),
     TeslaSparsePushComplete("TeslaSparsePushComplete"),
     TeslaCustomerCreated("TeslaCustomerCreated"),
@@ -175,7 +175,9 @@ public enum PropertyChangeNames {
     TeslaHistoryReturned("TeslaHistoryReturned"),
     
     TeslaEdisonHistoryReturned("TeslaEdisonHistoryReturned"),
-    CSVCreated("CSVCreated");
+    CSVCreated("CSVCreated"),
+    
+    EdisonCSVCreated("EdisonCSVCreated");
 
     private final String name;
 

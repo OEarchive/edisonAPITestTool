@@ -130,9 +130,61 @@ public class PopupMenuForDataPointsListTable extends JPopupMenu {
                     }
                 }
 
-            }  
+            }
         });
         this.add(selectNicholePoints);
+
+        JMenuItem selectConfigPoints = new JMenuItem("Select Config Points");
+        selectConfigPoints.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                List<String> configPointNames = getConfigPointNames();
+
+                DatapointsListTableModel mod = (DatapointsListTableModel) table.getModel();
+
+                for (int rowNumber = 0; rowNumber < table.getRowCount(); rowNumber++) {
+                    int modelNumber = table.convertRowIndexToModel(rowNumber);
+                    DatapointsAndMetadataResponse pointAndMetaData = mod.getRow(modelNumber);
+
+                    String name = pointAndMetaData.getName();
+
+                    if (configPointNames.contains(name)) {
+                        table.getSelectionModel().addSelectionInterval(rowNumber, rowNumber);
+
+                    }
+                }
+
+            }
+        });
+        this.add(selectConfigPoints);
+        
+        JMenuItem selectEAPoints = new JMenuItem("Select Erik/Andrew Points");
+        selectEAPoints.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                List<String> eaPoints = getAndrewErikPointNames();
+
+                DatapointsListTableModel mod = (DatapointsListTableModel) table.getModel();
+
+                for (int rowNumber = 0; rowNumber < table.getRowCount(); rowNumber++) {
+                    int modelNumber = table.convertRowIndexToModel(rowNumber);
+                    DatapointsAndMetadataResponse pointAndMetaData = mod.getRow(modelNumber);
+
+                    String name = pointAndMetaData.getName();
+
+                    if (eaPoints.contains(name)) {
+                        table.getSelectionModel().addSelectionInterval(rowNumber, rowNumber);
+
+                    }
+                }
+
+            }
+        });
+        this.add(selectEAPoints);
 
         this.show(evt.getComponent(), evt.getX(), evt.getY());
 
@@ -144,24 +196,62 @@ public class PopupMenuForDataPointsListTable extends JPopupMenu {
         });
         return chillerPoints;
     }
-    
+
     private List<String> getNicolePointNames() {
         List<String> chillerPoints = Arrays.asList(new String[]{
-            
-            "kWTon", 
-            "TotalTon", 
-            "TotalkW", 
-            "CH1kW", 
-            "CH2kW", 
-            "CH3kW", 
-            "TotalCapacity", 
-            "MininumChilledWaterFlow", 
+            "kWTon",
+            "TotalTon",
+            "TotalkW",
+            "CH1kW",
+            "CH2kW",
+            "CH3kW",
+            "TotalCapacity",
+            "MininumChilledWaterFlow",
             "Ton",
             "ChilledWaterFlow",
             "ChilledWaterSupplyTemperature",
             "ChilledWaterReturnTemperature"
         });
-        
+
         return chillerPoints;
     }
+
+    private List<String> getConfigPointNames() {
+        List<String> configPoints = Arrays.asList(new String[]{
+            "TotalCapacity",
+            "MinimumChilledWaterFlow",
+            "BlendedUtilityRate",
+            "CO2EmissionFactor"
+        });
+        return configPoints;
+    }
+
+    private List<String> getAndrewErikPointNames() {
+        List<String> aePoints = Arrays.asList(new String[]{
+            "BaselinekW",
+            "BaselinekWh",
+            "BaselinekWTon",
+            "TotalkW",
+            "TotalTon",
+            "kWDelta",
+            "kWhDelta",
+            "OAT",
+            "OAWB",
+            "EDGEMODE"
+        });
+        return aePoints;
+    }
+
+    /*
+    BaselinekW
+    BaselinekWh
+    BaselinekWTon
+    TotalkW
+    TotalTon
+    kWDelta
+    kWhDelta
+    OAT
+    OAWB
+    EDGEMODE
+     */
 }

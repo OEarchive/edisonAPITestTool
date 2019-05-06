@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public class DPHistoryTableModel extends AbstractTableModel {
 
     private final Map< String, Map<String, Object>> timestampToUNameValueMap;
-
     private final List<String> uNames; //cols
     private final List<String> masterListOfTimestamps; //row indicies
 
@@ -155,7 +155,7 @@ public class DPHistoryTableModel extends AbstractTableModel {
             DateTimeFormatter fromFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             //DateTimeFormatter toFormat = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
             //DateTimeFormatter resultFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
-            DateTime temp = DateTime.parse(ts, fromFormat);
+            DateTime temp = DateTime.parse(ts, fromFormat).withZone(DateTimeZone.UTC);
             temp = temp.withMillisOfSecond(0);
             ts = temp.toString(fromFormat);
 

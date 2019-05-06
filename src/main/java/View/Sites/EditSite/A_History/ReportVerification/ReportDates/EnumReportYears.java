@@ -9,7 +9,8 @@ public enum EnumReportYears {
     y2016("2016", 0, 2016),
     y2017("2017", 1, 2017),
     y2018("2018", 2, 2018),
-    y2019("2019", 3, 2019);
+    y2019("2019", 3, 2019),
+    y2020("2020", 4, 2020);
 
     private final String name;
     private final int dropDownIndex;
