@@ -11,7 +11,6 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostEquipResponse;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
-import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.TeslaLoginResponse;
 import Model.DataModels.Views.EnumPageViewTypes;
 import Model.DataModels.Views.ItemGroup;
@@ -49,8 +48,6 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
     private final Site edisonSite;
 
     private EnumTeslaBaseURLs selectedBaseURL;
-    private EnumTeslaUsers selectedUser;
-
     private List<TeslaGenEquipment> equipList;
 
     private final String toBeGenerated = "*to be generated*";
@@ -73,9 +70,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
         this.edisonSite = edisonSite;
 
         selectedBaseURL = EnumTeslaBaseURLs.LocalHost;
-        selectedUser = EnumTeslaUsers.DevOps;
         fillTeslasHostsDropdown();
-        fillUsersDropdown();
 
         initCustomerPanel();
         initSitePanel();
@@ -106,24 +101,10 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
 
     }
 
-    public void fillUsersDropdown() {
-        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumTeslaUsers.getUsernames().toArray());
-        this.jComboBoxTeslaUsers.setModel(comboBoxModel);
-        this.jComboBoxTeslaUsers.setSelectedItem(selectedUser);
 
-        this.jComboBoxTeslaUsers.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                JComboBox<String> combo = (JComboBox<String>) event.getSource();
-                String name = (String) combo.getSelectedItem();
-                selectedUser = EnumTeslaUsers.getUserFromName(name);
-            }
-        });
-    }
-
-    private void initTeslaModel(EnumTeslaBaseURLs baseURL, EnumTeslaUsers selectedUser) {
-        controller.teslaLogin(baseURL, selectedUser);
+    private void initTeslaModel(EnumTeslaBaseURLs baseURL) {
+        controller.teslaLogin(baseURL);
     }
 
     private void initCustomerPanel() {
@@ -262,8 +243,6 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
         jLabel2 = new javax.swing.JLabel();
         jTextFieldSalesForceID = new javax.swing.JTextField();
         jLabelCustId = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jComboBoxTeslaUsers = new javax.swing.JComboBox<>();
         jLabelLoggedIn = new javax.swing.JLabel();
         jButtonLogin = new javax.swing.JButton();
 
@@ -548,10 +527,6 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                 .addContainerGap())
         );
 
-        jLabel8.setText("User:");
-
-        jComboBoxTeslaUsers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         jLabelLoggedIn.setText("*not logged in*");
 
         jButtonLogin.setText("Login");
@@ -580,10 +555,6 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBoxTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonLogin)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabelLoggedIn)
@@ -598,8 +569,6 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8)
-                    .addComponent(jComboBoxTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelLoggedIn)
                     .addComponent(jButtonLogin))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -637,7 +606,7 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
         jLabelLoggedIn.setText("*not logged in*");
         this.jButtonGenerateSite.setEnabled(false);
-        initTeslaModel(selectedBaseURL, selectedUser);
+        initTeslaModel(selectedBaseURL);
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
     @Override
@@ -725,7 +694,6 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JCheckBox jCheckBoxBaslineEnabled;
     private javax.swing.JCheckBox jCheckBoxRegenerationAllowed;
     private javax.swing.JComboBox<String> jComboBoxTeslaHosts;
-    private javax.swing.JComboBox<String> jComboBoxTeslaUsers;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
@@ -737,7 +705,6 @@ public final class GenTeslaSiteFrame extends javax.swing.JFrame implements Prope
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelCustId;
     private javax.swing.JLabel jLabelLoggedIn;

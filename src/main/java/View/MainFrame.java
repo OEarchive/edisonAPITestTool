@@ -58,6 +58,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -73,7 +74,9 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -82,6 +85,8 @@ import javax.swing.tree.DefaultTreeModel;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import View.CustomPassword.TextTransferHandler;
 
 public class MainFrame extends javax.swing.JFrame {
 
@@ -115,7 +120,10 @@ public class MainFrame extends javax.swing.JFrame {
         this.jTextFieldCustomerExtSfId.setText("");
 
         this.jTextFieldUsersPassword.setText("");
-
+        TextTransferHandler th = new TextTransferHandler();
+        jTextFieldUsersPassword.setTransferHandler(th);
+        jTextFieldUsersPassword.setDragEnabled(true);
+        
         this.selectedSiteSid = null;
         this.selectedMobileSiteUUID = null;
 

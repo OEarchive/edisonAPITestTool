@@ -19,6 +19,8 @@ On osx these tools are likely already installed.
 3. Execute: `mvn clean && mvn package -DskipTests`
 4. Execute: `java -jar target/opticx-api-gui-1.0-SNAPSHOT.jar`
 
+
+
 Tool should now be running. Be careful with this tool, it's a powerful mechanism to cause sweeping database changes.
 
 ### Configure Tool

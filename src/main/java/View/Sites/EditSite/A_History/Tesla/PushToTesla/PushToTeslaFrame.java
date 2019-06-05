@@ -3,7 +3,6 @@ package View.Sites.EditSite.A_History.Tesla.PushToTesla;
 import Controller.OptiCxAPIController;
 import Model.DataModels.Datapoints.DatapointsAndMetadataResponse;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
-import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.TeslaStationInfo;
 import Model.PropertyChangeNames;
 import View.Sites.EditSite.A_History.Tesla.PushToTesla.MappingTable.DataPointsTableCellRenderer;
@@ -46,7 +45,6 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private final OptiCxAPIController controller;
 
     private EnumTeslaBaseURLs selectedBaseURL;
-    private EnumTeslaUsers selectedUser;
 
     private final List<DatapointsAndMetadataResponse> edisonPoints;
     private List<TeslaDPServiceDatapoint> listOfStationDatapoints;
@@ -112,9 +110,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         this.jTextFieldMaxNumPointsPerPush.setText("50");
 
         selectedBaseURL = EnumTeslaBaseURLs.Prod;
-        selectedUser = EnumTeslaUsers.ProdUser;
         fillTeslasHostsDropdown();
-        fillUsersDropdown();
 
         createAllTeslaCheckBoxListener();
         createIgnoreGarbageCheckBoxListener();
@@ -175,33 +171,11 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
 
     }
 
-    public void fillUsersDropdown() {
 
-        ComboBoxModel comboBoxModel = new DefaultComboBoxModel(EnumTeslaUsers.getUsernames().toArray());
-        this.jComboBoxTeslaUsers.setModel(comboBoxModel);
-        this.jComboBoxTeslaUsers.setSelectedItem(selectedUser.name());
+    
 
-        this.jComboBoxTeslaUsers.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                JComboBox<String> combo = (JComboBox<String>) event.getSource();
-                String name = (String) combo.getSelectedItem();
-                selectedUser = EnumTeslaUsers.getUserFromName(name);
-
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        //clearStationsTable();
-                        //clearDatapointsTable();
-                    }
-                });
-
-            }
-        });
-    }
-
-    private void initTeslaModel(EnumTeslaBaseURLs baseURL, EnumTeslaUsers selectedUser) {
-        controller.teslaLogin(baseURL, selectedUser);
+    private void initTeslaModel(EnumTeslaBaseURLs baseURL) {
+        controller.teslaLogin(baseURL);
     }
 
     public void clearTeslaSitesDropdown() {
@@ -402,8 +376,6 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
         jLabel9 = new javax.swing.JLabel();
         jTextFieldMaxNumPointsPerPush = new javax.swing.JTextField();
         jButtonPushSparsePoints = new javax.swing.JButton();
-        jLabel10 = new javax.swing.JLabel();
-        jComboBoxTeslaUsers = new javax.swing.JComboBox<>();
         jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -471,10 +443,6 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             }
         });
 
-        jLabel10.setText("User:");
-
-        jComboBoxTeslaUsers.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         jButton1.setText("Login");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -489,6 +457,17 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextFieldStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextFieldEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBoxShowAllTesla)
+                        .addGap(0, 282, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -512,34 +491,19 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jComboBoxTeslaStations, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jTextFieldEdisonFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jCheckBoxUseRegEx)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBoxIgnoreGarbage))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxTeslaStations, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBoxShowAllTesla)
-                        .addGap(35, 282, Short.MAX_VALUE)))
+                                .addComponent(jCheckBoxIgnoreGarbage)))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -558,8 +522,6 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
                     .addComponent(jComboBoxTeslaHosts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(jComboBoxTeslaStations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)
-                    .addComponent(jComboBoxTeslaUsers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -802,7 +764,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         jComboBoxTeslaStations.setEnabled(false);
-        initTeslaModel(selectedBaseURL, selectedUser);
+        initTeslaModel(selectedBaseURL);
     }//GEN-LAST:event_jButton1ActionPerformed
 
 
@@ -817,9 +779,7 @@ public final class PushToTeslaFrame extends javax.swing.JFrame implements Proper
     private javax.swing.JComboBox<String> jComboBoxEdisonSids;
     private javax.swing.JComboBox<String> jComboBoxTeslaHosts;
     private javax.swing.JComboBox<String> jComboBoxTeslaStations;
-    private javax.swing.JComboBox<String> jComboBoxTeslaUsers;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

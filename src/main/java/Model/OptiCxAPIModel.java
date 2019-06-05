@@ -50,7 +50,6 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
-import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
@@ -2128,8 +2127,8 @@ public class OptiCxAPIModel extends java.util.Observable {
     }
 
     // Tesla
-    public void teslaLogin(final EnumTeslaBaseURLs baseUrl, final EnumTeslaUsers user) {
-        teslaAPIModel.teslaLogin(baseUrl, user);
+    public void teslaLogin(final EnumTeslaBaseURLs baseUrl) {
+        teslaAPIModel.teslaLogin(baseUrl);
     }
 
     public void setEdisonClient() {

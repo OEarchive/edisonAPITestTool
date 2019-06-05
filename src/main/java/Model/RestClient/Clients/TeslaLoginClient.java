@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Model.RestClient.Clients;
 
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
-import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.TeslaLoginResponse;
+import Model.DataModels.TeslaModels.TeslaUsersInfo;
 import Model.RestClient.OEResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -23,7 +19,8 @@ public class TeslaLoginClient {
     private final String badCredentials = "incorrect credentials";
 
     private EnumTeslaBaseURLs serviceURL = null;
-    private EnumTeslaUsers user = null;
+    private String teslaUsername = null;
+    private String teslaPassword = null;
 
     private final TeslaRestClientCommon restClient;
 
@@ -33,16 +30,19 @@ public class TeslaLoginClient {
 
     public String getNewToken() throws IOException {
 
-        OEResponse newTokenResponse = login(serviceURL, user);
+        OEResponse newTokenResponse = login(serviceURL);
         TeslaLoginResponse loginResponse = (TeslaLoginResponse) newTokenResponse.responseObject;
         return loginResponse.getAccessToken();
 
     }
 
-    public OEResponse login(EnumTeslaBaseURLs serviceURL, EnumTeslaUsers user) throws IOException {
+    public OEResponse login(EnumTeslaBaseURLs serviceURL ) throws IOException {
+
+        TeslaUsersInfo teslaUser = new TeslaUsersInfo();
 
         this.serviceURL = serviceURL;
-        this.user = user;
+        this.teslaUsername = teslaUser.getUserName();
+        this.teslaPassword = teslaUser.getPassword();
 
         String url = serviceURL.getURL() + "/oauth/token";
 
@@ -51,8 +51,8 @@ public class TeslaLoginClient {
 
         Map<String, String> postBody = new HashMap<>();
         postBody.put("grant_type", "password");
-        postBody.put("email", user.getEmail());
-        postBody.put("password", user.getPassword());
+        postBody.put("email", this.teslaUsername);
+        postBody.put("password", this.teslaPassword);
 
         ObjectMapper mapper = new ObjectMapper();
         String payload = mapper.writeValueAsString(postBody);

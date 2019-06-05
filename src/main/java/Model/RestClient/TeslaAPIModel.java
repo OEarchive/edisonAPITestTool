@@ -11,7 +11,6 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostEquipResponse;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
-import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDPServiceDatapoint;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
@@ -37,8 +36,6 @@ import java.util.logging.Level;
 import javax.swing.SwingWorker;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,9 +73,10 @@ public class TeslaAPIModel extends java.util.Observable {
         pcs.removePropertyChangeListener(listener);
     }
 
-    public void teslaLogin(final EnumTeslaBaseURLs baseUrl, final EnumTeslaUsers user) {
+    public void teslaLogin(final EnumTeslaBaseURLs baseUrl ) {
 
-        if (baseUrl == null || user == null) {
+
+        if (baseUrl == null ) {
             return;
         }
 
@@ -86,7 +84,7 @@ public class TeslaAPIModel extends java.util.Observable {
 
             @Override
             public OEResponse doInBackground() throws IOException {
-                OEResponse results = teslaLoginClient.login(baseUrl, user);
+                OEResponse results = teslaLoginClient.login(baseUrl);
                 return results;
             }
 

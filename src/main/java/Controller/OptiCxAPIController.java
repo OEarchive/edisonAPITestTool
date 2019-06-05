@@ -39,7 +39,6 @@ import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostCustomer;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostSite;
 import Model.DataModels.TeslaModels.CreateTeslaSiteModel.TeslaPostStation;
 import Model.DataModels.TeslaModels.EnumTeslaBaseURLs;
-import Model.DataModels.TeslaModels.EnumTeslaUsers;
 import Model.DataModels.TeslaModels.MappingTableRow;
 import Model.DataModels.TeslaModels.TeslaDataPointUpsertRequest;
 import Model.DataModels.TeslaModels.TeslaHistoryRequest;
@@ -644,8 +643,8 @@ public class OptiCxAPIController implements java.awt.event.ActionListener, Prope
     }
 
     //Tesla
-    public void teslaLogin(final EnumTeslaBaseURLs baseUrl, final EnumTeslaUsers user) {
-        model.teslaLogin(baseUrl, user);
+    public void teslaLogin(final EnumTeslaBaseURLs baseUrl) {
+        model.teslaLogin(baseUrl);
     }
 
     public void getTeslaStations() {
