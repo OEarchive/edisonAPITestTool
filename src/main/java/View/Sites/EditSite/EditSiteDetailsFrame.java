@@ -1448,7 +1448,6 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jPanel5 = new javax.swing.JPanel();
         jTextFieldHistoryDPFilter = new javax.swing.JTextField();
         jLabel42 = new javax.swing.JLabel();
-        jCheckBoxUseRegEx = new javax.swing.JCheckBox();
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane14 = new javax.swing.JScrollPane();
         jTableDatapointsList = new javax.swing.JTable();
@@ -1457,6 +1456,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jComboBoxSpecialQueries = new javax.swing.JComboBox<>();
         jLabel33 = new javax.swing.JLabel();
         jButtonClearFilter = new javax.swing.JButton();
+        jCheckBoxUseRegEx = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         jLabel34 = new javax.swing.JLabel();
         jLabelHistoryNumberPoints = new javax.swing.JLabel();
@@ -1969,7 +1969,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                 .addComponent(jButtonPushXLS)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonReportVerification)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel39)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextFieldHistoryMaxPoints, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2166,8 +2166,6 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jLabel42.setText("Filter:");
         jLabel42.setToolTipText("<CR> to commit");
 
-        jCheckBoxUseRegEx.setText("Use RegEx");
-
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -2176,9 +2174,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                 .addContainerGap()
                 .addComponent(jLabel42)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextFieldHistoryDPFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jCheckBoxUseRegEx)
+                .addComponent(jTextFieldHistoryDPFilter)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -2187,8 +2183,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldHistoryDPFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel42)
-                    .addComponent(jCheckBoxUseRegEx)))
+                    .addComponent(jLabel42)))
         );
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
@@ -2197,7 +2192,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(118, 118, 118))
+                .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2257,6 +2252,8 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             }
         });
 
+        jCheckBoxUseRegEx.setText("RegEx");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -2264,17 +2261,17 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel33)
-                                .addGap(13, 13, 13)
-                                .addComponent(jComboBoxSpecialQueries, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonClearFilter)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jLabel33)
+                        .addGap(13, 13, 13)
+                        .addComponent(jComboBoxSpecialQueries, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonClearFilter)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBoxUseRegEx)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -2286,7 +2283,8 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jComboBoxSpecialQueries, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel33)
-                    .addComponent(jButtonClearFilter))
+                    .addComponent(jButtonClearFilter)
+                    .addComponent(jCheckBoxUseRegEx))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
                 .addContainerGap())
@@ -2370,7 +2368,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
         jPanelHistory.setLayout(jPanelHistoryLayout);
         jPanelHistoryLayout.setHorizontalGroup(
             jPanelHistoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1461, Short.MAX_VALUE)
+            .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1476, Short.MAX_VALUE)
         );
         jPanelHistoryLayout.setVerticalGroup(
             jPanelHistoryLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2526,7 +2524,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                         .addComponent(jTextFieldNodeSid, javax.swing.GroupLayout.PREFERRED_SIZE, 576, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonNodeQuery)
-                        .addGap(0, 716, Short.MAX_VALUE)))
+                        .addGap(0, 731, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanelGraphNodesLayout.setVerticalGroup(
@@ -2579,7 +2577,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanelAlarmsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelAlarmsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1449, Short.MAX_VALUE)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1464, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(jPanelAlarmsLayout.createSequentialGroup()
                 .addComponent(jButtonEditAlarms)
@@ -2651,7 +2649,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jTextFieldSiteTrendEndTime)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 785, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 800, Short.MAX_VALUE)
                         .addGroup(jPanelSiteTrendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelSiteTrendLayout.createSequentialGroup()
                                 .addComponent(jLabel8)
@@ -2935,7 +2933,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanelSubscriptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelSubscriptionsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 699, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanelSubscriptionsLayout.setVerticalGroup(
@@ -2969,7 +2967,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanelEnhancementsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelEnhancementsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 696, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 704, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanelEnhancementsLayout.setVerticalGroup(
@@ -3073,7 +3071,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanelAddressLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelAddressLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1427, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1442, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanelAddressLayout.setVerticalGroup(
@@ -3511,7 +3509,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanelLiveDataLayout.createSequentialGroup()
                         .addComponent(jCheckBoxUseStationToken)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 612, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 627, Short.MAX_VALUE)
                         .addComponent(jButtonPutHeartbeat)))
                 .addContainerGap())
         );
@@ -3687,7 +3685,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
                         .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBoxPageViewTypes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 1280, Short.MAX_VALUE))
+                        .addGap(0, 1295, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelViewsLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButtonViewLiveData))
@@ -3741,7 +3739,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1423, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1438, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -3764,7 +3762,7 @@ public class EditSiteDetailsFrame extends javax.swing.JFrame implements Property
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1423, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1438, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel10Layout.setVerticalGroup(

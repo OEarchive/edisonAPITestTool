@@ -25,6 +25,9 @@ public class TeslaDPServiceDatapoint {
 
     @JsonProperty("calculation")
     private String calculation;
+    
+    @JsonProperty("editable")
+    private Boolean editable;
 
     @JsonProperty("minimumResolution")
     private String minimumResolution;
@@ -78,6 +81,10 @@ public class TeslaDPServiceDatapoint {
 
     public String getCalculation() {
         return calculation;
+    }
+    
+    public Boolean getEditable() {
+        return editable;
     }
 
     public String getMinimumResolution() {

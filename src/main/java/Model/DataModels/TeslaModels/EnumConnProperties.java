@@ -1,4 +1,3 @@
-
 package Model.DataModels.TeslaModels;
 
 import java.util.ArrayList;
@@ -7,7 +6,9 @@ import java.util.List;
 public enum EnumConnProperties {
 
     TESLA_USER("TESLA_USER"),
-    TESLA_PASSWORD("TESLA_PASSWORD");
+    TESLA_PASSWORD("TESLA_PASSWORD"),
+    TESLA_DEV_USER("TESLA_DEV_USER"),
+    TESLA_DEV_PASSWORD("TESLA_DEV_PASSWORD");
 
     private final String propertyName;
 

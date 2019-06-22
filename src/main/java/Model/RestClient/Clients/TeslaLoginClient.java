@@ -38,7 +38,7 @@ public class TeslaLoginClient {
 
     public OEResponse login(EnumTeslaBaseURLs serviceURL ) throws IOException {
 
-        TeslaUsersInfo teslaUser = new TeslaUsersInfo();
+        TeslaUsersInfo teslaUser = new TeslaUsersInfo( serviceURL );
 
         this.serviceURL = serviceURL;
         this.teslaUsername = teslaUser.getUserName();
